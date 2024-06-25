@@ -1,0 +1,20 @@
+button {
+ margin: 5px;
+ padding: 5px;
+ border-radius: 8px;
+ border-width: 0.1rem;
+ transition: transform 0.3s ease, box-shadow 0.3s ease;
+ cursor: pointer;
+ width: 100%;
+}
+
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+input {
+    margin: 5px;
+    padding: 5px;
+    width: 100%;
+}
