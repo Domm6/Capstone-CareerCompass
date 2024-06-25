@@ -9,7 +9,6 @@ function SignUpPage() {
     const [password, setPassword] = useState('');
 
     const signUp = (e) => {
-        // sign in 
         e.preventDefault();
         createUserWithEmailAndPassword(auth, email, password)
         .then((userCredentials) => {
