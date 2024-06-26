@@ -48,7 +48,7 @@ const SignUpPage = () => {
         } else {
             navigate('/')
         }
-        
+
       } else {
         // Handle signup failure case
         alert('Signup failed');
@@ -60,7 +60,10 @@ const SignUpPage = () => {
   };
 
   return (
-    
+    <>
+    <div className="signup-header">
+        <h1>Welcome to CareerCompass!</h1>
+    </div>
     <div className="signup-page-container">
       <form className="signup-form" onSubmit={handleSubmit}>
         <h2>Sign Up</h2>
@@ -112,6 +115,7 @@ const SignUpPage = () => {
         </p>
       </form>
     </div>
+    </>
   );
 };
 

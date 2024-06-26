@@ -7,6 +7,7 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { updateUser } = useContext(UserContext);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const navigate = useNavigate();
 
@@ -37,14 +38,19 @@ const LoginPage = () => {
             navigate('/')
         }
       } else {
-        alert('Login failed');
+        setErrorMessage("Wrong email or password, please try again");
       }
     } catch (error) {
-      alert('Login failed: ' + error);
+        setErrorMessage(`Login failed: ${error.message}`);
+        // alert('Login failed: ' + error);
     }
   };
 
   return (
+    <>
+    <div className="signup-header">
+        <h1>Welcome to CareerCompass!</h1>
+    </div>
     <div className='login-form-container'>
       <form className="login-form" onSubmit={handleLogin}>
         <h2>Login</h2>
@@ -73,7 +79,9 @@ const LoginPage = () => {
           New to the app? <Link to="/signup">Sign Up</Link>
         </p>
       </form>
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
     </div>
+    </>
   );
 };
 
