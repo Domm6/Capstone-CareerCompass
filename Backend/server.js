@@ -40,47 +40,6 @@ sessionStore.sync();
 
 app.use(userRoutes);
 
-// Route to get all posts, with associated users
-app.get('/posts', async (req, res) => {
-  try {
-    const posts = await Post.findAll({
-      include: [{ model: User, as: 'user' }],
-      order: [['createdAt', 'DESC']]
-    });
-    res.json(posts);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// Route to create a new post
-app.post('/posts', async (req, res) => {
-  try {
-    // Check if user is logged in
-    if (!req.session.user) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    // Retrieve the current user from the session
-    const currentUser = req.session.user;
-
-    // Create the post with the current user ID
-    const post = await Post.create({
-      ...req.body,
-      userId: currentUser.id
-    });
-
-    const postWithUser = await Post.findOne({
-      where: { id: post.id },
-      include: [{ model: User, as: 'user' }]
-    });
-
-    res.status(201).json(postWithUser);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
 sequelize.sync({ alter: true })
   .then(() => {
     const port = 3000;
