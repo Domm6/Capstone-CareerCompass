@@ -5,6 +5,7 @@ import { Op } from 'sequelize';
 import { PrismaClient } from '@prisma/client';
 
 const router = express.Router();
+const SALT_ROUNDS = 10;
 
 // Route for user registration
 router.post('/users/signup', async (req, res) => {
@@ -25,7 +26,7 @@ router.post('/users/signup', async (req, res) => {
     }
 
     // Encrypt the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
     // Create a new user
     const newUser = await User.create({
@@ -76,10 +77,27 @@ router.post('/users/login', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 
-  // router to get user
-
 });
 
+  // router to get userinfo
+  router.get('/users/:id', async(req,res) => {
+
+    try{
+      const userId = req.params.id;
+      const user = await User.findByPk(userId, {
+        attributes: ['id', 'name', 'email', 'profileImageUrl', 'userRole']
+      });
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found'});
+      }
+      res.json(user)
+    } catch {
+      console.error('Error fetching user:', error);
+      res.status(500).json({ message: 'Error fetching uer information'});
+    }
+
+  })
 
 
 export default router;

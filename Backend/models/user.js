@@ -25,6 +25,11 @@ export const User = sequelize.define('User', {
     type: DataTypes.ENUM('mentee', 'mentor'),
     allowNull: false,
   },
+  profileImageUrl: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    defaultValue: null
+  }
 }, {
   tableName: 'Users',
   timestamps: false,
