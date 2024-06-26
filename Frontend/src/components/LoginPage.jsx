@@ -29,7 +29,13 @@ const LoginPage = () => {
 
         updateUser(loggedInUser);
 
-        navigate('/');
+        if (loggedInUser.userRole === 'mentor') {
+            navigate('/mentor-profile');
+        } else if (loggedInUser.userRole === 'mentee') {
+            navigate('/mentee-profile'); 
+        } else {
+            navigate('/')
+        }
       } else {
         alert('Login failed');
       }
