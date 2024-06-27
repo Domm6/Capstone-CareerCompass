@@ -12,7 +12,7 @@ export const Mentor = sequelize.define('Mentor', {
     allowNull: false,
     unique: true,
   },
-  bio: {
+  school: {
     type: DataTypes.STRING,
     allowNull: false,
   },

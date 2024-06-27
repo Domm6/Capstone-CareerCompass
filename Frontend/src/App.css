@@ -9,7 +9,7 @@ button {
  border-width: 0.1rem;
  transition: transform 0.3s ease, box-shadow 0.3s ease;
  cursor: pointer;
- width: 20%;
+ width: 100%;
 }
 
 button:hover {
@@ -20,5 +20,5 @@ button:hover {
 input {
     margin: 5px;
     padding: 5px;
-    width: 100%;
+    width: 75%;
 }

@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import { User } from '../models/user.js';
 import { Op } from 'sequelize';
+import { Mentor } from '../models/mentor.js';
 import { PrismaClient } from '@prisma/client';
 
 const router = express.Router();
@@ -35,6 +36,19 @@ router.post('/users/signup', async (req, res) => {
       password: hashedPassword,
       userRole
     });
+
+    // Create a Mentor profile if the userRole is 'mentor'
+    if (userRole === 'mentor') {
+      await Mentor.create({
+        userId: newUser.id,
+        school: '',
+        company: '',
+        work_role: '',
+        years_experience: 0,
+        industry: '',
+        skills: ''
+      });
+    }
 
     // Set the user in the session
     req.session.user = newUser;
@@ -98,6 +112,58 @@ router.post('/users/login', async (req, res) => {
     }
 
   })
+
+  // Route to update mentor profile
+  router.put('/mentors/:id', async (req, res) => {
+  const mentorId = req.params.id;
+  const { school, company, work_role, years_experience, industry, skills } = req.body;
+
+  try {
+    // Find the mentor by ID
+    const mentor = await Mentor.findOne({ where: { userId: mentorId } });
+
+    if (!mentor) {
+      return res.status(404).json({ error: 'Mentor not found' });
+    }
+
+    // Update the mentor's profile with the new data
+    await mentor.update({
+      school,
+      company,
+      work_role,
+      years_experience,
+      industry,
+      skills
+    });
+
+    // Return the updated mentor data in the response
+    res.json({ mentor });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Route to fetch mentor profile based on user ID
+router.get('/mentors/:id', async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    // Find the mentor by user ID
+    const mentor = await Mentor.findOne({ where: { userId } });
+
+    if (!mentor) {
+      return res.status(404).json({ error: 'Mentor not found' });
+    }
+
+    // Return the mentor data in the response
+    res.json({ mentor });
+  } catch (error) {
+    console.error('Error fetching mentor profile:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 
 
 export default router;

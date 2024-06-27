@@ -7,9 +7,25 @@
 }
 
 .mp-top {
+    display: flex;
+    justify-content: space-between; /* Ensures the title is on the left and button on the right */
+    align-items: center; /* Vertically center the items */
+    background-color: white;
     padding: 15px;
-    background-color: #95a5a6;
     border-radius: 8px;
+    width: 100%;
+}
+
+.mp-top-left {
+    background-color: #95a5a6;
+    flex: 1; /* Allow this div to grow and take available space */
+}
+
+.mp-top-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 70%;
 }
 
 .mp-container {
@@ -21,6 +37,7 @@
 }
 
 .mp-body {
+    margin: 10px;
     display: flex;
     justify-content: space-between;
     width: 100%;
@@ -40,4 +57,17 @@
     flex-direction: column;
     flex: 2;
     margin-left: 20px;
+}
+
+.mp-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.mp-form input {
+    width: 10%;
+}
+
+#save-button {
+    width: 20%;
 }
