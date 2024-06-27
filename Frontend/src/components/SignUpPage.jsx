@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './SignUpPage.css'
 import { UserContext } from '../UserContext.jsx';
+import config from '../../config.js';
 
 const SignUpPage = () => {
   const [name, setName] = useState('');
@@ -17,7 +18,7 @@ const SignUpPage = () => {
 
     try {
       // Make the signup API request
-      const response = await fetch(`http://localhost:3000/users/signup`, {
+      const response = await fetch(`${config.apiBaseUrl}/users/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

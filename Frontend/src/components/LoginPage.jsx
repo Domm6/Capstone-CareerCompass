@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../UserContext';
 import './LoginPage.css'
+import config from '../../config';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -15,7 +16,7 @@ const LoginPage = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`http://localhost:3000/users/login`, {
+      const response = await fetch(`${config.apiBaseUrl}/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

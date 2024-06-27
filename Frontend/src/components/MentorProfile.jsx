@@ -3,6 +3,7 @@ import { UserContext } from '../UserContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import './MentorProfile.css'
 import MentorProfileModal from './MentorProfileModal.jsx';
+import config from '../../config.js';
 
 const PLACEHOLDER = "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
 const skillsList = [
@@ -81,7 +82,7 @@ function MentorProfile() {
 
     const fetchMentorData = () => {
         if (user && user.id) {
-          fetch(`http://localhost:3000/mentors/${user.id}`)
+          fetch(`${config.apiBaseUrl}/mentors/${user.id}`)
             .then(response => {
               if (!response.ok) {
                 throw new Error(`HTTP status ${response.status}`);
