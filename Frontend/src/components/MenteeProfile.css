@@ -1,0 +1,44 @@
+.mp-header {
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.mp-top {
+    padding: 15px;
+    background-color: #95a5a6;
+    border-radius: 8px;
+}
+
+.mp-container {
+    margin: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.mp-body {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.mp-left {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.mp-right {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 2;
+    margin-left: 20px;
+}

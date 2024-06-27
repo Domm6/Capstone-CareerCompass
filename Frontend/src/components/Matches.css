@@ -1,0 +1,8 @@
+.matches-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: grey;
+    margin: 20px;
+    padding: 200px;
+}
