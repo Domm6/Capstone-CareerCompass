@@ -97,6 +97,7 @@ function MentorProfile() {
                 work_role: data.mentor.work_role,
                 years_experience: experienceMappingReverse[data.mentor.years_experience] || '',
                 school: data.mentor.school,
+                bio: data.mentor.bio,
                 skills: data.mentor.skills
               });
             })
@@ -158,6 +159,7 @@ function MentorProfile() {
                     <p>Years of Experience: {userData.years_experience} years</p>
                     <p>School: {userData.school}</p>
                     <p>Skills: {userData.skills}</p>
+                    <p>Bio: {userData.bio}</p>
                 </div>
             </div>
             {isModalOpen && (

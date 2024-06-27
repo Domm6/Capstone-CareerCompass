@@ -47,6 +47,7 @@
 }
 
 .mp-form input,
+.mp form textarea,
 .mp-form select,
 .mp-form button {
     width: 100%;

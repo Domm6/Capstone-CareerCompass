@@ -116,7 +116,7 @@ router.post('/users/login', async (req, res) => {
   // Route to update mentor profile
   router.put('/mentors/:id', async (req, res) => {
   const mentorId = req.params.id;
-  const { school, company, work_role, years_experience, industry, skills } = req.body;
+  const { school, bio, company, work_role, years_experience, industry, skills } = req.body;
 
   try {
     // Find the mentor by ID
@@ -129,6 +129,7 @@ router.post('/users/login', async (req, res) => {
     // Update the mentor's profile with the new data
     await mentor.update({
       school,
+      bio,
       company,
       work_role,
       years_experience,

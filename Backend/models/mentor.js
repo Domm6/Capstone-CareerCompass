@@ -16,6 +16,10 @@ export const Mentor = sequelize.define('Mentor', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  bio: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   company: {
     type: DataTypes.STRING,
     allowNull: false,

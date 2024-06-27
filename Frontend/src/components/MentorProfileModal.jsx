@@ -20,6 +20,7 @@ function MentorProfileModal ({handleCheckboxChange, handleDropdownToggle, dropdo
         work_role: '',
         years_experience: '',
         school: '',
+        bio: '',
         skills: selectedSkills.join(', '),
     })
     const handleChange = (e) => {
@@ -112,6 +113,15 @@ function MentorProfileModal ({handleCheckboxChange, handleDropdownToggle, dropdo
                             type="text"
                             name="school"
                             value={formData.school}
+                            onChange={handleChange}
+                            required
+                            />
+                        </div>
+                        <div className='form-bio'>
+                            <label htmlFor="bio">Bio</label>
+                            <textarea
+                            name="bio"
+                            value={formData.bio}
                             onChange={handleChange}
                             required
                             />
