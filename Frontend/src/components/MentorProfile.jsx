@@ -118,12 +118,12 @@ function MentorProfile() {
 
     const handleCheckboxChange = (skill) => {
         if (selectedSkills.includes(skill)) {
-            setSelectedSkills(selectedSkills.filter((s) => s !== skill));
+            setSelectedSkills(selectedSkills.filter((currentSkill) => currentSkill !== skill));
         } else {
             setSelectedSkills([...selectedSkills, skill]);
         }
     };
-
+    
     const handleDropdownToggle = () => {
         setDropdownOpen(!dropdownOpen);
     };
