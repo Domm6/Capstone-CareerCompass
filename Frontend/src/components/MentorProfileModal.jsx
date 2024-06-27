@@ -23,13 +23,13 @@ function MentorProfileModal ({handleCheckboxChange, handleDropdownToggle, dropdo
         school: '',
         skills: selectedSkills.join(', '),
     })
-    const handleChange = (e) => {
-        const { name, value } = e.target;
+    const handleChange = (event) => {
+        const { name, value } = event.target;
         setFormData({ ...formData, [name]: value });
     };
 
-      const handleSubmit = async (e) => {
-        e.preventDefault();
+      const handleSubmit = async (event) => {
+        event.preventDefault();
     
         const preparedData = {
           ...formData,

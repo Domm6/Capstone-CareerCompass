@@ -13,8 +13,8 @@ const SignUpPage = () => {
   const { updateUser } = useContext(UserContext);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
     try {
       // Make the signup API request
@@ -72,7 +72,7 @@ const SignUpPage = () => {
             type="text"
             id="name"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(event) => setName(event.target.value)}
             required
           />
         </div>
@@ -82,7 +82,7 @@ const SignUpPage = () => {
             type="email"
             id="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(event) => setEmail(event.target.value)}
             required
           />
         </div>
@@ -92,7 +92,7 @@ const SignUpPage = () => {
             type="password"
             id="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(event) => setPassword(event.target.value)}
             required
           />
         </div>
@@ -100,7 +100,7 @@ const SignUpPage = () => {
           <label htmlFor="user-role">User Role:</label>
             <select           
                 value={userRole}
-                onChange={(e) => setUserRole(e.target.value)}
+                onChange={(event) => setUserRole(event.target.value)}
                 required
             >
                 <option value="">Select a Role</option>
