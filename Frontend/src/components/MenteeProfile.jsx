@@ -1,10 +1,14 @@
 import { useState} from 'react'
+import { useNavigate } from 'react-router-dom';
 import './MenteeProfile.css'
 
 const PLACEHOLDER = "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
 
 
 function MenteeProfile() {
+
+    const navigate = useNavigate();
+
     return(
         <>
         <div className="mp-header">
@@ -28,7 +32,7 @@ function MenteeProfile() {
                     <p>Skills: </p>
                 </div>
             </div>
-            <button>Save</button>
+            <button onClick={() => navigate('/mentee-dashboard')}>Save</button>
         </div>
         </>
     )

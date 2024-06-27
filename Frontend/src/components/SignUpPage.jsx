@@ -30,8 +30,6 @@ const SignUpPage = () => {
         const data = await response.json();
         const loggedInUser = data.user;
 
-        console.log('Signup successful');
-
         // Reset Page fields
         setName('')
         setEmail('');

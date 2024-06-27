@@ -8,6 +8,8 @@ import LoginPage from './components/LoginPage'
 import SignUpPage from './components/SignUpPage'
 import MentorProfile from './components/MentorProfile';
 import MenteeProfile from './components/MenteeProfile';
+import MentorDashboard from './components/MentorDashboard';
+import MenteeDashboard from './components/MenteeDashboard';
 
 function App() {
   const [user, setUser] = useState(() => {
@@ -35,6 +37,8 @@ function App() {
           <Route path="/signup" element={<SignUpPage></SignUpPage>}></Route>
           <Route path="/mentor-profile" element={<MentorProfile></MentorProfile>}></Route>
           <Route path="/mentee-profile" element={<MenteeProfile></MenteeProfile>}></Route>
+          <Route path="/mentor-dashboard" element={<MentorDashboard></MentorDashboard>}></Route>
+          <Route path="/mentee-dashboard" element={<MenteeDashboard></MenteeDashboard>}></Route>
         </Routes>
       </Router>
       </UserContext.Provider>
