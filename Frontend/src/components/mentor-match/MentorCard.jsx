@@ -12,7 +12,7 @@ function MentorCard({mentor, onCardClick}) {
         <>
         <div className='mc-container' onClick={() => onCardClick(mentor)}>
             <div className='mc-image'>
-                <img src={PLACEHOLDER} alt="profile picture" />
+                <img src={user.profileImageUrl || PLACEHOLDER} alt="profile picture" />
             </div>
             <div className='mc-body'>
                 <div className='mc-body-left'>

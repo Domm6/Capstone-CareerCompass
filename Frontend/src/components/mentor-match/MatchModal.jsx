@@ -6,6 +6,8 @@ const PLACEHOLDER = "https://ralfvanveen.com/wp-content/uploads/2021/06/Placehol
 
 
 function MatchModal({mentor, closeModal}) {
+    const { User: user } = mentor; // Access user data from mentor
+
     return (
         <>
         <div className="modal">
@@ -15,16 +17,16 @@ function MatchModal({mentor, closeModal}) {
                     <div className='mp-body'>
                         <div className='mp-left'>
                             <img src={PLACEHOLDER} alt="profile picture" />
-                            <h3>Name</h3>
+                            <h3>{user.name}</h3>
                         </div>
                         <div className='mp-right'>
-                            <p>Industry:</p>
-                            <p>Company:</p>
-                            <p>Role:</p>
-                            <p>Years of Experience:  years</p>
-                            <p>School: </p>
-                            <p>Skills:</p>
-                            <p>Bio:</p>
+                            <p>Industry: {mentor.industry}</p>
+                            <p>Company: {mentor.company}</p>
+                            <p>Role: {mentor.work_role}</p>
+                            <p>Years of Experience: {mentor.years_experience} years</p>
+                            <p>School: {mentor.school} </p>
+                            <p>Skills: {mentor.skills}</p>
+                            <p>Bio: {mentor.bio || "No Bio Available"}</p>
                         </div>
                     </div>
                     <button id='save-button'>Connect</button>
