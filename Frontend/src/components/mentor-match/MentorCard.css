@@ -39,9 +39,13 @@
     height: 100%;
     color: white;
     padding: 20px;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.4);
     border-radius: 8px;
-    text-wrap: wrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    word-wrap: break-word; 
+    box-sizing: border-box; 
 }
 
 .mc-container:hover .mc-profile {
