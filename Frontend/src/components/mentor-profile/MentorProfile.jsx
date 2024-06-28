@@ -2,7 +2,7 @@ import {useContext, useEffect, useState} from 'react'
 import { UserContext } from '../../UserContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import './MentorProfile.css'
-import MentorProfileModal from '../MentorProfileModal.jsx';
+import MentorProfileModal from './MentorProfileModal.jsx';
 import config from '../../../config.js';
 
 const PLACEHOLDER = "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";

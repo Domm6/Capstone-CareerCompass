@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { UserContext } from '../UserContext.jsx';
+import { UserContext } from '../../UserContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import './MentorProfileModal.css';
-import config from '../../config.js';
+import config from '../../../config.js';
 
 const experienceMappingReverse = {
     1: '0-2',
@@ -11,7 +11,6 @@ const experienceMappingReverse = {
     4: '10+',
     5: '20+',
   };
-  
 
 function MentorProfileModal ({handleCheckboxChange, handleDropdownToggle, dropdownOpen, selectedSkills, skillsList, mentorData, closeModal}) {
     const { user } = useContext(UserContext);

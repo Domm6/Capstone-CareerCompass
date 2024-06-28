@@ -195,6 +195,36 @@ router.get('/mentors', async (req, res) => {
   }
 });
 
+// Route to update mentee profile
+router.put('/mentees/:id', async (req, res) => {
+  const mentorId = req.params.id;
+  const { school, bio, major, career_goals, skills } = req.body;
+
+  try {
+    // Find the mentor by ID
+    const mentee = await Mentee.findOne({ where: { userId: mentorId } });
+
+    if (!mentee) {
+      return res.status(404).json({ error: 'Mentor not found' });
+    }
+
+    // Update the mentor's profile with the new data
+    await mentee.update({
+      school,
+      bio,
+      major,
+      career_goals,
+      skills
+    });
+
+      // Return the updated mentor data in the response
+      res.json({ mentee });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Server error' });
+    }
+});
+
 // Route to fetch mentee profile based on user ID
 router.get('/mentees/:id', async (req, res) => {
   const userId = req.params.id;
