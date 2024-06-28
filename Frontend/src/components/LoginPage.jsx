@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../UserContext';
 import './LoginPage.css'
+import config from '../../config';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -11,11 +12,11 @@ const LoginPage = () => {
 
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const handleLogin = async (event) => {
+    event.preventDefault();
 
     try {
-      const response = await fetch(`http://localhost:3000/users/login`, {
+      const response = await fetch(`${config.apiBaseUrl}/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +61,7 @@ const LoginPage = () => {
             type="email"
             id="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(event) => setEmail(event.target.value)}
             required
           />
         </div>
@@ -70,7 +71,7 @@ const LoginPage = () => {
             type="password"
             id="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(event) => setPassword(event.target.value)}
             required
           />
         </div>
