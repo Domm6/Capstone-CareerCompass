@@ -62,7 +62,7 @@ function MentorProfile() {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false)
     const navigate = useNavigate();
-    const logoApiKey = 'KEY HERE';
+    // const logoApiKey = process.env.REACT_APP_LOGO_API_KEY; getting error process not defined
     
     const fetchLogo = () => {
         // use api to fetch logo
