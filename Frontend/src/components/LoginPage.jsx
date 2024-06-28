@@ -43,7 +43,6 @@ const LoginPage = () => {
       }
     } catch (error) {
         setErrorMessage(`Login failed: ${error.message}`);
-        // alert('Login failed: ' + error);
     }
   };
 
@@ -56,7 +55,7 @@ const LoginPage = () => {
       <form className="login-form" onSubmit={handleLogin}>
         <h2>Login</h2>
         <div className="form-group">
-          <label htmlFor="email">email:</label>
+          <label htmlFor="email">Email:</label>
           <input
             type="email"
             id="email"

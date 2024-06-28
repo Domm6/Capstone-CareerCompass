@@ -59,6 +59,23 @@
     margin-left: 20px;
 }
 
+.mp-right p {
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.mp-right-company {
+    display: flex;
+    align-items: center;
+}
+
+.mp-right-company img {
+    width: 50px;
+    margin: 10px;
+    padding: 10px;
+}
+
 .mp-form {
     display: flex;
     flex-direction: column;

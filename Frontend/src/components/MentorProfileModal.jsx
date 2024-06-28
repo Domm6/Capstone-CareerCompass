@@ -1,7 +1,7 @@
-import {useContext, useEffect, useState} from 'react'
+import React, { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../UserContext.jsx';
 import { useNavigate } from 'react-router-dom';
-import './MentorProfileModal.css'
+import './MentorProfileModal.css';
 import config from '../../config.js';
 
 const experienceMappingReverse = {
@@ -21,6 +21,7 @@ function MentorProfileModal ({handleCheckboxChange, handleDropdownToggle, dropdo
         work_role: '',
         years_experience: '',
         school: '',
+        bio: '',
         skills: selectedSkills.join(', '),
     })
     const handleChange = (event) => {
@@ -113,6 +114,15 @@ function MentorProfileModal ({handleCheckboxChange, handleDropdownToggle, dropdo
                             type="text"
                             name="school"
                             value={formData.school}
+                            onChange={handleChange}
+                            required
+                            />
+                        </div>
+                        <div className='form-bio'>
+                            <label htmlFor="bio">Bio</label>
+                            <textarea
+                            name="bio"
+                            value={formData.bio}
                             onChange={handleChange}
                             required
                             />

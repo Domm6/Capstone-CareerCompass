@@ -93,30 +93,30 @@ router.post('/users/login', async (req, res) => {
 
 });
 
-  // router to get userinfo
-  router.get('/users/:id', async(req,res) => {
+// router to get userinfo
+router.get('/users/:id', async(req,res) => {
 
-    try{
-      const userId = req.params.id;
-      const user = await User.findByPk(userId, {
-        attributes: ['id', 'name', 'email', 'profileImageUrl', 'userRole']
-      });
-  
-      if (!user) {
-        return res.status(404).json({ message: 'User not found'});
-      }
-      res.json(user)
-    } catch {
-      console.error('Error fetching user:', error);
-      res.status(500).json({ message: 'Error fetching uer information'});
+  try{
+    const userId = req.params.id;
+    const user = await User.findByPk(userId, {
+      attributes: ['id', 'name', 'email', 'profileImageUrl', 'userRole']
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found'});
     }
+    res.json(user)
+  } catch {
+    console.error('Error fetching user:', error);
+    res.status(500).json({ message: 'Error fetching uer information'});
+  }
 
-  })
+})
 
-  // Route to update mentor profile
-  router.put('/mentors/:id', async (req, res) => {
+// Route to update mentor profile
+router.put('/mentors/:id', async (req, res) => {
   const mentorId = req.params.id;
-  const { school, company, work_role, years_experience, industry, skills } = req.body;
+  const { school, bio, company, work_role, years_experience, industry, skills } = req.body;
 
   try {
     // Find the mentor by ID
@@ -129,6 +129,7 @@ router.post('/users/login', async (req, res) => {
     // Update the mentor's profile with the new data
     await mentor.update({
       school,
+      bio,
       company,
       work_role,
       years_experience,
@@ -136,12 +137,12 @@ router.post('/users/login', async (req, res) => {
       skills
     });
 
-    // Return the updated mentor data in the response
-    res.json({ mentor });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Server error' });
-  }
+      // Return the updated mentor data in the response
+      res.json({ mentor });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Server error' });
+    }
 });
 
 // Route to fetch mentor profile based on user ID
@@ -160,6 +161,26 @@ router.get('/mentors/:id', async (req, res) => {
     res.json({ mentor });
   } catch (error) {
     console.error('Error fetching mentor profile:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Route to fetch mentor profiles
+router.get('/mentors', async (req, res) => {
+  try {
+
+    // Find all mentors and include associated user data
+    const mentors = await Mentor.findAll({
+      include: {
+        model: User,
+        attributes: ['name', 'profileImageUrl']
+      }
+    });
+
+    // Return the mentors data in the response
+    res.json({ mentors });
+  } catch (error) {
+    console.error('Error fetching mentor profiles:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });

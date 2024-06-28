@@ -63,7 +63,7 @@ function MentorProfile() {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false)
     const navigate = useNavigate();
-    const logoApiKey = 'KEY HERE';
+    // const logoApiKey = process.env.REACT_APP_LOGO_API_KEY; getting error process not defined
     
     const fetchLogo = () => {
         // use api to fetch logo
@@ -98,6 +98,7 @@ function MentorProfile() {
                 work_role: data.mentor.work_role,
                 years_experience: experienceMappingReverse[data.mentor.years_experience] || '',
                 school: data.mentor.school,
+                bio: data.mentor.bio,
                 skills: data.mentor.skills
               });
             })
@@ -154,11 +155,15 @@ function MentorProfile() {
                 </div>
                 <div className='mp-right'>
                     <p>Industry: {userData.industry}</p>
-                    <p>Company: {userData.company}</p>
+                    <div className='mp-right-company'>
+                        <p>Company: {userData.company}</p>
+                        <img src={`https://img.logo.dev/${userData.company}.com?token=pk_DCOxK2D7TA68fkEDQQ2_fQ`} />
+                    </div>
                     <p>Role: {userData.work_role}</p>
                     <p>Years of Experience: {userData.years_experience} years</p>
                     <p>School: {userData.school}</p>
                     <p>Skills: {userData.skills}</p>
+                    <p>Bio: {userData.bio}</p>
                 </div>
             </div>
             {isModalOpen && (

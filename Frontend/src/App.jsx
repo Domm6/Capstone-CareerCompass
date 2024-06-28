@@ -10,6 +10,7 @@ import MentorProfile from './components/MentorProfile';
 import MenteeProfile from './components/MenteeProfile';
 import MentorDashboard from './components/MentorDashboard';
 import MenteeDashboard from './components/MenteeDashboard';
+import Match from './components/mentor-match/Match';
 
 function App() {
   const [user, setUser] = useState(() => {
@@ -39,6 +40,7 @@ function App() {
           <Route path="/mentee-profile" element={<MenteeProfile></MenteeProfile>}></Route>
           <Route path="/mentor-dashboard" element={<MentorDashboard></MentorDashboard>}></Route>
           <Route path="/mentee-dashboard" element={<MenteeDashboard></MenteeDashboard>}></Route>
+          <Route path="/matching" element={<Match></Match>}></Route>
         </Routes>
       </Router>
       </UserContext.Provider>
