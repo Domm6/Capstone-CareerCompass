@@ -13,7 +13,7 @@ const experienceMappingReverse = {
   };
   
 
-function MentorProfileModal ({handleCheckboxChange, handleDropdownToggle, dropdownOpen, selectedSkills, skillsList, closeModal}) {
+function MentorProfileModal ({handleCheckboxChange, handleDropdownToggle, dropdownOpen, selectedSkills, skillsList, mentorData, closeModal}) {
     const { user } = useContext(UserContext);
     const [formData, setFormData] = useState({
         industry: '',
@@ -24,38 +24,59 @@ function MentorProfileModal ({handleCheckboxChange, handleDropdownToggle, dropdo
         bio: '',
         skills: selectedSkills.join(', '),
     })
+
+    useEffect(() => {
+        if (mentorData) {
+            setFormData({
+                industry: mentorData.industry || '',
+                company: mentorData.company || '',
+                work_role: mentorData.work_role || '',
+                years_experience: experienceMappingReverse[mentorData.years_experience] || '',
+                school: mentorData.school || '',
+                bio: mentorData.bio || '',
+                skills: mentorData.skills || '',
+            });
+        }
+    }, [mentorData]);
+
     const handleChange = (event) => {
         const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value });
+
+        // Handle years_experience specifically
+        if (name === 'years_experience') {
+            setFormData({ ...formData, [name]: parseInt(value) });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
     };
 
-      const handleSubmit = async (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-    
+        
         const preparedData = {
-          ...formData,
-          skills: selectedSkills.join(', '),
+            ...formData,
+            skills: selectedSkills.join(', '),
         };
-    
+
         try {
-          const response = await fetch(`${config.apiBaseUrl}/mentors/${user.id}`, {
+            const response = await fetch(`${config.apiBaseUrl}/mentors/${user.id}`, {
             method: 'PUT',
             headers: {
-              'Content-Type': 'application/json',
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify(preparedData),
-          });
-    
-          if (response.ok) {
+            });
+
+            if (response.ok) {
             // Close the modal after a successful update
             closeModal();
-          } else {
+            } else {
             console.error('Error updating mentor profile:', response.statusText);
-          }
+            }
         } catch (error) {
-          console.error('Error updating mentor profile:', error);
+            console.error('Error updating mentor profile:', error);
         }
-      };
+    };
 
     return (
         <div className="modal">
@@ -101,11 +122,11 @@ function MentorProfileModal ({handleCheckboxChange, handleDropdownToggle, dropdo
                                 required
                                 >
                                 <option value="">Select</option>
-                                <option value={1}>0 - 2</option>
-                                <option value={2}>2 - 5</option>
-                                <option value={3}>5 - 10</option>
-                                <option value={4}>10+</option>
-                                <option value={5}>20+</option>
+                                <option value="1">0 - 2</option>
+                                <option value="2">2 - 5</option>
+                                <option value="3">5 - 10</option>
+                                <option value="4">10+</option>
+                                <option value="5">20+</option>
                             </select>
                         </div>
                         <div className='form-school'>

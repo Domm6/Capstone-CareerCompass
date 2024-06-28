@@ -168,6 +168,7 @@ function MentorProfile() {
             </div>
             {isModalOpen && (
                     <MentorProfileModal
+                        mentorData={userData}
                         handleDropdownToggle={handleDropdownToggle}
                         dropdownOpen={dropdownOpen}
                         selectedSkills={selectedSkills}
