@@ -30,6 +30,10 @@ function MentorCard({mentor, onCardClick}) {
                     <img src={`https://img.logo.dev/${mentor.company}.com?token=pk_DCOxK2D7TA68fkEDQQ2_fQ`} />
                 </div>
             </div>
+            <div className='mc-profile'>
+                <h3>About {user.name}:</h3>
+                <p>{mentor.bio}</p>
+            </div>
         </div>
         </>
     )
