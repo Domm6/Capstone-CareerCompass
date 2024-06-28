@@ -1,7 +1,7 @@
-import {useContext, useEffect, useState} from 'react'
+import React, { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../UserContext.jsx';
 import { useNavigate } from 'react-router-dom';
-import './MentorProfileModal.css'
+import './MentorProfileModal.css';
 import config from '../../config.js';
 
 const experienceMappingReverse = {

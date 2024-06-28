@@ -5,20 +5,8 @@ import "./MentorCard.css"
 const PLACEHOLDER = "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
 
 
-function MentorCard({onCardClick}) {
-
-    const mentor = {
-        // Mock mentor data; replace with actual data as needed
-        name: 'John Doe',
-        profileImageUrl: 'https://example.com/profile.jpg',
-        industry: 'Technology',
-        company: 'Tech Inc.',
-        work_role: 'Software Engineer',
-        years_experience: '5-10',
-        school: 'MIT',
-        skills: 'Programming, Problem-Solving',
-        bio: 'Experienced software engineer with a passion for technology.'
-    };
+function MentorCard({mentor, onCardClick}) {
+    const { User: user } = mentor; // Access user data from mentor
 
     return (
         <>
@@ -27,13 +15,13 @@ function MentorCard({onCardClick}) {
                 <img src={PLACEHOLDER} alt="profile picture" />
             </div>
             <div className='mc-name'>
-                <h3>Name</h3>
+                <h3>{user.name}</h3>
             </div>
             <div className='mc-role'>
-                <p>Role</p>
+                <p>{mentor.work_role}</p>
             </div>
             <div className='mc-company'>
-                <p>Comapny</p>
+                <p>{mentor.company}</p>
             </div>
         </div>
         </>

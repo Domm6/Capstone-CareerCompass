@@ -16,3 +16,10 @@
     padding: 10px;
 }
 
+.mc-list {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin: 20px;
+    width: 100%;
+}
