@@ -2,6 +2,7 @@ import {useContext, useEffect, useState} from 'react'
 import { UserContext } from '../UserContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import './MentorProfileModal.css'
+import config from '../../config.js';
 
 const experienceMappingReverse = {
     1: '0-2',
@@ -23,13 +24,13 @@ function MentorProfileModal ({handleCheckboxChange, handleDropdownToggle, dropdo
         bio: '',
         skills: selectedSkills.join(', '),
     })
-    const handleChange = (e) => {
-        const { name, value } = e.target;
+    const handleChange = (event) => {
+        const { name, value } = event.target;
         setFormData({ ...formData, [name]: value });
     };
 
-      const handleSubmit = async (e) => {
-        e.preventDefault();
+      const handleSubmit = async (event) => {
+        event.preventDefault();
     
         const preparedData = {
           ...formData,
@@ -37,7 +38,7 @@ function MentorProfileModal ({handleCheckboxChange, handleDropdownToggle, dropdo
         };
     
         try {
-          const response = await fetch(`http://localhost:3000/mentors/${user.id}`, {
+          const response = await fetch(`${config.apiBaseUrl}/mentors/${user.id}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
