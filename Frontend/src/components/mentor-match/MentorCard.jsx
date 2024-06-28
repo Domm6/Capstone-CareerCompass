@@ -37,7 +37,6 @@ function MentorCard({mentor, onCardClick}) {
         </div>
         </>
     )
-
 }
 
 export default MentorCard

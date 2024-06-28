@@ -9,6 +9,7 @@ function Match() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [mentors, setMentors] = useState([]);
     const [selectedMentor, setSelectedMentor] = useState(null);
+    const [errorMessage, setErrorMessage] = useState('')
 
     const handleCardClick = (mentor) => {
         setSelectedMentor(mentor);
@@ -24,18 +25,17 @@ function Match() {
         fetch(`${config.apiBaseUrl}/mentors`)
           .then(response => {
             if (!response.ok) {
-              throw new Error(`HTTP status ${response.status}`);
+              throw new Error('Failed to fetch mentor data. Please try again later.');
             }
             return response.json();
           })
           .then(data => {
             setMentors(data.mentors);
-            console.log(mentors)
           })
           .catch(error => {
-            console.error('Error fetching mentor data:', error);
+            setErrorMessage(error.message);
           });
-      };
+    };
 
     useEffect(() => {
         fetchMentorsData();
