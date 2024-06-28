@@ -14,14 +14,21 @@ function MentorCard({mentor, onCardClick}) {
             <div className='mc-image'>
                 <img src={PLACEHOLDER} alt="profile picture" />
             </div>
-            <div className='mc-name'>
-                <h3>{user.name}</h3>
-            </div>
-            <div className='mc-role'>
-                <p>{mentor.work_role}</p>
-            </div>
-            <div className='mc-company'>
-                <p>{mentor.company}</p>
+            <div className='mc-body'>
+                <div className='mc-body-left'>
+                    <div className='mc-name'>
+                        <h3>{user.name}</h3>
+                    </div>
+                    <div className='mc-role'>
+                        <p>{mentor.work_role}</p>
+                    </div>
+                    <div className='mc-company'>
+                        <p>{mentor.company}</p>
+                    </div>
+                </div>
+                <div className='mc-body-right'>
+                    <img src={`https://img.logo.dev/${mentor.company}.com?token=pk_DCOxK2D7TA68fkEDQQ2_fQ`} />
+                </div>
             </div>
         </div>
         </>

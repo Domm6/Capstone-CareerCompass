@@ -33,3 +33,14 @@
     height: auto;
     border-radius: 8px;
 }
+
+.mc-body {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+}
+
+.mc-body-right img{
+    width: 50px;
+}
