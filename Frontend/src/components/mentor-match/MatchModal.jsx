@@ -12,11 +12,6 @@ function MatchModal({mentor, closeModal}) {
             <div className="modal-content">
                 <span className="modal-close" onClick={closeModal}>×</span>
                 <div className='mp-container'>
-                    <div className='mp-top'>
-                        <div className='mp-top-left'>
-                            <h1>Mentor Profile</h1>
-                        </div>
-                    </div>
                     <div className='mp-body'>
                         <div className='mp-left'>
                             <img src={PLACEHOLDER} alt="profile picture" />

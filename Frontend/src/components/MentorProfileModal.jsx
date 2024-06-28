@@ -12,7 +12,7 @@ const experienceMappingReverse = {
   };
   
 
-function MentorProfileModal ({handleCheckboxChange, handleDropdownToggle, dropdownOpen, selectedSkills, skillsList, closeModal, mentorData, setMentorData}) {
+function MentorProfileModal ({handleCheckboxChange, handleDropdownToggle, dropdownOpen, selectedSkills, skillsList, closeModal}) {
     const { user } = useContext(UserContext);
     const [formData, setFormData] = useState({
         industry: '',

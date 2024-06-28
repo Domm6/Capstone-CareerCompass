@@ -165,6 +165,20 @@ router.get('/mentors/:id', async (req, res) => {
   }
 });
 
+// Route to fetch mentor profiles
+router.get('/mentors', async (req, res) => {
+  try {
+
+    const mentors = await Mentor.findAll();
+
+    // Return the mentors data in the response
+    res.json({ mentors });
+  } catch (error) {
+    console.error('Error fetching mentor profiles:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 
 
 export default router;
