@@ -2,7 +2,7 @@ import {useContext, useEffect, useState} from 'react'
 import { UserContext } from '../../UserContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import './MenteeProfile.css'
-import MentorProfileModal from '../mentor-profile/MentorProfileModal.jsx';
+import MenteeProfileModal from './MenteeProfileModal.jsx';
 import config from '../../../config.js';
 
 const PLACEHOLDER = "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
@@ -56,10 +56,6 @@ function MenteeProfile() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const navigate = useNavigate();
     // const logoApiKey = process.env.REACT_APP_LOGO_API_KEY; getting error process not defined
-    
-    const fetchLogo = () => {
-        // use api to fetch logo
-    };
 
     const [userData, setUserData] = useState({
         name: "Loading",
@@ -149,7 +145,7 @@ function MenteeProfile() {
                 </div>
             </div>
             {isModalOpen && (
-                    <MentorProfileModal
+                    <MenteeProfileModal
                         menteeData={userData}
                         handleDropdownToggle={handleDropdownToggle}
                         dropdownOpen={dropdownOpen}
