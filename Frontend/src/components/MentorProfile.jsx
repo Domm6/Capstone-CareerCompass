@@ -154,7 +154,10 @@ function MentorProfile() {
                 </div>
                 <div className='mp-right'>
                     <p>Industry: {userData.industry}</p>
-                    <p>Company: {userData.company}</p>
+                    <div className='mp-right-company'>
+                        <p>Company: {userData.company}</p>
+                        <img src={`https://img.logo.dev/${userData.company}.com?token=pk_DCOxK2D7TA68fkEDQQ2_fQ`} />
+                    </div>
                     <p>Role: {userData.work_role}</p>
                     <p>Years of Experience: {userData.years_experience} years</p>
                     <p>School: {userData.school}</p>

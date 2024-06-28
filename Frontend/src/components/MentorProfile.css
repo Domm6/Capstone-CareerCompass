@@ -59,6 +59,17 @@
     margin-left: 20px;
 }
 
+.mp-right-company {
+    display: flex;
+    align-items: center;
+}
+
+.mp-right-company img {
+    width: 50px;
+    margin: 10px;
+    padding: 10px;
+}
+
 .mp-form {
     display: flex;
     flex-direction: column;
