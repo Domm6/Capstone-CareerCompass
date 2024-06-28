@@ -1,6 +1,7 @@
 import { useState} from 'react'
 import { UserContext } from '../../UserContext.jsx';
 import "./MentorCard.css"
+import config from '../../../config.js';
 
 const PLACEHOLDER = "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
 
@@ -27,7 +28,7 @@ function MentorCard({mentor, onCardClick}) {
                     </div>
                 </div>
                 <div className='mc-body-right'>
-                    <img src={`https://img.logo.dev/${mentor.company}.com?token=pk_DCOxK2D7TA68fkEDQQ2_fQ`} />
+                    <img src={`${config.logoDevApiBaseUrl}/${mentor.company}.com?token=pk_DCOxK2D7TA68fkEDQQ2_fQ`} />
                 </div>
             </div>
             <div className='mc-profile'>
