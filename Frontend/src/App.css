@@ -28,6 +28,9 @@ input {
 }
 
 select {
-    padding: 5px;
     border-radius: 8px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    background: #fff;
+    font-size: 14px;
 }

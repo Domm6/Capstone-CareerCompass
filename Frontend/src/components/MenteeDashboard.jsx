@@ -1,16 +1,23 @@
 import { useState} from 'react'
+
 import './MenteeDashboard.css'
 import Calendar from './Calendar'
 import Matches from './Matches'
 import Requests from './Requests'
+import { Link } from 'react-router-dom';
+
 
 function MenteeDashboard() {
     const [activeComponent, setActiveComponent] = useState('Calendar');
 
     return(
         <>
-        <div className="signup-header">
-            <h1>Welcome to CareerCompass!</h1>
+        <div className="mp-header">
+            <h1>CareerCompass</h1>
+            <div className='mp-nav'>
+                <Link to="/mentee-profile">Profile</Link>
+                <Link to="/matching">Find a Mentor</Link>
+            </div>
         </div>
         <div className='md-container'>
             <div className='md-top'>

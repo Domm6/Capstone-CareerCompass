@@ -6,8 +6,8 @@ import './App.css';
 import HomePage from './components/HomePage'
 import LoginPage from './components/LoginPage'
 import SignUpPage from './components/SignUpPage'
-import MentorProfile from './components/MentorProfile';
-import MenteeProfile from './components/MenteeProfile';
+import MentorProfile from './components/mentor-profile/MentorProfile';
+import MenteeProfile from './components/mentee-profile/MenteeProfile';
 import MentorDashboard from './components/MentorDashboard';
 import MenteeDashboard from './components/MenteeDashboard';
 import Match from './components/mentor-match/Match';
