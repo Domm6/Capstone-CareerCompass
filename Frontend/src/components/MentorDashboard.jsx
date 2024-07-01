@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import './MentorDashboard.css';
 import Calendar from './Calendar.jsx';
 import Matches from './Matches.jsx';
-import Requests from './Requests.jsx';
+import Requests from './requests/Requests.jsx';
 
 function MentorDashboard() {
     const [activeComponent, setActiveComponent] = useState('Calendar');
@@ -26,10 +26,15 @@ function MentorDashboard() {
                 <button onClick={() => setActiveComponent('Requests')}>Requests</button>
             </div>
             <div className='md-body'>
-                {activeComponent == 'Calendar' &&  <Calendar></Calendar>}
-                {activeComponent == 'Matches' &&  <Matches></Matches>}
-                {activeComponent == 'Requests' &&  <Requests></Requests>}
-
+                <div className='md-body-calenday'>
+                    {activeComponent == 'Calendar' &&  <Calendar></Calendar>}
+                </div>
+                <div className='md-body-matches'>
+                    {activeComponent == 'Matches' &&  <Matches></Matches>}
+                </div>
+                <div className='md-body-requests'>
+                    {activeComponent == 'Requests' &&  <Requests></Requests>}
+                </div>
             </div>
         </div>
         </>

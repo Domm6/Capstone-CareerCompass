@@ -265,4 +265,40 @@ router.get('/mentees', async (req, res) => {
   }
 });
 
+// route creates new connect request
+router.post('/mentors/:id/requests', async (req, res) => {
+  const mentorId = req.params.id
+
+  const { email, password } = req.body;
+
+  try {
+    // Find the user by email
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(401).json({ error: 'No user with email found' });
+    }
+
+    // Compare the password
+    const isValidPassword = await bcrypt.compare(password, user.password);
+
+    if (!isValidPassword) {
+      return res.status(401).json({ error: 'Invalid password' });
+    }
+
+    // Set the user in the session
+    req.session.user = user;
+
+    // Return the user data in the response
+    res.json({ user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+
+});
+
+
+
+
 export default router;

@@ -3,7 +3,7 @@ import { useState} from 'react'
 import './MenteeDashboard.css'
 import Calendar from './Calendar'
 import Matches from './Matches'
-import Requests from './Requests'
+import Requests from './requests/Requests'
 import { Link } from 'react-router-dom';
 
 
