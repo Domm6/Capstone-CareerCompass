@@ -1,6 +1,7 @@
 import {useContext, useEffect, useState} from 'react'
 import { UserContext } from '../../UserContext.jsx';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+
 import './MenteeProfile.css'
 import MenteeProfileModal from './MenteeProfileModal.jsx';
 import config from '../../../config.js';
@@ -120,7 +121,11 @@ function MenteeProfile() {
     return(
         <>
         <div className="mp-header">
-            <h1>CareerCompass!</h1>
+            <h1>CareerCompass</h1>
+            <div className='mp-nav'>
+                <Link to="/mentee-dashboard">Dashboard</Link>
+                <Link to="/matching">Find Mentors</Link>
+            </div>
         </div>
         <div className='mp-container'>
             <div className='mp-top'>

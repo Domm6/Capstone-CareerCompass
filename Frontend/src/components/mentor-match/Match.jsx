@@ -1,5 +1,6 @@
 import { useState, useEffect} from 'react'
 import { UserContext } from '../../UserContext.jsx';
+import { Link } from 'react-router-dom';
 import "./Match.css"
 import MentorCard from './MentorCard.jsx';
 import MatchModal from './MatchModal.jsx';
@@ -142,8 +143,12 @@ function Match() {
 
     return (
         <>
-        <div className="match-header">
+        <div className="mp-header">
             <h1>CareerCompass</h1>
+            <div className='mp-nav'>
+                <Link to="/mentee-profile">Profile</Link>
+                <Link to="/mentee-dashboard">Dashboard</Link>
+            </div>
         </div>
         <div className='match-top'>
             <h1>Choose a Mentor</h1>
