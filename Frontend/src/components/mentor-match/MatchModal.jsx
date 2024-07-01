@@ -1,12 +1,43 @@
-import { useState} from 'react'
+import { useContext, useEffect, useState} from 'react'
 import { UserContext } from '../../UserContext.jsx';
+import config from '../../../config.js';
 import "./MatchModal.css"
 
 const PLACEHOLDER = "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
 
+function MatchModal({mentor, closeModal, mentee}) {
+    const [errorMessage, setErrorMessage] = useState('');
 
-function MatchModal({mentor, closeModal}) {
-    const { User: user } = mentor; // Access user data from mentor
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
+        const reqData = {
+            mentorId: mentor.id,
+            menteeId: mentee.id,
+            status: 'pending'
+        }
+
+        try {
+            const response = await fetch(`${config.apiBaseUrl}/connect-requests`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(reqData),
+            });
+
+            if (response.ok) {
+                // Close the modal after a successful update
+                closeModal();
+            } else {
+                const data = await response.json();
+                setErrorMessage(data.error || 'Error creating connect request');
+            }
+        } catch (error) {
+            setErrorMessage('Error creating connect request');
+            console.error('Error creating connect request:', error);
+        }
+    };
 
     return (
         <>
@@ -17,7 +48,7 @@ function MatchModal({mentor, closeModal}) {
                     <div className='mp-body'>
                         <div className='mp-left'>
                             <img src={PLACEHOLDER} alt="profile picture" />
-                            <h3>{user.name}</h3>
+                            <h3>{mentor.User.name}</h3>
                         </div>
                         <div className='mp-right'>
                             <p>Industry: {mentor.industry}</p>
@@ -29,13 +60,12 @@ function MatchModal({mentor, closeModal}) {
                             <p>Bio: {mentor.bio || "No Bio Available"}</p>
                         </div>
                     </div>
-                    <button id='save-button'>Connect</button>
+                    <button id='save-button' onClick={handleSubmit}>Connect</button>
                 </div>  
             </div>
         </div>
         </>
     )
-
 }
 
 export default MatchModal

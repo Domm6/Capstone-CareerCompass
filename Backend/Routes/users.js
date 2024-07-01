@@ -5,6 +5,7 @@ import { Op } from 'sequelize';
 import { Mentor } from '../models/mentor.js';
 import { PrismaClient } from '@prisma/client';
 import { Mentee } from '../models/index.js';
+import { ConnectRequest } from '../models/connect-request.js';
 
 const router = express.Router();
 const SALT_ROUNDS = 10;
@@ -265,38 +266,67 @@ router.get('/mentees', async (req, res) => {
   }
 });
 
-// route creates new connect request
-router.post('/mentors/:id/requests', async (req, res) => {
-  const mentorId = req.params.id
-
-  const { email, password } = req.body;
+router.post('/connect-requests', async (req, res) => {
+  const { mentorId, menteeId, status } = req.body;
 
   try {
-    // Find the user by email
-    const user = await User.findOne({ where: { email } });
+    // Check if a connect request already exists
+    const existingRequest = await ConnectRequest.findOne({
+      where: { mentorId, menteeId }
+    });
 
-    if (!user) {
-      return res.status(401).json({ error: 'No user with email found' });
+    if (existingRequest) {
+      return res.status(400).json({ error: 'Connect request already exists' });
     }
 
-    // Compare the password
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    // Create new connect request
+    const connectRequest = await ConnectRequest.create({
+      mentorId,
+      menteeId,
+      status
+    });
 
-    if (!isValidPassword) {
-      return res.status(401).json({ error: 'Invalid password' });
-    }
-
-    // Set the user in the session
-    req.session.user = user;
-
-    // Return the user data in the response
-    res.json({ user });
+    res.status(201).json({ connectRequest });
   } catch (error) {
-    console.error(error);
+    console.error('Error creating connect request:', error);
     res.status(500).json({ error: 'Server error' });
   }
-
 });
+
+
+// route to get connect requests
+router.get('/connect-requests', async (req, res) => {
+  try {
+    // Find all connect requests and include associated mentor and mentee data
+    const connectRequests = await ConnectRequest.findAll({
+      include: [
+        {
+          model: Mentor,
+          attributes: ['id', 'userId', 'school', 'bio', 'company', 'work_role', 'years_experience', 'industry', 'skills'],
+          include: {
+            model: User,
+            attributes: ['id', 'name', 'email', 'profileImageUrl']
+          }
+        },
+        {
+          model: Mentee,
+          attributes: ['id', 'userId', 'bio', 'school', 'major', 'career_goals', 'skills'],
+          include: {
+            model: User,
+            attributes: ['id', 'name', 'email', 'profileImageUrl']
+          }
+        }
+      ]
+    });
+
+    // Return the connect requests data in the response
+    res.json({ connectRequests });
+  } catch (error) {
+    console.error('Error fetching connect requests:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 
 
 
