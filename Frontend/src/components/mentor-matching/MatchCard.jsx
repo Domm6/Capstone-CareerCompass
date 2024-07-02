@@ -1,6 +1,6 @@
 import { useState} from 'react'
-import { UserContext } from '../UserContext.jsx';
-import config from '../../config.js';
+import { UserContext } from '../../UserContext.jsx';
+import config from '../../../config.js';
 import "./requests/Request.css"
 
 const PLACEHOLDER = "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";

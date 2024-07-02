@@ -1,10 +1,10 @@
 import { useState} from 'react'
-import { UserContext } from '../UserContext.jsx';
+import { UserContext } from '../../../UserContext.jsx';
 import { Link } from 'react-router-dom';
 import './MentorDashboard.css';
-import Calendar from './Calendar.jsx';
-import Matches from './Matches.jsx';
-import Requests from './requests/Requests.jsx';
+import Calendar from '../../Calendar.jsx';
+import Matches from '../mentor-matches/MentorMatches.jsx';
+import Requests from '../../requests/Requests.jsx';
 
 function MentorDashboard() {
     const [activeComponent, setActiveComponent] = useState('Calendar');

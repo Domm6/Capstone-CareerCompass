@@ -3,14 +3,14 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { UserContext } from './UserContext';
 import './App.css';
-import HomePage from './components/HomePage'
-import LoginPage from './components/LoginPage'
-import SignUpPage from './components/SignUpPage'
-import MentorProfile from './components/mentor-profile/MentorProfile';
-import MenteeProfile from './components/mentee-profile/MenteeProfile';
-import MentorDashboard from './components/MentorDashboard';
-import MenteeDashboard from './components/MenteeDashboard';
-import Match from './components/mentor-match/Match';
+import HomePage from './components/home-page/HomePage'
+import LoginPage from './components/login&signup/login/LoginPage'
+import SignUpPage from './components/login&signup/signup/SignUpPage'
+import MentorProfile from './components/mentor/mentor-profile/MentorProfile';
+import MenteeProfile from './components/mentee/mentee-profile/MenteeProfile';
+import MentorDashboard from './components/mentor/mentor-dashboard/MentorDashboard';
+import MenteeDashboard from './components/mentee/mentee-dashboard/MenteeDashboard';
+import Match from './components/mentor-matching/Match';
 
 function App() {
   const [user, setUser] = useState(() => {

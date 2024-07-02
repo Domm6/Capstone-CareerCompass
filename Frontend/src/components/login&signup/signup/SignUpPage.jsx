@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './SignUpPage.css'
-import { UserContext } from '../UserContext.jsx';
-import config from '../../config.js';
+import { UserContext } from '../../../UserContext.jsx';
+import config from '../../../../config.js';
 
 const SignUpPage = () => {
   const [name, setName] = useState('');

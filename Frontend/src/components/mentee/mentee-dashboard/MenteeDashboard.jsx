@@ -1,9 +1,9 @@
 import { useState} from 'react'
 import './MenteeDashboard.css'
-import Calendar from './Calendar'
-import Requests from './requests/Requests'
+import Calendar from '../../Calendar'
+import Requests from '../../requests/Requests'
 import { Link } from 'react-router-dom';
-import MenteeMatches from './MenteeMatches'
+import MenteeMatches from '../mentee-matches/MenteeMatches'
 
 
 function MenteeDashboard() {

@@ -1,41 +1,52 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { UserContext } from '../../UserContext.jsx';
+import { UserContext } from '../../../UserContext.jsx';
 import { useNavigate } from 'react-router-dom';
-import './MenteeProfileModal.css';
-import config from '../../../config.js';
+import './MentorProfileModal.css';
+import config from '../../../../config.js';
 
-const PLACEHOLDER = "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
+const experienceMappingReverse = {
+    1: '0-2',
+    2: '2-5',
+    3: '5-10',
+    4: '10+',
+    5: '20+',
+  };
 
-
-function MenteeProfileModal ({handleCheckboxChange, handleDropdownToggle, dropdownOpen, selectedSkills, skillsList, menteeData, closeModal}) {
+function MentorProfileModal ({handleCheckboxChange, handleDropdownToggle, dropdownOpen, selectedSkills, skillsList, mentorData, closeModal}) {
     const { user } = useContext(UserContext);
     const [formData, setFormData] = useState({
-        name: '',
-        profileImageUrl: '',
-        major: '',
+        industry: '',
+        company: '',
+        work_role: '',
+        years_experience: '',
         school: '',
         bio: '',
-        career_goals: '',
         skills: selectedSkills.join(', '),
     })
 
     useEffect(() => {
-        if (menteeData) {
+        if (mentorData) {
             setFormData({
-              name: user.name,
-                profileImageUrl: user.profileImageUrl || PLACEHOLDER,
-                major: menteeData.major,
-                school: menteeData.school,
-                bio: menteeData.bio,
-                career_goals: menteeData.career_goals,
-                skills: menteeData.skills
+                industry: mentorData.industry || '',
+                company: mentorData.company || '',
+                work_role: mentorData.work_role || '',
+                years_experience: experienceMappingReverse[mentorData.years_experience] || '',
+                school: mentorData.school || '',
+                bio: mentorData.bio || '',
+                skills: mentorData.skills || '',
             });
         }
-    }, [menteeData]);
+    }, [mentorData]);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value });
+
+        // Handle years_experience specifically
+        if (name === 'years_experience') {
+            setFormData({ ...formData, [name]: parseInt(value) });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
     };
 
     const handleSubmit = async (event) => {
@@ -47,7 +58,7 @@ function MenteeProfileModal ({handleCheckboxChange, handleDropdownToggle, dropdo
         };
 
         try {
-            const response = await fetch(`${config.apiBaseUrl}/mentees/${user.id}`, {
+            const response = await fetch(`${config.apiBaseUrl}/mentors/${user.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -59,10 +70,10 @@ function MenteeProfileModal ({handleCheckboxChange, handleDropdownToggle, dropdo
             // Close the modal after a successful update
             closeModal();
             } else {
-            console.error('Error updating mentee profile:', response.statusText);
+            console.error('Error updating mentor profile:', response.statusText);
             }
         } catch (error) {
-            console.error('Error updating mentee profile:', error);
+            console.error('Error updating mentor profile:', error);
         }
     };
 
@@ -71,34 +82,60 @@ function MenteeProfileModal ({handleCheckboxChange, handleDropdownToggle, dropdo
             <div className="modal-content">
                 <span className="modal-close" onClick={closeModal}>×</span>
                 <form className='mp-form' onSubmit={handleSubmit}>
+                        <div className='form-industry'>
+                            <label htmlFor="industry" required>Industry</label>
+                            <input
+                                type="text"
+                                name="industry"
+                                value={formData.industry}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div className='form-company'>
+                            <label htmlFor="company">Company</label>
+                            <input
+                                type="text"
+                                name="company"
+                                value={formData.company}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div className='form-role'>
+                            <label htmlFor="role">Role</label>
+                            <input
+                                type="text"
+                                name="work_role"
+                                value={formData.work_role}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div className='form-years-experience'>
+                            <label htmlFor="years_experience">Years of Experiencce</label>
+                            <select
+                                name="years_experience"
+                                value={formData.years_experience}
+                                onChange={handleChange}
+                                required
+                                >
+                                <option value="">Select</option>
+                                <option value="1">0 - 2</option>
+                                <option value="2">2 - 5</option>
+                                <option value="3">5 - 10</option>
+                                <option value="4">10+</option>
+                                <option value="5">20+</option>
+                            </select>
+                        </div>
                         <div className='form-school'>
-                            <label htmlFor="school" required>School</label>
+                            <label htmlFor="school">School</label>
                             <input
-                                type="text"
-                                name="school"
-                                value={formData.school}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <div className='form-major'>
-                            <label htmlFor="major">Major</label>
-                            <input
-                                type="text"
-                                name="major"
-                                value={formData.major}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <div className='form-career-goals'>
-                            <label htmlFor="career-goals">Career Goals</label>
-                            <input
-                                type="text"
-                                name="career_goals"
-                                value={formData.career_goals}
-                                onChange={handleChange}
-                                required
+                            type="text"
+                            name="school"
+                            value={formData.school}
+                            onChange={handleChange}
+                            required
                             />
                         </div>
                         <div className='form-bio'>
@@ -142,4 +179,4 @@ function MenteeProfileModal ({handleCheckboxChange, handleDropdownToggle, dropdo
     )
 }
 
-export default MenteeProfileModal
+export default MentorProfileModal

@@ -1,34 +1,34 @@
 import { useContext, useEffect, useState } from 'react';
-import { UserContext } from '../UserContext.jsx';
-import Request from './requests/Request.jsx';
-import MatchCard from './MatchCard.jsx';
-import './Matches.css'
-import config  from '../../config.js';
+import { UserContext } from '../../../UserContext.jsx';
+import Request from '../../requests/Request.jsx';
+import MatchCard from '../../mentor-matching/MatchCard.jsx';
+import './MentorMatches.css'
+import config  from '../../../../config.js';
 
-function MenteeMatches() {
+function MentorMatches() {
     const { user } = useContext(UserContext);
-    const [menteeData, setMenteeData] = useState(null);
+    const [mentorData, setMentorData] = useState(null);
     const [requests, setRequests] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
 
-    // Fetch mentee-specific data using user ID from user context
-    const fetchMenteeData = async () => {
+    // Fetch mentor-specific data using user ID from user context
+    const fetchMentorData = async () => {
         try {
-            const response = await fetch(`${config.apiBaseUrl}/mentees/${user.id}`);
+            const response = await fetch(`${config.apiBaseUrl}/mentors/${user.id}`);
             if (!response.ok) {
-                throw new Error('Failed to fetch mentee data');
+                throw new Error('Failed to fetch mentor data');
             }
             const data = await response.json();
-            setMenteeData(data.mentee);
+            setMentorData(data.mentor);
         } catch (error) {
             setErrorMessage(error.message);
         }
     };
 
-    // Fetch list of requests using mentee ID
-    const fetchRequests = async (menteeId) => {
+    // Fetch list of requests using mentor ID
+    const fetchRequests = async (mentorId) => {
         try {
-            const response = await fetch(`${config.apiBaseUrl}/connect-requests/mentee/${menteeId}`);
+            const response = await fetch(`${config.apiBaseUrl}/connect-requests/${mentorId}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch requests');
             }
@@ -41,15 +41,15 @@ function MenteeMatches() {
 
     useEffect(() => {
         if (user && user.id) {
-            fetchMenteeData();
+            fetchMentorData();
         }
     }, [user]);
 
     useEffect(() => {
-        if (menteeData && menteeData.id) {
-            fetchRequests(menteeData.id);
+        if (mentorData && mentorData.id) {
+            fetchRequests(mentorData.id);
         }
-    }, [menteeData]);
+    }, [mentorData]);
 
     // callback function to update page
     const handleReqeustUpdate = (requestId) => {
@@ -68,7 +68,7 @@ function MenteeMatches() {
                         name={request.name} 
                         school={request.school} 
                         major={request.major} 
-                        requestId={request.id}
+                        requestId={request.id} 
                         onRequestUpdate={handleReqeustUpdate}
                     />
                 ))
@@ -78,4 +78,4 @@ function MenteeMatches() {
     )
 }
 
-export default MenteeMatches
+export default MentorMatches
