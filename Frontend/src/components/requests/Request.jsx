@@ -26,6 +26,27 @@ function Request({name, major, school, requestId}) {
         }
     };
 
+    // accept specific request
+    const acceptRequest = async () => {
+        try {
+            const response = await fetch(`${config.apiBaseUrl}/connect-requests/${requestId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ status: 'accepted' }),
+            });
+
+            if (response.ok) {
+                onDelete(requestId);
+            } else {
+                setErrorMessage('Failed to accept connect request');
+            }
+        } catch (error) {
+            setErrorMessage('Error accepting connect request');
+        }
+    }; 
+
     return(
         <>
         <div className='request-container'>
@@ -41,7 +62,7 @@ function Request({name, major, school, requestId}) {
             </div>
             <div className='request-right'>
                 <div className='request-actions'>
-                    <button>Accept</button>
+                    <button onClick={acceptRequest}>Accept</button>
                     <button onClick={deleteRequest}>Decline</button>
                 </div>
             </div>

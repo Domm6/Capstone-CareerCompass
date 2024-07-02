@@ -297,7 +297,7 @@ router.post('/connect-requests', async (req, res) => {
   }
 });
 
-// route to delete a connect request by requestId
+// route to delcine (delete) a connect request by requestId
 router.delete('/connect-requests/:requestId', async (req, res) => {
   const { requestId } = req.params;
 
@@ -318,6 +318,33 @@ router.delete('/connect-requests/:requestId', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+// route to accept request
+router.patch('/connect-requests/:requestId', async (req,res) => {
+  const {requestId} = req.params
+  const {status} = req.body
+
+  try {
+    // Find the connect request by requestId
+    const connectRequest = await ConnectRequest.findByPk(requestId);
+
+    if (!connectRequest) {
+      return res.status(404).json({ error: 'Connect request not found' });
+    } 
+
+    // Update the mentor's profile with the new data
+    await connectRequest.update({
+      status
+    });
+
+    // Return the updated mentor data in the response
+    res.json({ connectRequest });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+
+})
 
 // route to get connect requests
 router.get('/connect-requests', async (req, res) => {

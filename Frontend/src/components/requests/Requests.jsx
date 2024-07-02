@@ -11,7 +11,6 @@ function Requests() {
     const [requests, setRequests] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
 
-
     // Fetch mentor-specific data using user ID from user context
     const fetchMentorData = async () => {
         try {
@@ -56,15 +55,18 @@ function Requests() {
         <>
         <div className='requests-list'>
             <h1>Requests</h1>
-            {requests.map(request => (
-                <Request 
-                    key={request.id} 
-                    requestId={request.id}
-                    name={request.name} 
-                    school={request.school} 
-                    major={request.major} 
-                />
-            ))}
+            {requests
+                .filter(request => request.status === 'pending')
+                .map(request => (
+                    <Request 
+                        key={request.id} 
+                        name={request.name} 
+                        school={request.school} 
+                        major={request.major} 
+                        requestId={request.id} 
+                    />
+                ))
+            }
         </div>
         </>
     )
