@@ -9,10 +9,6 @@ function MatchModal({mentor, closeModal, mentee}) {
     const { user } = useContext(UserContext);  // Access the user context
     const [errorMessage, setErrorMessage] = useState('');
 
-    console.log(user.name)
-    console.log(mentor.User.name)
-    console.log(mentor.work_role)
-
     const handleSubmit = async (event) => {
         event.preventDefault();
 
