@@ -395,4 +395,20 @@ router.get('/connect-requests/:mentorId', async (req, res) => {
 
 });
 
+// route to get mentee specific requests
+router.get('/connect-requests/mentee/:menteeId', async (req, res) => {
+  const { menteeId } = req.params;
+
+  try {
+    const requests = await ConnectRequest.findAll({
+      where: { menteeId }
+    });
+
+    res.json({ requests });
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching connect requests' });
+  }
+
+});
+
 export default router;

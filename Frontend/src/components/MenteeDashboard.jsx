@@ -1,10 +1,9 @@
 import { useState} from 'react'
-
 import './MenteeDashboard.css'
 import Calendar from './Calendar'
-import Matches from './Matches'
 import Requests from './requests/Requests'
 import { Link } from 'react-router-dom';
+import MenteeMatches from './MenteeMatches'
 
 
 function MenteeDashboard() {
@@ -29,7 +28,7 @@ function MenteeDashboard() {
             </div>
             <div className='md-body'>
                 {activeComponent == 'Calendar' &&  <Calendar></Calendar>}
-                {activeComponent == 'Matches' &&  <Matches></Matches>}
+                {activeComponent == 'Matches' &&  <MenteeMatches></MenteeMatches>}
             </div>
         </div>
         </>

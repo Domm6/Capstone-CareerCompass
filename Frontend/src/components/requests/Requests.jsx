@@ -49,7 +49,12 @@ function Requests() {
         if (mentorData && mentorData.id) {
             fetchRequests(mentorData.id);
         }
-    }, [mentorData, requests]);
+    }, [mentorData]);
+
+    // callback function to update page
+    const handleReqeustUpdate = (requestId) => {
+        setRequests(prevRequests => prevRequests.filter(request => request.id !== requestId))
+    }
 
     return(
         <>
@@ -63,7 +68,8 @@ function Requests() {
                         name={request.name} 
                         school={request.school} 
                         major={request.major} 
-                        requestId={request.id} 
+                        requestId={request.id}
+                        onRequestUpdate={handleReqeustUpdate}
                     />
                 ))
             }

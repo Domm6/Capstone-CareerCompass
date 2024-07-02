@@ -5,30 +5,30 @@ import MatchCard from './MatchCard.jsx';
 import './Matches.css'
 import config  from '../../config.js';
 
-function Matches() {
+function MenteeMatches() {
     const { user } = useContext(UserContext);
-    const [mentorData, setMentorData] = useState(null);
+    const [menteeData, setMenteeData] = useState(null);
     const [requests, setRequests] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
 
-    // Fetch mentor-specific data using user ID from user context
-    const fetchMentorData = async () => {
+    // Fetch mentee-specific data using user ID from user context
+    const fetchMenteeData = async () => {
         try {
-            const response = await fetch(`${config.apiBaseUrl}/mentors/${user.id}`);
+            const response = await fetch(`${config.apiBaseUrl}/mentees/${user.id}`);
             if (!response.ok) {
-                throw new Error('Failed to fetch mentor data');
+                throw new Error('Failed to fetch mentee data');
             }
             const data = await response.json();
-            setMentorData(data.mentor);
+            setMenteeData(data.mentee);
         } catch (error) {
             setErrorMessage(error.message);
         }
     };
 
-    // Fetch list of requests using mentor ID
-    const fetchRequests = async (mentorId) => {
+    // Fetch list of requests using mentee ID
+    const fetchRequests = async (menteeId) => {
         try {
-            const response = await fetch(`${config.apiBaseUrl}/connect-requests/${mentorId}`);
+            const response = await fetch(`${config.apiBaseUrl}/connect-requests/mentee/${menteeId}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch requests');
             }
@@ -41,15 +41,15 @@ function Matches() {
 
     useEffect(() => {
         if (user && user.id) {
-            fetchMentorData();
+            fetchMenteeData();
         }
     }, [user]);
 
     useEffect(() => {
-        if (mentorData && mentorData.id) {
-            fetchRequests(mentorData.id);
+        if (menteeData && menteeData.id) {
+            fetchRequests(menteeData.id);
         }
-    }, [mentorData]);
+    }, [menteeData]);
 
     // callback function to update page
     const handleReqeustUpdate = (requestId) => {
@@ -68,7 +68,7 @@ function Matches() {
                         name={request.name} 
                         school={request.school} 
                         major={request.major} 
-                        requestId={request.id} 
+                        requestId={request.id}
                         onRequestUpdate={handleReqeustUpdate}
                     />
                 ))
@@ -78,4 +78,4 @@ function Matches() {
     )
 }
 
-export default Matches
+export default MenteeMatches

@@ -6,7 +6,7 @@ import './Request.css'
 const PLACEHOLDER = "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
 
 
-function Request({name, major, school, requestId}) {
+function Request({name, major, school, requestId, onRequestUpdate}) {
     const [errorMessage, setErrorMessage] = useState('');
 
     // delete specific request
@@ -17,7 +17,7 @@ function Request({name, major, school, requestId}) {
             });
 
             if (response.ok) {
-                onDelete(requestId); // Call the onDelete callback
+                onRequestUpdate(requestId);
             } else {
                 setErrorMessage('Failed to delete connect request');
             }
@@ -38,7 +38,7 @@ function Request({name, major, school, requestId}) {
             });
 
             if (response.ok) {
-                onDelete(requestId);
+                onRequestUpdate(requestId)
             } else {
                 setErrorMessage('Failed to accept connect request');
             }
