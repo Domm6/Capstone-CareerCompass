@@ -9,7 +9,6 @@ const SignUpPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [userRole, setUserRole] = useState('');
-
   const { updateUser } = useContext(UserContext);
   const navigate = useNavigate();
 

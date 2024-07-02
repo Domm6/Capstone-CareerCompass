@@ -5,7 +5,8 @@ import './Request.css'
 const PLACEHOLDER = "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
 
 
-function Request() {
+function Request({name, major, school}) {
+
     return(
         <>
         <div className='request-container'>
@@ -14,9 +15,9 @@ function Request() {
                     <img src={PLACEHOLDER} alt="profile picture" />
                 </div>
                 <div className='request-text'>
-                    <h3>Name</h3>
-                    <p>School</p>
-                    <p>Major</p>
+                    <h3>{name}</h3>
+                    <p>{school}</p>
+                    <p>{major}</p>
                 </div>
             </div>
             <div className='request-right'>

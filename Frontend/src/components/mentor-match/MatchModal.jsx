@@ -1,11 +1,12 @@
-import { useContext, useEffect, useState} from 'react'
+import { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../../UserContext.jsx';
 import config from '../../../config.js';
-import "./MatchModal.css"
+import "./MatchModal.css";
 
 const PLACEHOLDER = "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
 
 function MatchModal({mentor, closeModal, mentee}) {
+    const { user } = useContext(UserContext);  // Access the user context
     const [errorMessage, setErrorMessage] = useState('');
 
     const handleSubmit = async (event) => {
@@ -14,8 +15,11 @@ function MatchModal({mentor, closeModal, mentee}) {
         const reqData = {
             mentorId: mentor.id,
             menteeId: mentee.id,
+            name: user.name,
+            school: mentee.school,
+            major: mentee.major,
             status: 'pending'
-        }
+        };
 
         try {
             const response = await fetch(`${config.apiBaseUrl}/connect-requests`, {

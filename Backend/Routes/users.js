@@ -266,8 +266,9 @@ router.get('/mentees', async (req, res) => {
   }
 });
 
+// route create connection requests
 router.post('/connect-requests', async (req, res) => {
-  const { mentorId, menteeId, status } = req.body;
+  const { name, school, major, mentorId, menteeId, status } = req.body;
 
   try {
     // Check if a connect request already exists
@@ -283,6 +284,9 @@ router.post('/connect-requests', async (req, res) => {
     const connectRequest = await ConnectRequest.create({
       mentorId,
       menteeId,
+      name,
+      school,
+      major,
       status
     });
 
@@ -292,7 +296,6 @@ router.post('/connect-requests', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-
 
 // route to get connect requests
 router.get('/connect-requests', async (req, res) => {
@@ -327,8 +330,20 @@ router.get('/connect-requests', async (req, res) => {
   }
 });
 
+// route to get mentors specific requests
+router.get('/connect-requests/:mentorId', async (req, res) => {
+  const { mentorId } = req.params;
 
+  try {
+    const requests = await ConnectRequest.findAll({
+      where: { mentorId }
+    });
 
+    res.json({ requests });
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching connect requests' });
+  }
 
+});
 
 export default router;

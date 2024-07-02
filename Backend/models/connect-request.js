@@ -23,6 +23,18 @@ export const ConnectRequest = sequelize.define('ConnectRequest', {
     },
     allowNull: false,
   },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  school: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  major: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   status: {
     type: DataTypes.ENUM('pending', 'accepted', 'rejected'),
     defaultValue: 'pending',
