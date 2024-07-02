@@ -4,6 +4,7 @@ import Request from '../mentor-requests/Request.jsx';
 import MatchCard from '../../mentee/mentee-matches/MatchCard.jsx';
 import './MentorMatches.css'
 import config  from '../../../../config.js';
+import MentorMatchCard from './MentorMatchCard.jsx';
 
 function MentorMatches() {
     const { user } = useContext(UserContext);
@@ -63,7 +64,7 @@ function MentorMatches() {
             {requests
                 .filter(request => request.status === 'accepted')
                 .map(request => (
-                    <MatchCard 
+                    <MentorMatchCard 
                         key={request.id} 
                         menteeName={request.menteeName} 
                         menteeSchool={request.menteeSchool} 
