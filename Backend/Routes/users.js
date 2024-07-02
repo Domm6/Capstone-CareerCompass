@@ -4,6 +4,7 @@ import { User } from '../models/user.js';
 import { Op } from 'sequelize';
 import { Mentor } from '../models/mentor.js';
 import { PrismaClient } from '@prisma/client';
+import { Mentee } from '../models/index.js';
 
 const router = express.Router();
 const SALT_ROUNDS = 10;
@@ -12,7 +13,6 @@ const SALT_ROUNDS = 10;
 router.post('/users/signup', async (req, res) => {
 
   const { name, password, email, userRole } = req.body;
-
 
   try {
     // Check if email already exists
@@ -37,7 +37,7 @@ router.post('/users/signup', async (req, res) => {
       userRole
     });
 
-    // Create a Mentor profile if the userRole is 'mentor'
+    // Create a Mentor profile if the userRole is 'mentor' or Mentee if profile is 'mentee'
     if (userRole === 'mentor') {
       await Mentor.create({
         userId: newUser.id,
@@ -46,7 +46,17 @@ router.post('/users/signup', async (req, res) => {
         work_role: '',
         years_experience: 0,
         industry: '',
-        skills: ''
+        skills: '',
+        bio: ''
+      });
+    } else {
+      await Mentee.create({
+        userId: newUser.id,
+        school: '',
+        major: '',
+        career_goals: '',
+        skills: '',
+        bio: ''
       });
     }
 
@@ -185,6 +195,74 @@ router.get('/mentors', async (req, res) => {
   }
 });
 
+// Route to update mentee profile
+router.put('/mentees/:id', async (req, res) => {
+  const mentorId = req.params.id;
+  const { school, bio, major, career_goals, skills } = req.body;
 
+  try {
+    // Find the mentor by ID
+    const mentee = await Mentee.findOne({ where: { userId: mentorId } });
+
+    if (!mentee) {
+      return res.status(404).json({ error: 'Mentor not found' });
+    }
+
+    // Update the mentor's profile with the new data
+    await mentee.update({
+      school,
+      bio,
+      major,
+      career_goals,
+      skills
+    });
+
+      // Return the updated mentor data in the response
+      res.json({ mentee });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Route to fetch mentee profile based on user ID
+router.get('/mentees/:id', async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    // Find the mentor by user ID
+    const mentee = await Mentee.findOne({ where: { userId } });
+
+    if (!mentee) {
+      return res.status(404).json({ error: 'Mentee not found' });
+    }
+
+    // Return the mentor data in the response
+    res.json({ mentee });
+  } catch (error) {
+    console.error('Error fetching mentor profile:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Route to fetch mentee profiles
+router.get('/mentees', async (req, res) => {
+  try {
+
+    // Find all mentors and include associated user data
+    const mentees = await Mentee.findAll({
+      include: {
+        model: User,
+        attributes: ['name', 'profileImageUrl']
+      }
+    });
+
+    // Return the mentors data in the response
+    res.json({ mentees });
+  } catch (error) {
+    console.error('Error fetching mentor profiles:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 
 export default router;

@@ -1,5 +1,6 @@
 import { useState} from 'react'
 import { UserContext } from '../UserContext.jsx';
+import { Link } from 'react-router-dom';
 import './MentorDashboard.css';
 import Calendar from './Calendar.jsx';
 import Matches from './Matches.jsx';
@@ -9,8 +10,11 @@ function MentorDashboard() {
     const [activeComponent, setActiveComponent] = useState('Calendar');
     return(
         <>
-        <div className="signup-header">
-            <h1>Welcome to CareerCompass!</h1>
+        <div className="mp-header">
+            <h1>CareerCompass</h1>
+            <div className='mp-nav'>
+                <Link to="/mentor-profile">Profile</Link>
+            </div>
         </div>
         <div className='md-container'>
             <div className='md-top'>
