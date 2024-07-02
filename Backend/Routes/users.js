@@ -297,6 +297,28 @@ router.post('/connect-requests', async (req, res) => {
   }
 });
 
+// route to delete a connect request by requestId
+router.delete('/connect-requests/:requestId', async (req, res) => {
+  const { requestId } = req.params;
+
+  try {
+    // Find the connect request by requestId
+    const connectRequest = await ConnectRequest.findByPk(requestId);
+
+    if (!connectRequest) {
+      return res.status(404).json({ error: 'Connect request not found' });
+    }
+
+    // Delete the connect request
+    await connectRequest.destroy();
+
+    res.status(200).json({ message: 'Connect request deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting connect request:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // route to get connect requests
 router.get('/connect-requests', async (req, res) => {
   try {

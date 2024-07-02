@@ -5,11 +5,6 @@ import './Requests.css';
 import config from '../../../config.js';
 
 function Requests() {
-    // fetch mentor specific data using user context to get userid
-
-    // user the id from mentor data to access list of requests
-
-    // go through each requets and map the follwoing contents to the placeholders below
 
     const { user } = useContext(UserContext);
     const [mentorData, setMentorData] = useState(null);
@@ -55,9 +50,7 @@ function Requests() {
         if (mentorData && mentorData.id) {
             fetchRequests(mentorData.id);
         }
-    }, [mentorData]);
-
-    console.log(requests)
+    }, [mentorData, requests]);
 
     return(
         <>
@@ -66,6 +59,7 @@ function Requests() {
             {requests.map(request => (
                 <Request 
                     key={request.id} 
+                    requestId={request.id}
                     name={request.name} 
                     school={request.school} 
                     major={request.major} 
