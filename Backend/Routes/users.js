@@ -268,7 +268,7 @@ router.get('/mentees', async (req, res) => {
 
 // route create connection requests
 router.post('/connect-requests', async (req, res) => {
-  const { name, school, major, mentorId, menteeId, status } = req.body;
+  const { menteeName, menteeSchool, menteeMajor, mentorId, menteeId, status, mentorName, mentorCompany, mentorWorkRole  } = req.body;
 
   try {
     // Check if a connect request already exists
@@ -284,9 +284,12 @@ router.post('/connect-requests', async (req, res) => {
     const connectRequest = await ConnectRequest.create({
       mentorId,
       menteeId,
-      name,
-      school,
-      major,
+      menteeName,
+      menteeSchool,
+      menteeMajor,
+      mentorName,
+      mentorCompany,
+      mentorWorkRole,
       status
     });
 

@@ -23,15 +23,15 @@ export const ConnectRequest = sequelize.define('ConnectRequest', {
     },
     allowNull: false,
   },
-  name: {
+  menteeName: {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  school: {
+  menteeSchool: {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  major: {
+  menteeMajor: {
     type: DataTypes.STRING,
     allowNull: true,
   },
@@ -39,7 +39,19 @@ export const ConnectRequest = sequelize.define('ConnectRequest', {
     type: DataTypes.ENUM('pending', 'accepted', 'rejected'),
     defaultValue: 'pending',
     allowNull: false,
-  }
+  },
+  mentorName: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  mentorCompany: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  mentorWorkRole: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 }, {
   tableName: 'ConnectRequests',
   indexes: [

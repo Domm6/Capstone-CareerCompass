@@ -1,12 +1,12 @@
 import { useState} from 'react'
-import { UserContext } from '../../UserContext.jsx';
-import config from '../../../config.js';
-import "../mentor/mentor-requests/Request.css"
+import { UserContext } from '../../../UserContext.jsx';
+import config from '../../../../config.js';
+import "./MatchCard.css"
 
 const PLACEHOLDER = "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
 
 
-function MatchCard({name, major, school, requestId}) {
+function MatchCard({mentorName, mentorCompany, mentorWorkRole, requestId}) {
 
     return(
         <>
@@ -16,9 +16,9 @@ function MatchCard({name, major, school, requestId}) {
                     <img src={PLACEHOLDER} alt="profile picture" />
                 </div>
                 <div className='request-text'>
-                    <h3>{name}</h3>
-                    <p>{school}</p>
-                    <p>{major}</p>
+                    <h3>{mentorName}</h3>
+                    <p>{mentorCompany}</p>
+                    <p>{mentorWorkRole}</p>
                 </div>
             </div>
             <div className='request-right'>

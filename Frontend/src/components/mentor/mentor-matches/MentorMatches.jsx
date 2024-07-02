@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../../../UserContext.jsx';
 import Request from '../mentor-requests/Request.jsx';
-import MatchCard from '../../mentor-matching/MatchCard.jsx';
+import MatchCard from '../../mentee/mentee-matches/MatchCard.jsx';
 import './MentorMatches.css'
 import config  from '../../../../config.js';
 
@@ -65,9 +65,9 @@ function MentorMatches() {
                 .map(request => (
                     <MatchCard 
                         key={request.id} 
-                        name={request.name} 
-                        school={request.school} 
-                        major={request.major} 
+                        menteeName={request.menteeName} 
+                        menteeSchool={request.menteeSchool} 
+                        menteeMajor={request.menteeMajor} 
                         requestId={request.id} 
                         onRequestUpdate={handleReqeustUpdate}
                     />

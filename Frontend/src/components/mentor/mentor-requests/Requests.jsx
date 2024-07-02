@@ -65,9 +65,9 @@ function Requests() {
                 .map(request => (
                     <Request 
                         key={request.id} 
-                        name={request.name} 
-                        school={request.school} 
-                        major={request.major} 
+                        name={request.menteeName} 
+                        school={request.menteeSchool} 
+                        major={request.menteeMajor} 
                         requestId={request.id}
                         onRequestUpdate={handleReqeustUpdate}
                     />

@@ -9,15 +9,22 @@ function MatchModal({mentor, closeModal, mentee}) {
     const { user } = useContext(UserContext);  // Access the user context
     const [errorMessage, setErrorMessage] = useState('');
 
+    console.log(user.name)
+    console.log(mentor.User.name)
+    console.log(mentor.work_role)
+
     const handleSubmit = async (event) => {
         event.preventDefault();
 
         const reqData = {
             mentorId: mentor.id,
             menteeId: mentee.id,
-            name: user.name,
-            school: mentee.school,
-            major: mentee.major,
+            menteeName: user.name,
+            menteeSchool: mentee.school,
+            menteeMajor: mentee.major,
+            mentorName: mentor.User.name,
+            mentorCompany: mentor.company,
+            mentorWorkRole: mentor.work_role,
             status: 'pending'
         };
 
