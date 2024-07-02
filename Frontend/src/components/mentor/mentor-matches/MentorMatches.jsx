@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../../../UserContext.jsx';
-import Request from '../../requests/Request.jsx';
+import Request from '../mentor-requests/Request.jsx';
 import MatchCard from '../../mentor-matching/MatchCard.jsx';
 import './MentorMatches.css'
 import config  from '../../../../config.js';

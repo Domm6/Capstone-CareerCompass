@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
-import { UserContext } from '../../UserContext.jsx';
+import { UserContext } from '../../../UserContext.jsx';
 import Request from './Request.jsx';
 import './Requests.css';
-import config from '../../../config.js';
+import config from '../../../../config.js';
 
 function Requests() {
 

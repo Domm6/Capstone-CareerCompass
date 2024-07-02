@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import './MentorDashboard.css';
 import Calendar from '../../Calendar.jsx';
 import Matches from '../mentor-matches/MentorMatches.jsx';
-import Requests from '../../requests/Requests.jsx';
+import Requests from '../mentor-requests/Requests.jsx';
 
 function MentorDashboard() {
     const [activeComponent, setActiveComponent] = useState('Calendar');
