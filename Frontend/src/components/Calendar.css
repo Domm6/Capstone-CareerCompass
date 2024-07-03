@@ -17,3 +17,10 @@
     display: flex;
 
 }
+
+.add-meeting-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30%;
+}
