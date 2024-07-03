@@ -31,5 +31,4 @@ export const Meeting = sequelize.define('Meeting', {
   },
 }, {
   tableName: 'Meetings',
-  timestamps: false,
 });

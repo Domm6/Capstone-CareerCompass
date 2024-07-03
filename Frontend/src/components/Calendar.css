@@ -3,6 +3,16 @@
     justify-content: center;
     align-items: center;
     background-color: grey;
-    margin: 20px;
-    padding: 200px;
+    margin: 10px;
+    padding: 10px;
+}
+
+.add-event {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.add-event button {
+    width: 20%;
 }
