@@ -26,7 +26,7 @@ function MentorDashboard() {
                 <button onClick={() => setActiveComponent('Requests')}>Requests</button>
             </div>
             <div className='md-body'>
-                <div className='md-body-calenday'>
+                <div className='md-body-calendar'>
                     {activeComponent == 'Calendar' &&  <Calendar></Calendar>}
                 </div>
                 <div className='md-body-matches'>

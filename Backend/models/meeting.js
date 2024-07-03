@@ -23,7 +23,11 @@ export const Meeting = sequelize.define('Meeting', {
   },
   scheduledTime: {
     type: DataTypes.DATE,
-    allowNull: false,
+    allowNull: true,
+  },
+  endTime: {
+    type: DataTypes.DATE,
+    allowNull: true,
   },
   topic: {
     type: DataTypes.STRING,
@@ -31,5 +35,4 @@ export const Meeting = sequelize.define('Meeting', {
   },
 }, {
   tableName: 'Meetings',
-  timestamps: false,
 });
