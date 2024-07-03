@@ -300,7 +300,7 @@ router.post('/connect-requests', async (req, res) => {
   }
 });
 
-// route to delcine (delete) a connect request by requestId
+// route to decline (delete) a connect request by requestId
 router.delete('/connect-requests/:requestId', async (req, res) => {
   const { requestId } = req.params;
 
