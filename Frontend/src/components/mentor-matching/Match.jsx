@@ -1,7 +1,7 @@
-import { useState, useEffect} from 'react'
+import { useState, useEffect, useContext } from 'react';
 import { UserContext } from '../../UserContext.jsx';
 import { Link } from 'react-router-dom';
-import "./Match.css"
+import "./Match.css";
 import MentorCard from './MentorCard.jsx';
 import MatchModal from './MatchModal.jsx';
 import config from '../../../config.js';
@@ -95,12 +95,14 @@ const IndustriesEnum = Object.freeze({
 const industries = Object.values(IndustriesEnum);
 
 function Match() {
+    const { user } = useContext(UserContext);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [mentors, setMentors] = useState([]);
     const [selectedMentor, setSelectedMentor] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const [selectedRole, setSelectedRole] = useState('');
     const [selectedIndustry, setSelectedIndustry] = useState('');
+    const [mentee, setMentee] = useState(null);
 
     const handleCardClick = (mentor) => {
         setSelectedMentor(mentor);
@@ -136,8 +138,25 @@ function Match() {
           });
     };
 
+    const fetchMenteeData = () => {
+        fetch(`${config.apiBaseUrl}/mentees/${user.id}`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Failed to fetch mentee data. Please try again later.');
+            }
+            return response.json();
+          })
+          .then(data => {
+            setMentee(data.mentee);
+          })
+          .catch(error => {
+            setErrorMessage(error.message);
+          });
+    };
+
     useEffect(() => {
         fetchMentorsData();
+        fetchMenteeData();
     }, []);
 
     const filteredMentors = mentors.filter(mentor => 
@@ -183,7 +202,7 @@ function Match() {
             </div>
         </div>
         {isModalOpen && (
-                <MatchModal mentor={selectedMentor} closeModal={closeModal} />
+                <MatchModal mentor={selectedMentor} closeModal={closeModal} mentee={mentee}/>
             )}
         </>
     )

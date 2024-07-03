@@ -1,15 +1,14 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './SignUpPage.css'
-import { UserContext } from '../UserContext.jsx';
-import config from '../../config.js';
+import { UserContext } from '../../../UserContext.jsx';
+import config from '../../../../config.js';
 
 const SignUpPage = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [userRole, setUserRole] = useState('');
-
   const { updateUser } = useContext(UserContext);
   const navigate = useNavigate();
 

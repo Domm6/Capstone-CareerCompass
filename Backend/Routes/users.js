@@ -5,6 +5,7 @@ import { Op } from 'sequelize';
 import { Mentor } from '../models/mentor.js';
 import { PrismaClient } from '@prisma/client';
 import { Mentee } from '../models/index.js';
+import { ConnectRequest } from '../models/connect-request.js';
 
 const router = express.Router();
 const SALT_ROUNDS = 10;
@@ -263,6 +264,154 @@ router.get('/mentees', async (req, res) => {
     console.error('Error fetching mentor profiles:', error);
     res.status(500).json({ error: 'Server error' });
   }
+});
+
+// route create connection requests
+router.post('/connect-requests', async (req, res) => {
+  const { menteeName, menteeSchool, menteeMajor, mentorId, menteeId, status, mentorName, mentorCompany, mentorWorkRole  } = req.body;
+
+  try {
+    // Check if a connect request already exists
+    const existingRequest = await ConnectRequest.findOne({
+      where: { mentorId, menteeId }
+    });
+
+    if (existingRequest) {
+      return res.status(400).json({ error: 'Connect request already exists' });
+    }
+
+    // Create new connect request
+    const connectRequest = await ConnectRequest.create({
+      mentorId,
+      menteeId,
+      menteeName,
+      menteeSchool,
+      menteeMajor,
+      mentorName,
+      mentorCompany,
+      mentorWorkRole,
+      status
+    });
+
+    res.status(201).json({ connectRequest });
+  } catch (error) {
+    console.error('Error creating connect request:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// route to decline (delete) a connect request by requestId
+router.delete('/connect-requests/:requestId', async (req, res) => {
+  const { requestId } = req.params;
+
+  try {
+    // Find the connect request by requestId
+    const connectRequest = await ConnectRequest.findByPk(requestId);
+
+    if (!connectRequest) {
+      return res.status(404).json({ error: 'Connect request not found' });
+    }
+
+    // Delete the connect request
+    await connectRequest.destroy();
+
+    res.status(200).json({ message: 'Connect request deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting connect request:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// route to accept request
+router.patch('/connect-requests/:requestId', async (req,res) => {
+  const {requestId} = req.params
+  const {status} = req.body
+
+  try {
+    // Find the connect request by requestId
+    const connectRequest = await ConnectRequest.findByPk(requestId);
+
+    if (!connectRequest) {
+      return res.status(404).json({ error: 'Connect request not found' });
+    } 
+
+    // Update the mentor's profile with the new data
+    await connectRequest.update({
+      status
+    });
+
+    // Return the updated mentor data in the response
+    res.json({ connectRequest });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+
+})
+
+// route to get connect requests
+router.get('/connect-requests', async (req, res) => {
+  try {
+    // Find all connect requests and include associated mentor and mentee data
+    const connectRequests = await ConnectRequest.findAll({
+      include: [
+        {
+          model: Mentor,
+          attributes: ['id', 'userId', 'school', 'bio', 'company', 'work_role', 'years_experience', 'industry', 'skills'],
+          include: {
+            model: User,
+            attributes: ['id', 'name', 'email', 'profileImageUrl']
+          }
+        },
+        {
+          model: Mentee,
+          attributes: ['id', 'userId', 'bio', 'school', 'major', 'career_goals', 'skills'],
+          include: {
+            model: User,
+            attributes: ['id', 'name', 'email', 'profileImageUrl']
+          }
+        }
+      ]
+    });
+
+    // Return the connect requests data in the response
+    res.json({ connectRequests });
+  } catch (error) {
+    console.error('Error fetching connect requests:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// route to get mentors specific requests
+router.get('/connect-requests/:mentorId', async (req, res) => {
+  const { mentorId } = req.params;
+
+  try {
+    const requests = await ConnectRequest.findAll({
+      where: { mentorId }
+    });
+
+    res.json({ requests });
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching connect requests' });
+  }
+
+});
+
+// route to get mentee specific requests
+router.get('/connect-requests/mentee/:menteeId', async (req, res) => {
+  const { menteeId } = req.params;
+
+  try {
+    const requests = await ConnectRequest.findAll({
+      where: { menteeId }
+    });
+
+    res.json({ requests });
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching connect requests' });
+  }
+
 });
 
 export default router;

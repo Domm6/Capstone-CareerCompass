@@ -1,0 +1,42 @@
+.request-container {
+    display: flex;
+    justify-content: space-between;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    border: 0.7px solid black;
+    margin: 10px;
+    padding: 10px;
+}
+
+.request-left {
+    display: flex;
+}
+
+.request-left img{
+    margin: 10px;
+    padding: 10px;
+    width: 200px;
+    border-radius: 8px;
+}
+
+.request-left p{
+    margin: 10px;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.request-left h3{
+    margin: 10px;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.request-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+    padding: 10px;
+}

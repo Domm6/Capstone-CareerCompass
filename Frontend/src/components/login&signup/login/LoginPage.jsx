@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { UserContext } from '../UserContext';
+import { UserContext } from '../../../UserContext';
 import './LoginPage.css'
-import config from '../../config';
+import config from '../../../../config';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
