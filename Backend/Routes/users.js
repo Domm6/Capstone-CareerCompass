@@ -6,6 +6,7 @@ import { Mentor } from '../models/mentor.js';
 import { PrismaClient } from '@prisma/client';
 import { Mentee } from '../models/index.js';
 import { Meeting } from '../models/index.js';
+import { Review } from '../models/review.js';
 import { ConnectRequest } from '../models/connect-request.js';
 
 const router = express.Router();
@@ -529,6 +530,43 @@ router.post('/meetings', async (req, res) => {
     res.status(201).json(newMeeting);
   } catch (error) {
     res.status(500).json({ error: 'Error scheduling meeting' });
+  }
+});
+
+// create new reveiw
+router.post('/reviews', async (req, res) => {
+  const {mentorId, menteeId, rating} = req.body
+
+  try {
+    // create new review
+    const review = await Review.create({mentorId, menteeId, rating});
+
+    // update mentors rating
+    const mentor = await Mentor.findByPk(mentorId);
+
+    // Update mentor ratings
+    mentor.totalRating += rating;
+    mentor.ratingCount += 1;
+    mentor.averageRating = mentor.totalRating / mentor.ratingCount;
+
+    await mentor.save();
+
+    res.status(201).json(review);
+  } catch(error) {
+    res.status(500).json({error: 'Server error'});
+  }
+
+});
+
+// get reviews for a mentor
+router.get('/mentors/:id/reviews', async (req, res) => {
+  const mentorId = req.params.id;
+
+  try {
+    const reviews = await Review.findAll({ where: { mentorId } });
+    res.json({ reviews });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
