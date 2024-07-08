@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import '../mentor/mentor-profile/MentorProfileModal.css'
 import config from '../../../config.js';
 
-function CalendarModal ({toggleModal, onMeetingScheduled}) {
+function CalendarModal ({toggleModal, onMeetingScheduled, isMentor}) {
     const {user} = useContext(UserContext);
     const [menteesOrMentors, setMenteesOrMentors] = useState([]);
     const [selectedUser, setSelectedUser] = useState('');
@@ -19,7 +19,7 @@ function CalendarModal ({toggleModal, onMeetingScheduled}) {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const url = user.userRole === 'mentor'
+                const url = isMentor(user)
                     ? `${config.apiBaseUrl}/mentors/${user.id}`
                     : `${config.apiBaseUrl}/mentees/${user.id}`;
 
@@ -28,7 +28,7 @@ function CalendarModal ({toggleModal, onMeetingScheduled}) {
                     throw new Error('Failed to fetch user data');
                 }
                 const data = await response.json();
-                setUserData(user.userRole === 'mentor' ? data.mentor : data.mentee);
+                setUserData(isMentor(user) ? data.mentor : data.mentee);
             } catch (error) {
                 setErrorMessage(error.message);
             }
@@ -43,7 +43,7 @@ function CalendarModal ({toggleModal, onMeetingScheduled}) {
     useEffect(() => {
         const fetchRequests = async (userId) => {
         try {
-            const url = user.userRole === 'mentor'
+            const url = isMentor(user)
                 ? `${config.apiBaseUrl}/connect-requests/${userId}`
                 : `${config.apiBaseUrl}/connect-requests/mentee/${userId}`
 
@@ -54,8 +54,8 @@ function CalendarModal ({toggleModal, onMeetingScheduled}) {
             const data = await response.json();
             const acceptedRequests = data.requests.filter(request => request.status === 'accepted');
             setMenteesOrMentors(acceptedRequests.map(request => ({
-                id: user.userRole === 'mentor' ? request.menteeId : request.mentorId,
-                name: user.userRole === 'mentor' ? request.menteeName : request.mentorName
+                id: isMentor(user) ? request.menteeId : request.mentorId,
+                name: isMentor(user) ? request.menteeName : request.mentorName
             })));
         } catch (error) {
             setErrorMessage(error.message);
@@ -80,7 +80,7 @@ function CalendarModal ({toggleModal, onMeetingScheduled}) {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    mentorId: user.userRole === 'mentor' ? userData.id : selectedUser,
+                    mentorId: isMentor(user) ? userData.id : selectedUser,
                     menteeId: user.userRole === 'mentee' ? userData.id : selectedUser,
                     scheduledTime: scheduledTimeFull,
                     topic,
@@ -106,9 +106,9 @@ function CalendarModal ({toggleModal, onMeetingScheduled}) {
                 <h3>Schedule Meeting:</h3>
                 <form onSubmit={handleScheduleMeeting}>
                     <div className='form-group'>
-                    <label htmlFor="mentee-or-mentor">Select {user.userRole === 'mentor' ? 'Mentee' : 'Mentor'}</label>
+                    <label htmlFor="mentee-or-mentor">Select {isMentor(user) ? 'Mentee' : 'Mentor'}</label>
                         <select id='mentee-or-mentor' value={selectedUser} onChange={(event) => setSelectedUser(event.target.value)} required>
-                            <option value="">Select {user.userRole === 'mentor' ? 'Mentee' : 'Mentor'}</option>
+                            <option value="">Select {isMentor(user) ? 'Mentee' : 'Mentor'}</option>
                             {menteesOrMentors.map((person) => (
                                 <option key={person.id} value={person.id}>
                                     {person.name}

@@ -16,11 +16,14 @@ function Calendar() {
     const [errorMessage, setErrorMessage] = useState('');
     const [userData, setUserData] = useState('')
 
+    // check if mentor
+    const isMentor = (user) => user.userRole === 'mentor';
+
     // Fetch user data (mentor or mentee)
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const url = user.userRole === 'mentor'
+                const url = isMentor(user)
                     ? `${config.apiBaseUrl}/mentors/${user.id}`
                     : `${config.apiBaseUrl}/mentees/${user.id}`;
 
@@ -29,7 +32,7 @@ function Calendar() {
                     throw new Error('Failed to fetch user data');
                 }
                 const data = await response.json();
-                setUserData(user.userRole === 'mentor' ? data.mentor : data.mentee);
+                setUserData(isMentor(user) ? data.mentor : data.mentee);
             } catch (error) {
                 setErrorMessage(error.message);
             }
@@ -43,7 +46,7 @@ function Calendar() {
     // Fetch meetings for the user (mentor or mentee)
     const fetchMeetings = async (userId) => {
         try {
-            const url = user.userRole === 'mentor'
+            const url = isMentor(user)
                 ? `${config.apiBaseUrl}/meetings/mentor/${userId}`
                 : `${config.apiBaseUrl}/meetings/mentee/${userId}`;
 
@@ -100,6 +103,7 @@ function Calendar() {
                 <CalendarModal
                     toggleModal={handleModalToggle}
                     onMeetingScheduled={handleMeetingScheduled}
+                    isMentor={isMentor}
                 ></CalendarModal>
             )}
         </>
