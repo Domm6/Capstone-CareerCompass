@@ -482,9 +482,13 @@ router.post('/meetings/conflict', async (req, res) => {
 
 // create new meeting
 router.post('/meetings', async (req, res) => {
+
+  const MEETING_DURATION_MINUTES = 30;
+  const MILLISECONDS_IN_MINUTE = 60 * 1000;
+
   const { mentorId, menteeId, scheduledTime, topic } = req.body;
   const startTime = new Date(scheduledTime).toISOString();
-  const endTime = new Date(new Date(scheduledTime).getTime() + 30 * 60 * 1000).toISOString(); // 30 minute meeting
+  const endTime = new Date(new Date(scheduledTime).getTime() + MEETING_DURATION_MINUTES * MILLISECONDS_IN_MINUTE).toISOString(); // 30 minute meeting
 
   try {
     // Check if there is a conflict
