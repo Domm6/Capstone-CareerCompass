@@ -2,7 +2,7 @@ import { useState} from 'react'
 import { UserContext } from '../../../UserContext.jsx';
 import { Link } from 'react-router-dom';
 import './MentorDashboard.css';
-import Calendar from '../../Calendar.jsx';
+import Calendar from '../../calendar/Calendar.jsx';
 import Matches from '../mentor-matches/MentorMatches.jsx';
 import Requests from '../mentor-requests/Requests.jsx';
 
