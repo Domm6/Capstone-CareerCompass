@@ -68,7 +68,9 @@ function MenteeMatches() {
                         key={request.id} 
                         mentorName={request.mentorName} 
                         mentorCompany={request.mentorCompany} 
-                        mentorWorkRole={request.mentorWorkRole} 
+                        mentorWorkRole={request.mentorWorkRole}
+                        mentorId={request.mentorId}
+                        mentee={menteeData}
                         requestId={request.id}
                         onRequestUpdate={handleReqeustUpdate}
                     />

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import "./Match.css";
 import MentorCard from './MentorCard.jsx';
 import MatchModal from './MatchModal.jsx';
+import SuggestionModal from './SuggestionModal.jsx';
 import config from '../../../config.js';
 
 const TechRolesEnum = Object.freeze({
@@ -94,20 +95,95 @@ const IndustriesEnum = Object.freeze({
 
 const industries = Object.values(IndustriesEnum);
 
+const calculateMentorScore = (mentor, mentee) => {
+    const NORMALIZE = 100;
+    const MAX_RATING = 5;
+    const RATING_WEIGHT = 0.3; 
+    const EXPERIENCE_WEIGHT = 0.2;
+    const MATCHING_SKILLS_WEIGHT = 0.2;
+    const NON_MATCHING_SKILLS_WEIGHT = 0.1;
+    const SCHOOL_MATCH_WEIGHT = 0.1;
+    const CAREER_GOALS_MATCH_WEIGHT = 0.2;
+
+    // normalize rating to a 0-10 scale
+    const normalizedRating = (mentor.averageRating / MAX_RATING) * NORMALIZE;
+    const ratingScore = normalizedRating * RATING_WEIGHT;
+
+    // normalize experience to a 0-10 scale
+    const normalizedExperience = Math.min(mentor.years_experience, NORMALIZE);
+    const experienceScore = normalizedExperience * EXPERIENCE_WEIGHT;
+
+    // skill scores
+    // gets mentee and mentor list of skills
+    const menteeSkills = mentee.skills.split(',').map(skill => skill.trim().toLowerCase());
+    const mentorSkills = mentor.skills.split(',').map(skill => skill.trim().toLowerCase());
+
+    // gets list of matching, then mentor skills length - matchign skills length
+    const matchingSkillsCount = menteeSkills.filter(skill => mentorSkills.includes(skill)).length;
+    const nonMatchingSkillsCount = mentorSkills.length - matchingSkillsCount;
+    const matchingSkillScore = (matchingSkillsCount / menteeSkills.length) * NORMALIZE * MATCHING_SKILLS_WEIGHT;
+    const nonMatchingSkillScore = (nonMatchingSkillsCount / mentorSkills.length) * NORMALIZE * NON_MATCHING_SKILLS_WEIGHT;
+    const skillScore = matchingSkillScore + nonMatchingSkillScore;
+
+    // check if school strings match and multiply by match weight
+    const schoolScore = mentor.school.toLowerCase() === mentee.school.toLowerCase() ? NORMALIZE * SCHOOL_MATCH_WEIGHT : 0;
+
+    // score of matching key words in mentee career goal section to mentor fields
+    const careerGoalText = mentee.career_goals
+    const keywordsArray = careerGoalText.split(/\s+/); // splits based on whitespace
+    const careerGoalsKeywords = keywordsArray.map(keyword => keyword.trim().toLowerCase()); // trim whitespace and lowercase
+    const careerGoalsMatchCount = careerGoalsKeywords.filter(keyword => 
+        mentor.work_role.toLowerCase().includes(keyword) ||
+        mentor.industry.toLowerCase().includes(keyword) ||
+        mentor.skills.toLowerCase().includes(keyword) ||
+        mentor.company.toLowerCase().includes(keyword) ||
+        mentor.industry.toLowerCase().includes(keyword)
+    ).length;
+    const careerGoalsMatchScore = (careerGoalsMatchCount / careerGoalsKeywords.length) * NORMALIZE * CAREER_GOALS_MATCH_WEIGHT;
+
+    const totalScore = ratingScore + experienceScore + skillScore + schoolScore + careerGoalsMatchScore;
+    
+    return totalScore;
+}
+
+const getTopMentorSuggestions = (mentors, mentee) => {
+    const rankedMentors = mentors.map(mentor => {
+        const score = calculateMentorScore(mentor, mentee);
+        return {
+            ...mentor,
+            score,
+        };
+    }).sort((a, b) => b.score - a.score);
+
+    return rankedMentors.slice(0, 5);
+}
+
 function Match() {
     const { user } = useContext(UserContext);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isMatchModalOpen, setIsMatchModalOpen] = useState(false);
     const [mentors, setMentors] = useState([]);
     const [selectedMentor, setSelectedMentor] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const [selectedRole, setSelectedRole] = useState('');
     const [selectedIndustry, setSelectedIndustry] = useState('');
     const [mentee, setMentee] = useState(null);
+    const [isSuggestionModalOpen, setIsSuggestionModalOpen] = useState(false);
+    const [topMentors, setTopMentors] = useState([]);
 
     const handleCardClick = (mentor) => {
         setSelectedMentor(mentor);
-        setIsModalOpen(true);
+        setIsMatchModalOpen(true);
     };
+
+    const openSuggestionModal = () => {
+        const suggestions = getTopMentorSuggestions(mentors, mentee);
+        setTopMentors(suggestions);
+        setIsSuggestionModalOpen(true); 
+    }
+
+    const closeSuggestionModal = () => {
+        setIsSuggestionModalOpen(false);
+    }
 
     const handleRoleChange = (event) => {
         setSelectedRole(event.target.value);
@@ -118,7 +194,7 @@ function Match() {
     };
 
     const closeModal = () => {
-        setIsModalOpen(false);
+        setIsMatchModalOpen(false);
         setSelectedMentor(null);
     };
 
@@ -177,6 +253,7 @@ function Match() {
             <h1>Choose a Mentor</h1>
         </div>
         <div className='match-nav'>
+            <button id='suggestion-btn' onClick={openSuggestionModal}>Suggestions</button>
             <select name="role" value={selectedRole} onChange={handleRoleChange}>
                 <option value="">Select a role</option>
                 {techRoles.map((role, index) => (
@@ -201,9 +278,12 @@ function Match() {
                 ))}
             </div>
         </div>
-        {isModalOpen && (
-                <MatchModal mentor={selectedMentor} closeModal={closeModal} mentee={mentee}/>
-            )}
+        {isMatchModalOpen && (
+            <MatchModal mentor={selectedMentor} closeModal={closeModal} mentee={mentee}/>
+        )}
+        {isSuggestionModalOpen && (
+            <SuggestionModal closeSuggestionModal={closeSuggestionModal} mentors={topMentors} handleCardClick={handleCardClick} mentee={mentee} closeModal={closeModal}></SuggestionModal>
+        )}
         </>
     )
 }

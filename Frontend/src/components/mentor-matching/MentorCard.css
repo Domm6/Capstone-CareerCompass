@@ -70,3 +70,18 @@
 .mc-body-right img{
     width: 50px;
 }
+
+.mc-socre {
+    font-size: 0.9em;
+}
+
+.mc-body-right-rating {
+    display: flex;
+    align-items: center;
+    justify-content: space-around
+}
+
+.mc-body-right-rating img {
+    max-width: 23px;
+    height: auto;
+}

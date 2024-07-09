@@ -4,9 +4,9 @@ import "./MentorCard.css"
 import config from '../../../config.js';
 
 const PLACEHOLDER = "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
+const STAR_ICON = "https://cdn.iconscout.com/icon/free/png-256/free-star-bookmark-favorite-shape-rank-16-28621.png"
 
-
-function MentorCard({mentor, onCardClick}) {
+function MentorCard({mentor, onCardClick, score}) {
     const { User: user } = mentor; // Access user data from mentor
 
     return (
@@ -29,11 +29,18 @@ function MentorCard({mentor, onCardClick}) {
                 </div>
                 <div className='mc-body-right'>
                     <img src={`${config.logoDevApiBaseUrl}/${mentor.company}.com?token=pk_DCOxK2D7TA68fkEDQQ2_fQ`} />
+                    <div className='mc-body-right-rating'>
+                        <p>{mentor.averageRating}</p>
+                        <img src={STAR_ICON} alt="mentor rating" />
+                    </div>
                 </div>
             </div>
             <div className='mc-profile'>
                 <h3>About {user.name}:</h3>
                 <p>{mentor.bio}</p>
+            </div>
+            <div className='mc-socre'>
+                {score && <p>{score.toFixed(2)}% Match</p>}
             </div>
         </div>
         </>

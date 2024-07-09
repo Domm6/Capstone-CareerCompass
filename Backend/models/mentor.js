@@ -40,6 +40,18 @@ export const Mentor = sequelize.define('Mentor', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  totalRating: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
+  ratingCount: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
+  averageRating: {
+    type: DataTypes.FLOAT,
+    defaultValue: 0,
+  }
 }, {
   tableName: 'Mentors',
   timestamps: false,
