@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../../UserContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import '../mentor/mentor-profile/MentorProfileModal.css'
+import moment from 'moment-timezone';
 import config from '../../../config.js';
 
 function CalendarModal ({toggleModal, onMeetingScheduled, isMentor}) {
@@ -71,7 +72,7 @@ function CalendarModal ({toggleModal, onMeetingScheduled, isMentor}) {
     const handleScheduleMeeting = async (event) => {
         event.preventDefault();
 
-        const scheduledTimeFull = `${scheduledDate}T${scheduledTime}:00.000Z`; // Combine date and time
+        const scheduledDateTime = moment.tz(`${scheduledDate}T${scheduledTime}`, 'YYYY-MM-DDTHH:mm', 'America/Los_Angeles').format();
 
         try {
             const response = await fetch(`${config.apiBaseUrl}/meetings`, {
@@ -82,7 +83,7 @@ function CalendarModal ({toggleModal, onMeetingScheduled, isMentor}) {
                 body: JSON.stringify({
                     mentorId: isMentor(user) ? userData.id : selectedUser,
                     menteeId: user.userRole === 'mentee' ? userData.id : selectedUser,
-                    scheduledTime: scheduledTimeFull,
+                    scheduledTime: scheduledDateTime,
                     topic,
                 }),
             });

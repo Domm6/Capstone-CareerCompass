@@ -172,7 +172,7 @@ function Calendar() {
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                     initialView="timeGridWeek"
                     events={meetings}
-                    timeZone="UTC"
+                    timeZone="PST"
                     eventClick={handleMeetingClick}
                 />
             </div>
