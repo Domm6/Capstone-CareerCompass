@@ -5,6 +5,7 @@ import { Op } from 'sequelize';
 import { Mentor } from '../models/mentor.js';
 import { PrismaClient } from '@prisma/client';
 import { Mentee } from '../models/index.js';
+import { Meeting } from '../models/index.js';
 import { ConnectRequest } from '../models/connect-request.js';
 
 const router = express.Router();
@@ -412,6 +413,123 @@ router.get('/connect-requests/mentee/:menteeId', async (req, res) => {
     res.status(500).json({ error: 'Error fetching connect requests' });
   }
 
+});
+
+// get a mentors meeting
+router.get('/meetings/mentor/:mentorId', async (req, res) => {
+  const { mentorId } = req.params;
+
+  try {
+    const meetings = await Meeting.findAll({
+      where: { mentorId }
+    });
+
+    res.json({ meetings });
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching meetings' });
+  }
+})
+
+// get a mentees meetings
+router.get('/meetings/mentee/:menteeId', async (req, res) => {
+  const { menteeId } = req.params;
+
+  try {
+    const meetings = await Meeting.findAll({
+      where: { menteeId }
+    });
+
+    res.json({ meetings });
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching meetings' });
+  }
+})
+
+// check for conflicts
+router.post('/meetings/conflict', async (req, res) => {
+  const { mentorId, menteeId, scheduledTime } = req.body;
+  const startTime = new Date(scheduledTime).toISOString();
+  const endTime = new Date(new Date(scheduledTime).getTime() + 30 * 60 * 1000).toISOString(); // 30 minute meeting
+
+  try {
+    // Check if there is a conflict
+    const conflict = await Meeting.findOne({
+      where: {
+        [Op.or]: [
+          {
+            mentorId,
+            [Op.and]: [
+              { scheduledTime: { [Op.lte]: endTime } },
+              { endTime: { [Op.gte]: startTime } }
+            ]
+          },
+          {
+            menteeId,
+            [Op.and]: [
+              { scheduledTime: { [Op.lte]: endTime } },
+              { endTime: { [Op.gte]: startTime } }
+            ]
+          }
+        ]
+      }
+    });
+
+    res.json({ conflict: !!conflict });
+  } catch (error) {
+    res.status(500).json({ error: 'Error checking for conflicts' });
+  }
+});
+
+// create new meeting
+router.post('/meetings', async (req, res) => {
+
+  const MEETING_DURATION_MINUTES = 30;
+  const MILLISECONDS_IN_MINUTE = 60 * 1000;
+
+  const { mentorId, menteeId, scheduledTime, topic } = req.body;
+  const startTime = new Date(scheduledTime).toISOString();
+  const endTime = new Date(new Date(scheduledTime).getTime() + MEETING_DURATION_MINUTES * MILLISECONDS_IN_MINUTE).toISOString(); // 30 minute meeting
+
+  try {
+    // Check if there is a conflict
+    const conflict = await Meeting.findOne({
+      where: {
+        [Op.or]: [
+          {
+            mentorId,
+            [Op.and]: [
+              { scheduledTime: { [Op.lte]: endTime } },
+              { endTime: { [Op.gte]: startTime } }
+            ]
+          },
+          {
+            menteeId,
+            [Op.and]: [
+              { scheduledTime: { [Op.lte]: endTime } },
+              { endTime: { [Op.gte]: startTime } }
+            ]
+          }
+        ]
+      }
+    });
+
+    if (conflict) {
+      return res.status(400).json({ error: 'Scheduling conflict detected' });
+    }
+
+    // Create the new meeting
+    const newMeeting = await Meeting.create({
+      mentorId,
+      menteeId,
+      scheduledTime: startTime,
+      endTime: endTime,
+      topic
+    });
+
+    res.status(201).json(newMeeting);
+  } catch (error) {
+    res.status(500).json({ error: 'Error scheduling meeting' });
+  }
 });
 
 export default router;

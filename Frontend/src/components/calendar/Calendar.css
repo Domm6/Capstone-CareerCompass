@@ -7,12 +7,19 @@
     padding: 10px;
 }
 
-.add-event {
+.fc-media-screen {
+    width: 100%;
+    padding: 10px;
+}
+
+.fc-toolbar-chunk {
+    display: flex;
+
+}
+
+.add-meeting-btn {
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.add-event button {
-    width: 20%;
+    width: 30%;
 }
