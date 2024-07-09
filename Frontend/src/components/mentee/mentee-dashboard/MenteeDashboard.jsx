@@ -4,6 +4,7 @@ import Calendar from '../../calendar/Calendar'
 import Requests from '../../mentor/mentor-requests/Requests'
 import { Link } from 'react-router-dom';
 import MenteeMatches from '../mentee-matches/MenteeMatches'
+import MeetingModal from '../../MeetingModal';
 
 
 function MenteeDashboard() {

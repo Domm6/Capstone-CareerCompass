@@ -8,13 +8,16 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import MeetingModal from '../MeetingModal.jsx';
 
 function Calendar() {
     const { user } = useContext(UserContext);
     const [meetings, setMeetings] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [errorMessage, setErrorMessage] = useState('');
-    const [userData, setUserData] = useState('')
+    const [userData, setUserData] = useState('');
+    const [selectedMeeting, setSelectedMeeting] = useState(null);
+    const [isMeetingModalOpen, setIsMeetingModalOpen] = useState(false);
 
     // check if mentor
     const isMentor = (user) => user.userRole === 'mentor';
@@ -82,11 +85,70 @@ function Calendar() {
         setIsModalOpen(!isModalOpen);
     }
 
+    const handleMeetingModalToggle = () => {
+        setIsMeetingModalOpen(!isMeetingModalOpen);
+    }
+
     const handleMeetingScheduled = () => {
         if (userData && userData.id) {
             fetchMeetings(userData.id);
-        }
+        }t
     };
+
+    const handleMeetingClick = (info) => {
+        setSelectedMeeting(info.event);
+        setIsMeetingModalOpen(true);
+    }
+
+    // decline (delete) meetings
+    const declineMeeting = async (meetingId) => {
+        try {
+            const response = await fetch(`${config.apiBaseUrl}/meeting/${meetingId}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to delete meeting');
+            }
+            const data = await response.json();
+            if (userData && userData.id) {
+                fetchMeetings(userData.id);
+            }
+
+        } catch (error) {
+            setErrorMessage(error.message);
+        }
+        handleMeetingModalToggle();
+    }
+
+    // accept meetings
+    const acceptMeeting = async (meetingId) => {
+        try {
+            const response = await fetch(`${config.apiBaseUrl}/meetings/${meetingId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ status: 'accepted' }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error accepting meeting`);
+            }
+
+            const data = await response.json();
+            console.log(data);
+
+            // Refresh meetings after accept
+            if (userData && userData.id) {
+                fetchMeetings(userData.id);
+            }
+        } catch (error) {
+            setErrorMessage('Error accepting meeting');
+        }
+        handleMeetingModalToggle();
+    }
+
 
     const getMeetingColor = (status) => {
         if (status === 'accepted') {
@@ -111,6 +173,7 @@ function Calendar() {
                     initialView="timeGridWeek"
                     events={meetings}
                     timeZone="UTC"
+                    eventClick={handleMeetingClick}
                 />
             </div>
             {isModalOpen && (
@@ -119,6 +182,9 @@ function Calendar() {
                     onMeetingScheduled={handleMeetingScheduled}
                     isMentor={isMentor}
                 ></CalendarModal>
+            )}
+            {isMeetingModalOpen && (
+                <MeetingModal toggleModal={handleMeetingModalToggle} selectedMeeting={selectedMeeting} acceptMeeting={acceptMeeting} declineMeeting={declineMeeting}></MeetingModal>
             )}
         </>
     );
