@@ -96,7 +96,7 @@ const IndustriesEnum = Object.freeze({
 const industries = Object.values(IndustriesEnum);
 
 const calculateMentorScore = (mentor, mentee) => {
-    const NORMALIZE = 10;
+    const NORMALIZE = 100;
     const RATING_WEIGHT = 0.3; 
     const EXPERIENCE_WEIGHT = 0.2;
     const MATCHING_SKILLS_WEIGHT = 0.2;
@@ -148,10 +148,9 @@ const calculateMentorScore = (mentor, mentee) => {
 const getTopMentorSuggestions = (mentors, mentee) => {
     const rankedMentors = mentors.map(mentor => {
         const score = calculateMentorScore(mentor, mentee);
-        const percentageScore = (score / 10) * 100; // Convert to percentage
         return {
             ...mentor,
-            score: percentageScore,
+            score,
         };
     }).sort((a, b) => b.score - a.score);
 
