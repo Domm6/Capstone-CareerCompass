@@ -96,25 +96,37 @@ const IndustriesEnum = Object.freeze({
 const industries = Object.values(IndustriesEnum);
 
 const calculateMentorScore = (mentor, mentee) => {
-    const RATING_WEIGHT = 7;
-    const EXPERIENCE_WEIGHT = 5;
-    const SKILLS_MATCH_WEIGHT = 3;
-    const SCHOOL_MATCH_WEIGHT = 4;
+    const NORMALIZE = 10;
+    const RATING_WEIGHT = 0.4; 
+    const EXPERIENCE_WEIGHT = 0.3;
+    const MATCHING_SKILLS_WEIGHT = 0.15;
+    const NON_MATCHING_SKILLS_WEIGHT = 0.05;
+    const SCHOOL_MATCH_WEIGHT = 0.1;
 
-    // multiply ratign score
-    const ratingScore = mentor.averageRating * RATING_WEIGHT;
+    // normalize rating to a 0-10 scale
+    const normalizedRating = (mentor.averageRating / 5) * NORMALIZE;
+    const ratingScore = normalizedRating * RATING_WEIGHT;
 
-    // multiply years of experience by experience weight
-    const experienceScore = mentor.years_experience * EXPERIENCE_WEIGHT;
+    // normalize experience to a 0-10 scale
+    const normalizedExperience = Math.min(mentor.years_experience, NORMALIZE);
+    const experienceScore = normalizedExperience * EXPERIENCE_WEIGHT;
 
-    // count skill matches and multiply by match weight
+    // skill scores
+    // gets mentee and mentor list of skills
     const menteeSkills = mentee.skills.split(',').map(skill => skill.trim().toLowerCase());
     const mentorSkills = mentor.skills.split(',').map(skill => skill.trim().toLowerCase());
-    const skillsMatchCount = menteeSkills.filter(skill => mentorSkills.includes(skill)).length;
-    const skillScore = skillsMatchCount * SKILLS_MATCH_WEIGHT;
+
+    // gets list of matching, then mentor skills length - matchign skills length
+    const matchingSkillsCount = menteeSkills.filter(skill => mentorSkills.includes(skill)).length;
+    const nonMatchingSkillsCount = mentorSkills.length - matchingSkillsCount;
+
+    const matchingSkillScore = (matchingSkillsCount / menteeSkills.length) * 10 * MATCHING_SKILLS_WEIGHT;
+    const nonMatchingSkillScore = (nonMatchingSkillsCount / mentorSkills.length) * 10 * NON_MATCHING_SKILLS_WEIGHT;
+
+    const skillScore = matchingSkillScore + nonMatchingSkillScore;
 
     // check if school strings match and multiply by match weight
-    const schoolScore = mentor.school.toLowerCase() === mentee.school.toLowerCase() ? SCHOOL_MATCH_WEIGHT : 0;
+    const schoolScore = mentor.school.toLowerCase() === mentee.school.toLowerCase() ? NORMALIZE * SCHOOL_MATCH_WEIGHT : 0;
 
     const totalScore = ratingScore + experienceScore + skillScore + schoolScore;
 
@@ -150,7 +162,6 @@ function Match() {
     const openSuggestionModal = () => {
         const suggestions = getTopMentorSuggestions(mentors, mentee);
         setTopMentors(suggestions);
-        console.log(topMentors)
         setIsSuggestionModalOpen(true);    
     }
 

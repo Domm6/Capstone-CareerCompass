@@ -33,7 +33,6 @@ function MatchCard({mentorName, mentorCompany, mentorWorkRole, requestId, mentee
 
             if (response.ok) {
                 setMessage('Rating submitted successfully!');
-                console.log(message)
             } else {
                 const errorData = await response.json();
                 setMessage(`Error: ${errorData.error}`);
