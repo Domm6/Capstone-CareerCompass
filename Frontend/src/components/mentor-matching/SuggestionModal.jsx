@@ -3,7 +3,7 @@ import { UserContext } from '../../UserContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import '../mentor/mentor-profile/MentorProfileModal.css';
 import config from '../../../config.js';
-import MentorCard from '../mentor-matching/MentorCard.jsx';
+import MentorCard from './MentorCard.jsx';
 import './SuggestionModal.css'
 
 function SuggestionModal ({closeModal, mentors}) {

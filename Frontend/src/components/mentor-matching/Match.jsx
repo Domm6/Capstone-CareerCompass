@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import "./Match.css";
 import MentorCard from './MentorCard.jsx';
 import MatchModal from './MatchModal.jsx';
-import SuggestionModal from '../modal/SuggestionModal.jsx';
+import SuggestionModal from './SuggestionModal.jsx';
 import config from '../../../config.js';
 
 const TechRolesEnum = Object.freeze({
@@ -150,6 +150,7 @@ function Match() {
     const openSuggestionModal = () => {
         const suggestions = getTopMentorSuggestions(mentors, mentee);
         setTopMentors(suggestions);
+        console.log(topMentors)
         setIsSuggestionModalOpen(true);    
     }
 
