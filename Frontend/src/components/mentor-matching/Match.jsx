@@ -141,17 +141,21 @@ const calculateMentorScore = (mentor, mentee) => {
     const careerGoalsMatchScore = (careerGoalsMatchCount / careerGoalsKeywords.length) * NORMALIZE * CAREER_GOALS_MATCH_WEIGHT;
 
     const totalScore = ratingScore + experienceScore + skillScore + schoolScore + careerGoalsMatchScore;
-
+    
     return totalScore;
 }
 
 const getTopMentorSuggestions = (mentors, mentee) => {
-    const rankedMentors = mentors.map(mentor => ({
-        ...mentor,
-        score: calculateMentorScore(mentor, mentee),
-    })).sort((a,b) => b.score - a.score);
+    const rankedMentors = mentors.map(mentor => {
+        const score = calculateMentorScore(mentor, mentee);
+        const percentageScore = (score / 10) * 100; // Convert to percentage
+        return {
+            ...mentor,
+            score: percentageScore,
+        };
+    }).sort((a, b) => b.score - a.score);
 
-    return rankedMentors.slice(0, 5)
+    return rankedMentors.slice(0, 5);
 }
 
 function Match() {
@@ -174,7 +178,7 @@ function Match() {
     const openSuggestionModal = () => {
         const suggestions = getTopMentorSuggestions(mentors, mentee);
         setTopMentors(suggestions);
-        setIsSuggestionModalOpen(true);    
+        setIsSuggestionModalOpen(true); 
     }
 
     const closeSuggestionModal = () => {

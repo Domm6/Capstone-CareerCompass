@@ -6,7 +6,7 @@ import config from '../../../config.js';
 import MentorCard from './MentorCard.jsx';
 import './SuggestionModal.css'
 
-function SuggestionModal ({closeModal, mentors}) {
+function SuggestionModal ({closeModal, mentors, score}) {
 
     return (
         <div className="modal">
@@ -15,7 +15,7 @@ function SuggestionModal ({closeModal, mentors}) {
                 <h3>Top Suggestions</h3>
                 <div className='scroll-container'>
                     {mentors.map(mentor => (
-                        <MentorCard key={mentor.id} mentor={mentor} />
+                        <MentorCard key={mentor.id} mentor={mentor} score={mentor.score}/>
                     ))}
 
                 </div>

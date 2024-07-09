@@ -5,7 +5,7 @@ import config from '../../../config.js';
 
 const PLACEHOLDER = "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
 
-function MentorCard({mentor, onCardClick}) {
+function MentorCard({mentor, onCardClick, score}) {
     const { User: user } = mentor; // Access user data from mentor
 
     return (
@@ -33,6 +33,9 @@ function MentorCard({mentor, onCardClick}) {
             <div className='mc-profile'>
                 <h3>About {user.name}:</h3>
                 <p>{mentor.bio}</p>
+            </div>
+            <div className='mc-socre'>
+                {score && <p>{score.toFixed(2)}% Match</p>}
             </div>
         </div>
         </>
