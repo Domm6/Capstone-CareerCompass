@@ -97,6 +97,7 @@ const industries = Object.values(IndustriesEnum);
 
 const calculateMentorScore = (mentor, mentee) => {
     const NORMALIZE = 100;
+    const MAX_RATING = 5;
     const RATING_WEIGHT = 0.3; 
     const EXPERIENCE_WEIGHT = 0.2;
     const MATCHING_SKILLS_WEIGHT = 0.2;
@@ -105,7 +106,7 @@ const calculateMentorScore = (mentor, mentee) => {
     const CAREER_GOALS_MATCH_WEIGHT = 0.2;
 
     // normalize rating to a 0-10 scale
-    const normalizedRating = (mentor.averageRating / 5) * NORMALIZE;
+    const normalizedRating = (mentor.averageRating / MAX_RATING) * NORMALIZE;
     const ratingScore = normalizedRating * RATING_WEIGHT;
 
     // normalize experience to a 0-10 scale
