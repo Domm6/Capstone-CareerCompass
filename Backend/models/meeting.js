@@ -29,6 +29,11 @@ export const Meeting = sequelize.define('Meeting', {
     type: DataTypes.DATE,
     allowNull: true,
   },
+  status: {
+    type: DataTypes.ENUM('pending', 'accepted', 'rejected'),
+    defaultValue: 'pending',
+    allowNull: false,
+  },
   topic: {
     type: DataTypes.STRING,
     allowNull: true,

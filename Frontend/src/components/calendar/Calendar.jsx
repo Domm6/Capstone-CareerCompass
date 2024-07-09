@@ -11,7 +11,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 
 function Calendar() {
     const { user } = useContext(UserContext);
-    const [events, setEvents] = useState([]);
+    const [meetings, setMeetings] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [errorMessage, setErrorMessage] = useState('');
     const [userData, setUserData] = useState('')
@@ -57,14 +57,16 @@ function Calendar() {
             const data = await response.json();
 
             // Transform the meetings into FullCalendar event format
-            const events = data.meetings.map(meeting => ({
+            const meetings = data.meetings.map(meeting => ({
                 id: meeting.id,
                 title: meeting.topic,
+                status: meeting.status,
+                backgroundColor: getMeetingColor(meeting.status),
                 start: moment.utc(meeting.scheduledTime).local().format(),
                 end: moment.utc(meeting.endTime).local().format(),
             }));
 
-            setEvents(events);
+            setMeetings(meetings);
         } catch (error) {
             setErrorMessage(error.message);
         }
@@ -86,6 +88,18 @@ function Calendar() {
         }
     };
 
+    const getMeetingColor = (status) => {
+        if (status === 'accepted') {
+            return 'green'
+        } else if (status === 'pending') {
+            return 'orange'
+        } else if (status === 'declined') {
+            return 'red'
+        } else {
+            return 'blue'
+        }
+    }
+
     return (
         <>
             <div className='add-meeting-btn'>
@@ -95,7 +109,7 @@ function Calendar() {
                 <FullCalendar
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                     initialView="timeGridWeek"
-                    events={events}
+                    events={meetings}
                     timeZone="UTC"
                 />
             </div>
