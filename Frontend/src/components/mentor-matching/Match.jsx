@@ -134,7 +134,9 @@ const calculateMentorScore = (mentor, mentee) => {
     const careerGoalsMatchCount = careerGoalsKeywords.filter(keyword => 
         mentor.work_role.toLowerCase().includes(keyword) ||
         mentor.industry.toLowerCase().includes(keyword) ||
-        mentor.skills.toLowerCase().includes(keyword)
+        mentor.skills.toLowerCase().includes(keyword) ||
+        mentor.company.toLowerCase().includes(keyword) ||
+        mentor.industry.toLowerCase().includes(keyword)
     ).length;
     const careerGoalsMatchScore = (careerGoalsMatchCount / careerGoalsKeywords.length) * 10 * CAREER_GOALS_MATCH_WEIGHT;
 
