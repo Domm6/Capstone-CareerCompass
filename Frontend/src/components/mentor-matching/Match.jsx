@@ -120,8 +120,8 @@ const calculateMentorScore = (mentor, mentee) => {
     // gets list of matching, then mentor skills length - matchign skills length
     const matchingSkillsCount = menteeSkills.filter(skill => mentorSkills.includes(skill)).length;
     const nonMatchingSkillsCount = mentorSkills.length - matchingSkillsCount;
-    const matchingSkillScore = (matchingSkillsCount / menteeSkills.length) * 10 * MATCHING_SKILLS_WEIGHT;
-    const nonMatchingSkillScore = (nonMatchingSkillsCount / mentorSkills.length) * 10 * NON_MATCHING_SKILLS_WEIGHT;
+    const matchingSkillScore = (matchingSkillsCount / menteeSkills.length) * NORMALIZE * MATCHING_SKILLS_WEIGHT;
+    const nonMatchingSkillScore = (nonMatchingSkillsCount / mentorSkills.length) * NORMALIZE * NON_MATCHING_SKILLS_WEIGHT;
     const skillScore = matchingSkillScore + nonMatchingSkillScore;
 
     // check if school strings match and multiply by match weight
@@ -138,11 +138,9 @@ const calculateMentorScore = (mentor, mentee) => {
         mentor.company.toLowerCase().includes(keyword) ||
         mentor.industry.toLowerCase().includes(keyword)
     ).length;
-    const careerGoalsMatchScore = (careerGoalsMatchCount / careerGoalsKeywords.length) * 10 * CAREER_GOALS_MATCH_WEIGHT;
+    const careerGoalsMatchScore = (careerGoalsMatchCount / careerGoalsKeywords.length) * NORMALIZE * CAREER_GOALS_MATCH_WEIGHT;
 
     const totalScore = ratingScore + experienceScore + skillScore + schoolScore + careerGoalsMatchScore;
-
-    console.log(mentor.User.name + ": " + totalScore)
 
     return totalScore;
 }
