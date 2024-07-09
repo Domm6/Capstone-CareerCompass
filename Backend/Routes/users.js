@@ -532,6 +532,51 @@ router.post('/meetings', async (req, res) => {
   }
 });
 
+// update meeting status (accept)
+router.patch('/meetings/:meetingId', async (req, res) => {
+  const {meetingId} = req.params
+  const {status} = req.body
+
+  try {
+
+    const meeting = await Meeting.findByPk(meetingId);
+
+    if (!meeting) {
+      return res.status(404).json({error: 'Meeting not found'});
+    }
+
+    meeting.status = status;
+
+    await meeting.save();
+
+    res.json(meeting);
+  } catch (error) {
+    console.error('Error updating meeting status', error);
+    res.status(500).json({error: 'server error'});
+  }
+
+});
+
+// delete meeting (decline)
+router.delete('/meeting/:meetingId', async (req, res) => {
+  const {meetingId} = req.params;
+
+  try {
+    const meeting = await Meeting.findByPk(meetingId);
+
+    if (!meeting) {
+      return res.status(404).json({error: 'Meeting not found'});
+    }
+
+    await meeting.destroy();
+    res.status(200).json({ message: 'Meeting deleted successfully' });
+
+  } catch (error) {
+    res.status(500).json({error: 'server error'})
+  }
+
+});
+
 // create new reveiw
 router.post('/reviews', async (req, res) => {
   const {mentorId, menteeId, rating} = req.body
