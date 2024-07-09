@@ -10,7 +10,6 @@ function MeetingModal({mentor, mentee, toggleModal, acceptMeeting, declineMeetin
     // const formattedStartTime = moment(selectedMeeting.scheduledTime).format('MMMM Do YYYY, h:mm:ss a');
     // const formattedEndTime = moment(selectedMeeting.start).add(30, 'minutes').format('MMMM Do YYYY, h:mm:ss a');
 
-
     return (
         <>
         <div className="modal" id='match'> 

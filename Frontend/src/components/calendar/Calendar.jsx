@@ -137,7 +137,6 @@ function Calendar() {
             }
 
             const data = await response.json();
-            console.log(data);
 
             // Refresh meetings after accept
             if (userData && userData.id) {

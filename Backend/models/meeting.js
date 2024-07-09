@@ -14,12 +14,20 @@ export const Meeting = sequelize.define('Meeting', {
       key: 'id',
     },
   },
+  mentorName: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   menteeId: {
     type: DataTypes.INTEGER,
     references: {
       model: 'Mentees',
       key: 'id',
     },
+  },
+  menteeName: {
+    type: DataTypes.STRING,
+    allowNull: true,
   },
   scheduledTime: {
     type: DataTypes.DATE,
