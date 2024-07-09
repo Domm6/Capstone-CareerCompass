@@ -48,7 +48,7 @@ function MatchModal({mentor, closeModal, mentee}) {
 
     return (
         <>
-        <div className="modal">
+        <div className="modal" id='match'> 
             <div className="modal-content">
                 <span className="modal-close" onClick={closeModal}>×</span>
                 <div className='mp-container'>

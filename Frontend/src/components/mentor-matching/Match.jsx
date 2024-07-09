@@ -282,7 +282,7 @@ function Match() {
             <MatchModal mentor={selectedMentor} closeModal={closeModal} mentee={mentee}/>
         )}
         {isSuggestionModalOpen && (
-            <SuggestionModal closeModal={closeSuggestionModal} mentors={topMentors}></SuggestionModal>
+            <SuggestionModal closeSuggestionModal={closeSuggestionModal} mentors={topMentors} handleCardClick={handleCardClick} mentee={mentee} closeModal={closeModal}></SuggestionModal>
         )}
         </>
     )
