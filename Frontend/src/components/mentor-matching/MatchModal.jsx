@@ -65,6 +65,7 @@ function MatchModal({mentor, closeModal, mentee}) {
                             <p>School: {mentor.school} </p>
                             <p>Skills: {mentor.skills}</p>
                             <p>Bio: {mentor.bio || "No Bio Available"}</p>
+                            <p>Rating: {mentor.averageRating}</p>
                         </div>
                     </div>
                     <button id='save-button' onClick={handleSubmit}>Connect</button>

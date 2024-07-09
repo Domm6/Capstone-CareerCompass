@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import "./Match.css";
 import MentorCard from './MentorCard.jsx';
 import MatchModal from './MatchModal.jsx';
+import SuggestionModal from '../modal/SuggestionModal.jsx';
 import config from '../../../config.js';
 
 const TechRolesEnum = Object.freeze({
@@ -94,20 +95,67 @@ const IndustriesEnum = Object.freeze({
 
 const industries = Object.values(IndustriesEnum);
 
+const calculateMentorScore = (mentor, mentee) => {
+    const RATING_WEIGHT = 7;
+    const EXPERIENCE_WEIGHT = 5;
+    const SKILLS_MATCH_WEIGHT = 3;
+    const SCHOOL_MATCH_WEIGHT = 4;
+
+    // multiply ratign score
+    const ratingScore = mentor.averageRating * RATING_WEIGHT;
+
+    // multiply years of experience by experience weight
+    const experienceScore = mentor.years_experience * EXPERIENCE_WEIGHT;
+
+    // count skill matches and multiply by match weight
+    const menteeSkills = mentee.skills.split(',').map(skill => skill.trim().toLowerCase());
+    const mentorSkills = mentor.skills.split(',').map(skill => skill.trim().toLowerCase());
+    const skillsMatchCount = menteeSkills.filter(skill => mentorSkills.includes(skill)).length;
+    const skillScore = skillsMatchCount * SKILLS_MATCH_WEIGHT;
+
+    // check if school strings match and multiply by match weight
+    const schoolScore = mentor.school.toLowerCase() === mentee.school.toLowerCase() ? SCHOOL_MATCH_WEIGHT : 0;
+
+    const totalScore = ratingScore + experienceScore + skillScore + schoolScore;
+
+    return totalScore;
+}
+
+const getTopMentorSuggestions = (mentors, mentee) => {
+    const rankedMentors = mentors.map(mentor => ({
+        ...mentor,
+        score: calculateMentorScore(mentor, mentee),
+    })).sort((a,b) => b.score - a.score);
+
+    return rankedMentors.slice(0, 5)
+}
+
 function Match() {
     const { user } = useContext(UserContext);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isMatchModalOpen, setIsMatchModalOpen] = useState(false);
     const [mentors, setMentors] = useState([]);
     const [selectedMentor, setSelectedMentor] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const [selectedRole, setSelectedRole] = useState('');
     const [selectedIndustry, setSelectedIndustry] = useState('');
     const [mentee, setMentee] = useState(null);
+    const [isSuggestionModalOpen, setIsSuggestionModalOpen] = useState(false);
+    const [topMentors, setTopMentors] = useState([]);
 
     const handleCardClick = (mentor) => {
         setSelectedMentor(mentor);
-        setIsModalOpen(true);
+        setIsMatchModalOpen(true);
     };
+
+    const openSuggestionModal = () => {
+        const suggestions = getTopMentorSuggestions(mentors, mentee);
+        setTopMentors(suggestions);
+        setIsSuggestionModalOpen(true);    
+    }
+
+    const closeSuggestionModal = () => {
+        setIsSuggestionModalOpen(false);
+    }
 
     const handleRoleChange = (event) => {
         setSelectedRole(event.target.value);
@@ -118,7 +166,7 @@ function Match() {
     };
 
     const closeModal = () => {
-        setIsModalOpen(false);
+        setIsMatchModalOpen(false);
         setSelectedMentor(null);
     };
 
@@ -177,6 +225,7 @@ function Match() {
             <h1>Choose a Mentor</h1>
         </div>
         <div className='match-nav'>
+            <button id='suggestion-btn' onClick={openSuggestionModal}>Suggestions</button>
             <select name="role" value={selectedRole} onChange={handleRoleChange}>
                 <option value="">Select a role</option>
                 {techRoles.map((role, index) => (
@@ -201,9 +250,12 @@ function Match() {
                 ))}
             </div>
         </div>
-        {isModalOpen && (
-                <MatchModal mentor={selectedMentor} closeModal={closeModal} mentee={mentee}/>
-            )}
+        {isMatchModalOpen && (
+            <MatchModal mentor={selectedMentor} closeModal={closeModal} mentee={mentee}/>
+        )}
+        {isSuggestionModalOpen && (
+            <SuggestionModal closeModal={closeSuggestionModal} mentors={topMentors}></SuggestionModal>
+        )}
         </>
     )
 }

@@ -5,7 +5,6 @@ import config from '../../../config.js';
 
 const PLACEHOLDER = "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
 
-
 function MentorCard({mentor, onCardClick}) {
     const { User: user } = mentor; // Access user data from mentor
 

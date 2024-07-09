@@ -74,7 +74,6 @@ router.post('/users/signup', async (req, res) => {
   }
 });
 
-
 // Route for user login
 router.post('/users/login', async (req, res) => {
   const { email, password } = req.body;
