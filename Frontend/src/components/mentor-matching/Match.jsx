@@ -97,11 +97,12 @@ const industries = Object.values(IndustriesEnum);
 
 const calculateMentorScore = (mentor, mentee) => {
     const NORMALIZE = 10;
-    const RATING_WEIGHT = 0.4; 
-    const EXPERIENCE_WEIGHT = 0.3;
-    const MATCHING_SKILLS_WEIGHT = 0.15;
-    const NON_MATCHING_SKILLS_WEIGHT = 0.05;
+    const RATING_WEIGHT = 0.3; 
+    const EXPERIENCE_WEIGHT = 0.2;
+    const MATCHING_SKILLS_WEIGHT = 0.2;
+    const NON_MATCHING_SKILLS_WEIGHT = 0.1;
     const SCHOOL_MATCH_WEIGHT = 0.1;
+    const CAREER_GOALS_MATCH_WEIGHT = 0.2;
 
     // normalize rating to a 0-10 scale
     const normalizedRating = (mentor.averageRating / 5) * NORMALIZE;
@@ -119,16 +120,27 @@ const calculateMentorScore = (mentor, mentee) => {
     // gets list of matching, then mentor skills length - matchign skills length
     const matchingSkillsCount = menteeSkills.filter(skill => mentorSkills.includes(skill)).length;
     const nonMatchingSkillsCount = mentorSkills.length - matchingSkillsCount;
-
     const matchingSkillScore = (matchingSkillsCount / menteeSkills.length) * 10 * MATCHING_SKILLS_WEIGHT;
     const nonMatchingSkillScore = (nonMatchingSkillsCount / mentorSkills.length) * 10 * NON_MATCHING_SKILLS_WEIGHT;
-
     const skillScore = matchingSkillScore + nonMatchingSkillScore;
 
     // check if school strings match and multiply by match weight
     const schoolScore = mentor.school.toLowerCase() === mentee.school.toLowerCase() ? NORMALIZE * SCHOOL_MATCH_WEIGHT : 0;
 
-    const totalScore = ratingScore + experienceScore + skillScore + schoolScore;
+    // score of matching key words in mentee career goal section to mentor fields
+    const careerGoalText = mentee.career_goals
+    const keywordsArray = careerGoalText.split(/\s+/); // splits based on whitespace
+    const careerGoalsKeywords = keywordsArray.map(keyword => keyword.trim().toLowerCase()); // trim whitespace and lowercase
+    const careerGoalsMatchCount = careerGoalsKeywords.filter(keyword => 
+        mentor.work_role.toLowerCase().includes(keyword) ||
+        mentor.industry.toLowerCase().includes(keyword) ||
+        mentor.skills.toLowerCase().includes(keyword)
+    ).length;
+    const careerGoalsMatchScore = (careerGoalsMatchCount / careerGoalsKeywords.length) * 10 * CAREER_GOALS_MATCH_WEIGHT;
+
+    const totalScore = ratingScore + experienceScore + skillScore + schoolScore + careerGoalsMatchScore;
+
+    console.log(mentor.User.name + ": " + totalScore)
 
     return totalScore;
 }
