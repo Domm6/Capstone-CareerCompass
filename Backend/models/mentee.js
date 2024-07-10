@@ -20,6 +20,14 @@ export const Mentee = sequelize.define('Mentee', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  schoolState: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  schoolCity: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   major: {
     type: DataTypes.STRING,
     allowNull: false,

@@ -98,6 +98,7 @@ function CalendarModal ({toggleModal, onMeetingScheduled, isMentor}) {
         } catch (error) {
             setErrorMessage(error.message);
         }
+        toggleModal();
     };
     
     return (

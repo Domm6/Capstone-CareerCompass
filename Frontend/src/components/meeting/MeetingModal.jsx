@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
-import { UserContext } from '../UserContext.jsx';
-import config from '../../config.js';
+import { UserContext } from '../../UserContext.jsx';
+import config from '../../../config.js';
 import moment from 'moment';
-import "./mentor-matching/MatchModal.css"
+import "../mentor-matching/MatchModal.css"
 import "./MeetingModal.css"
 
 
