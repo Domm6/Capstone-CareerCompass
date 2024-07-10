@@ -1,7 +1,7 @@
 .requests-list {
-    display: flex;
-    flex-direction: column;
-    background-color: grey;
-    margin: 20px;
-    padding: 20px;
+  display: flex;
+  flex-direction: column;
+  background-color: grey;
+  margin: 20px;
+  padding: 20px;
 }

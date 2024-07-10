@@ -1,81 +1,81 @@
 .modal {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: fixed; /* Stay in place */
-    z-index: 2; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed; /* Stay in place */
+  z-index: 2; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .modal-content {
-    background-color: #FFFFFF;
-    margin: 10px;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    border: 0.7px solid black;
-    width: 60%;
-    display: flex;
-    align-items: center; /* Align items vertically in the center */
-    flex-direction: column;
-    justify-content: space-between; /* Space between the items */
-    gap: 15px;
-    height: auto;
-    position: relative;
+  background-color: #ffffff;
+  margin: 10px;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border: 0.7px solid black;
+  width: 60%;
+  display: flex;
+  align-items: center; /* Align items vertically in the center */
+  flex-direction: column;
+  justify-content: space-between; /* Space between the items */
+  gap: 15px;
+  height: auto;
+  position: relative;
 }
 
-.modal-close{
-    color: #aaa;
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
+.modal-close {
+  color: #aaa;
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
 }
-
 
 .mp-form {
-    display: flex;
-    flex-direction: column;
-    width: 100%; /* Ensure the form takes up the full width */
-    max-width: 600px; /* Optional: Set a max-width to control form size */
+  display: flex;
+  flex-direction: column;
+  width: 100%; /* Ensure the form takes up the full width */
+  max-width: 600px; /* Optional: Set a max-width to control form size */
 }
 
 .mp-form input,
 .mp form textarea,
 .mp-form select,
 .mp-form button {
-    width: 100%;
-    margin-bottom: 15px;
-    padding: 10px;
-    box-sizing: border-box;
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 .mp-form label {
-    margin-bottom: 5px;
-    font-weight: bold;
+  margin-bottom: 5px;
+  font-weight: bold;
 }
 
 .skills-dropdown {
-    display: flex;
-    flex-direction: column;
-    max-height: 200px;
-    overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .skills-dropdown div {
-    margin-bottom: 5px;
+  margin-bottom: 5px;
+  display: flex;
 }
 
 .form-bio {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    margin: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 10px;
 }
