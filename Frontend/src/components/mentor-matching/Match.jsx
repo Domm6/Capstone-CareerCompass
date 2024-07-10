@@ -167,23 +167,13 @@ function Match() {
     const [selectedRole, setSelectedRole] = useState('');
     const [selectedIndustry, setSelectedIndustry] = useState('');
     const [mentee, setMentee] = useState(null);
-    const [isSuggestionModalOpen, setIsSuggestionModalOpen] = useState(false);
     const [topMentors, setTopMentors] = useState([]);
+    const [matchedMentorIds, setMatchedMentorIds] = useState([]);
 
     const handleCardClick = (mentor) => {
         setSelectedMentor(mentor);
         setIsMatchModalOpen(true);
     };
-
-    const openSuggestionModal = () => {
-        const suggestions = getTopMentorSuggestions(mentors, mentee);
-        setTopMentors(suggestions);
-        setIsSuggestionModalOpen(true); 
-    }
-
-    const closeSuggestionModal = () => {
-        setIsSuggestionModalOpen(false);
-    }
 
     const handleRoleChange = (event) => {
         setSelectedRole(event.target.value);
@@ -197,6 +187,31 @@ function Match() {
         setIsMatchModalOpen(false);
         setSelectedMentor(null);
     };
+
+    console.log(user.id)
+
+    const fetchMatchedMentors = (menteeId) => {
+        fetch(`${config.apiBaseUrl}/connect-requests/mentee/${menteeId}`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Failed to fetch connect requests. Please try again later.');
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log(data)
+            const acceptedRequests = data.requests.filter(request => request.status === 'accepted');
+            const matchedMentorIds = acceptedRequests.map(request => request.mentorId);
+            setMatchedMentorIds(matchedMentorIds);
+          })
+          .catch(error => {
+            setErrorMessage(error.message);
+          });
+    };
+
+    const getUnmatchedMentors = (mentors, matchedMentorIds) => {
+        return mentors.filter(mentor => !matchedMentorIds.includes(mentor.id));
+    }
 
     const fetchMentorsData = () => {
         fetch(`${config.apiBaseUrl}/mentors`)
@@ -224,6 +239,7 @@ function Match() {
           })
           .then(data => {
             setMentee(data.mentee);
+            fetchMatchedMentors(data.mentee.id);
           })
           .catch(error => {
             setErrorMessage(error.message);
@@ -231,14 +247,24 @@ function Match() {
     };
 
     useEffect(() => {
-        fetchMentorsData();
         fetchMenteeData();
+        fetchMentorsData();
     }, []);
+
+    useEffect(() => {
+        if (mentors.length && mentee) {
+            const unmatchedMentors = getUnmatchedMentors(mentors, matchedMentorIds);
+            const suggestions = getTopMentorSuggestions(unmatchedMentors, mentee);
+            setTopMentors(suggestions);
+        }
+    }, [mentors, mentee, matchedMentorIds]);
 
     const filteredMentors = mentors.filter(mentor => 
         (selectedRole === '' || (mentor.work_role && mentor.work_role.toLowerCase().includes(selectedRole.toLowerCase()))) &&
-        (selectedIndustry === '' || (mentor.industry && mentor.industry.toLowerCase().includes(selectedIndustry.toLowerCase())))
-    );  
+        (selectedIndustry === '' || (mentor.industry && mentor.industry.toLowerCase().includes(selectedIndustry.toLowerCase()))) &&
+        !matchedMentorIds.includes(mentor.id) && !topMentors.some(topMentor => topMentor.id === mentor.id)
+
+    );
 
     return (
         <>
@@ -253,7 +279,6 @@ function Match() {
             <h1>Choose a Mentor</h1>
         </div>
         <div className='match-nav'>
-            <button id='suggestion-btn' onClick={openSuggestionModal}>Suggestions</button>
             <select name="role" value={selectedRole} onChange={handleRoleChange}>
                 <option value="">Select a role</option>
                 {techRoles.map((role, index) => (
@@ -271,18 +296,25 @@ function Match() {
                     ))}
             </select>
         </div>
-        <div className='match-container'>
-            <div className='mc-list'>
-                {filteredMentors.map(mentor => (
-                    <MentorCard key={mentor.id} mentor={mentor} onCardClick={handleCardClick} />
+        <div className='suggested-container'>
+            <div className='sc-header'>
+                <h3>Suggested</h3>
+            </div>
+            <div className='sc-list'>
+                {topMentors.map(mentor => (
+                    <MentorCard key={mentor.id} mentor={mentor} onCardClick={handleCardClick} score={mentor.score} />
                 ))}
             </div>
         </div>
+        <div className='divider'>
+        </div>
+        <div className='mc-list'>
+            {filteredMentors.filter(mentor => !topMentors.includes(mentor)).map(mentor => (
+                <MentorCard key={mentor.id} mentor={mentor} onCardClick={handleCardClick} />
+            ))}
+        </div>
         {isMatchModalOpen && (
             <MatchModal mentor={selectedMentor} closeModal={closeModal} mentee={mentee}/>
-        )}
-        {isSuggestionModalOpen && (
-            <SuggestionModal closeSuggestionModal={closeSuggestionModal} mentors={topMentors} handleCardClick={handleCardClick} mentee={mentee} closeModal={closeModal}></SuggestionModal>
         )}
         </>
     )
