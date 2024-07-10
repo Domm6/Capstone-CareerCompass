@@ -1,68 +1,68 @@
 .mp-header {
-    background-color: #2c3e50;
-    color: #ecf0f1;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .mp-nav {
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    cursor: pointer;
-    padding: 20px;
-    margin: 5px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  cursor: pointer;
+  padding: 20px;
+  margin: 5px;
 }
 
 .mp-nav a {
-    color: #ecf0f1;
-    text-decoration: none;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
-    padding: 15px;
+  color: #ecf0f1;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  padding: 15px;
 }
 
 .mp-nav a:hover {
-    background-color: #e9ecef;
-    color: black;
+  background-color: #e9ecef;
+  color: black;
 }
 
 .mp-top {
-    padding: 15px;
-    background-color: #95a5a6;
-    border-radius: 8px;
+  padding: 15px;
+  background-color: #95a5a6;
+  border-radius: 8px;
 }
 
 .mp-container {
-    margin: 10px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  margin: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .mp-body {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .mp-left {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 1;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
 }
 
 .mp-right {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    flex: 2;
-    margin-left: 20px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 2;
+  margin-left: 20px;
 }
