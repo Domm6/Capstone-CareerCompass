@@ -102,7 +102,9 @@ const calculateMentorScore = (mentor, mentee) => {
     const EXPERIENCE_WEIGHT = 0.2;
     const MATCHING_SKILLS_WEIGHT = 0.2;
     const NON_MATCHING_SKILLS_WEIGHT = 0.1;
-    const SCHOOL_MATCH_WEIGHT = 0.1;
+    const SCHOOL_MATCH_WEIGHT = 0.02;
+    const SCHOOL_STATE_MATCH_WEIGHT = 0.03;
+    const SCHOOL_CITY_MATCH_WEIGHT = 0.05;
     const CAREER_GOALS_MATCH_WEIGHT = 0.2;
 
     // normalize rating to a 0-10 scale
@@ -126,7 +128,20 @@ const calculateMentorScore = (mentor, mentee) => {
     const skillScore = matchingSkillScore + nonMatchingSkillScore;
 
     // check if school strings match and multiply by match weight
-    const schoolScore = mentor.school.toLowerCase() === mentee.school.toLowerCase() ? NORMALIZE * SCHOOL_MATCH_WEIGHT : 0;
+    const menteeSchool = mentee.school ?? ''; // handle null checks
+    const mentorSchool = mentor.school ?? '';
+    const menteeSchoolState = mentee.schoolState ?? '';
+    const mentorSchoolState = mentor.schoolState ?? '';
+    const menteeSchoolCity = mentee.schoolCity ?? '';
+    const mentorSchoolCity = mentor.schoolCity ?? '';
+    
+    const schoolMatch = mentorSchool.toLowerCase() === menteeSchool.toLowerCase() ? 1 : 0;
+    const schoolStateMatch = mentorSchoolState.toLowerCase() === menteeSchoolState.toLowerCase() ? 1 : 0;
+    const schoolCityMatch = mentorSchoolCity.toLowerCase() === menteeSchoolCity.toLowerCase() ? 1 : 0;
+
+    const schoolScore = (schoolMatch * NORMALIZE * SCHOOL_MATCH_WEIGHT) +
+                        (schoolStateMatch * NORMALIZE * SCHOOL_STATE_MATCH_WEIGHT) +
+                        (schoolCityMatch * NORMALIZE * SCHOOL_CITY_MATCH_WEIGHT);
 
     // score of matching key words in mentee career goal section to mentor fields
     const careerGoalText = mentee.career_goals
@@ -306,7 +321,9 @@ function Match() {
                 ))}
             </div>
         </div>
-        <div className='divider'>
+        <div className='divider'></div>
+        <div className='mc-header'>
+            <h3>Other Mentors</h3>
         </div>
         <div className='mc-list'>
             {filteredMentors.filter(mentor => !topMentors.includes(mentor)).map(mentor => (
