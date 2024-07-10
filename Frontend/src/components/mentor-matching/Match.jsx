@@ -95,40 +95,35 @@ const IndustriesEnum = Object.freeze({
 
 const industries = Object.values(IndustriesEnum);
 
-const calculateMentorScore = (mentor, mentee) => {
-    const NORMALIZE = 100;
-    const MAX_RATING = 5;
-    const RATING_WEIGHT = 0.3; 
-    const EXPERIENCE_WEIGHT = 0.2;
-    const MATCHING_SKILLS_WEIGHT = 0.2;
-    const NON_MATCHING_SKILLS_WEIGHT = 0.1;
-    const SCHOOL_MATCH_WEIGHT = 0.02;
-    const SCHOOL_STATE_MATCH_WEIGHT = 0.03;
-    const SCHOOL_CITY_MATCH_WEIGHT = 0.05;
-    const CAREER_GOALS_MATCH_WEIGHT = 0.2;
+const NORMALIZE = 100;
+const MAX_RATING = 5;
+const RATING_WEIGHT = 0.3; 
+const EXPERIENCE_WEIGHT = 0.2;
+const MATCHING_SKILLS_WEIGHT = 0.2;
+const NON_MATCHING_SKILLS_WEIGHT = 0.1;
+const SCHOOL_MATCH_WEIGHT = 0.02;
+const SCHOOL_STATE_MATCH_WEIGHT = 0.03;
+const SCHOOL_CITY_MATCH_WEIGHT = 0.05;
+const CAREER_GOALS_MATCH_WEIGHT = 0.2;
 
-    // normalize rating to a 0-10 scale
-    const normalizedRating = (mentor.averageRating / MAX_RATING) * NORMALIZE;
-    const ratingScore = normalizedRating * RATING_WEIGHT;
+const normalizeRating = (rating) => {
+    return (rating / MAX_RATING) * NORMALIZE * RATING_WEIGHT;
+}
 
-    // normalize experience to a 0-10 scale
-    const normalizedExperience = Math.min(mentor.years_experience, NORMALIZE);
-    const experienceScore = normalizedExperience * EXPERIENCE_WEIGHT;
+const normalizeExperience = (years_experience) => {
+    return Math.min(years_experience, NORMALIZE) * EXPERIENCE_WEIGHT;
+}
 
-    // skill scores
-    // gets mentee and mentor list of skills
-    const menteeSkills = mentee.skills.split(',').map(skill => skill.trim().toLowerCase());
-    const mentorSkills = mentor.skills.split(',').map(skill => skill.trim().toLowerCase());
-
-    // gets list of matching, then mentor skills length - matchign skills length
+const calculateSkillScores = (mentorSkills, menteeSkills) => {
     const matchingSkillsCount = menteeSkills.filter(skill => mentorSkills.includes(skill)).length;
     const nonMatchingSkillsCount = mentorSkills.length - matchingSkillsCount;
     const matchingSkillScore = (matchingSkillsCount / menteeSkills.length) * NORMALIZE * MATCHING_SKILLS_WEIGHT;
     const nonMatchingSkillScore = (nonMatchingSkillsCount / mentorSkills.length) * NORMALIZE * NON_MATCHING_SKILLS_WEIGHT;
-    const skillScore = matchingSkillScore + nonMatchingSkillScore;
+    return matchingSkillScore + nonMatchingSkillScore;
+}
 
-    // check if school strings match and multiply by match weight
-    const menteeSchool = mentee.school ?? ''; // handle null checks
+const calculateSchoolScores = (mentor, mentee) => {
+    const menteeSchool = mentee.school ?? '';
     const mentorSchool = mentor.school ?? '';
     const menteeSchoolState = mentee.schoolState ?? '';
     const mentorSchoolState = mentor.schoolState ?? '';
@@ -142,9 +137,11 @@ const calculateMentorScore = (mentor, mentee) => {
     const schoolScore = (schoolMatch * NORMALIZE * SCHOOL_MATCH_WEIGHT) +
                         (schoolStateMatch * NORMALIZE * SCHOOL_STATE_MATCH_WEIGHT) +
                         (schoolCityMatch * NORMALIZE * SCHOOL_CITY_MATCH_WEIGHT);
+    return schoolScore;
+}
 
-    // score of matching key words in mentee career goal section to mentor fields
-    const careerGoalText = mentee.career_goals
+const calculateCareerGoalsMatchScore = (mentor, mentee) => {
+    const careerGoalText = mentee.career_goals;
     const keywordsArray = careerGoalText.split(/\s+/); // splits based on whitespace
     const careerGoalsKeywords = keywordsArray.map(keyword => keyword.trim().toLowerCase()); // trim whitespace and lowercase
     const careerGoalsMatchCount = careerGoalsKeywords.filter(keyword => 
@@ -154,10 +151,21 @@ const calculateMentorScore = (mentor, mentee) => {
         mentor.company.toLowerCase().includes(keyword) ||
         mentor.industry.toLowerCase().includes(keyword)
     ).length;
-    const careerGoalsMatchScore = (careerGoalsMatchCount / careerGoalsKeywords.length) * NORMALIZE * CAREER_GOALS_MATCH_WEIGHT;
+    return (careerGoalsMatchCount / careerGoalsKeywords.length) * NORMALIZE * CAREER_GOALS_MATCH_WEIGHT;
+}
+
+const calculateMentorScore = (mentor, mentee) => {
+    const ratingScore = normalizeRating(mentor.averageRating);
+    const experienceScore = normalizeExperience(mentor.years_experience);
+
+    const menteeSkills = mentee.skills.split(',').map(skill => skill.trim().toLowerCase());
+    const mentorSkills = mentor.skills.split(',').map(skill => skill.trim().toLowerCase());
+    const skillScore = calculateSkillScores(mentorSkills, menteeSkills);
+
+    const schoolScore = calculateSchoolScores(mentor, mentee);
+    const careerGoalsMatchScore = calculateCareerGoalsMatchScore(mentor, mentee);
 
     const totalScore = ratingScore + experienceScore + skillScore + schoolScore + careerGoalsMatchScore;
-    
     return totalScore;
 }
 
