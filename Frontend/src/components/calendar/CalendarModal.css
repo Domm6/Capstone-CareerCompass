@@ -1,0 +1,13 @@
+.calendar-form {
+  width: 100%;
+}
+
+.checkbox-list {
+  width: 100%;
+  display: flex;
+}
+.checkbox-item {
+  width: 100%;
+  display: flex;
+  justify-content: start;
+}
