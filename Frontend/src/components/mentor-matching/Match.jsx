@@ -134,7 +134,7 @@ const calculateMentorScore = (mentor, mentee) => {
     const mentorSchoolState = mentor.schoolState ?? '';
     const menteeSchoolCity = mentee.schoolCity ?? '';
     const mentorSchoolCity = mentor.schoolCity ?? '';
-    
+
     const schoolMatch = mentorSchool.toLowerCase() === menteeSchool.toLowerCase() ? 1 : 0;
     const schoolStateMatch = mentorSchoolState.toLowerCase() === menteeSchoolState.toLowerCase() ? 1 : 0;
     const schoolCityMatch = mentorSchoolCity.toLowerCase() === menteeSchoolCity.toLowerCase() ? 1 : 0;
@@ -203,8 +203,6 @@ function Match() {
         setSelectedMentor(null);
     };
 
-    console.log(user.id)
-
     const fetchMatchedMentors = (menteeId) => {
         fetch(`${config.apiBaseUrl}/connect-requests/mentee/${menteeId}`)
           .then(response => {
@@ -214,7 +212,6 @@ function Match() {
             return response.json();
           })
           .then(data => {
-            console.log(data)
             const acceptedRequests = data.requests.filter(request => request.status === 'accepted');
             const matchedMentorIds = acceptedRequests.map(request => request.mentorId);
             setMatchedMentorIds(matchedMentorIds);
