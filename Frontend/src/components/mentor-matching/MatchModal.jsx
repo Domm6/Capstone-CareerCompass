@@ -1,79 +1,84 @@
-import { useContext, useEffect, useState } from 'react';
-import { UserContext } from '../../UserContext.jsx';
-import config from '../../../config.js';
+import { useContext, useEffect, useState } from "react";
+import { UserContext } from "../../UserContext.jsx";
+import config from "../../../config.js";
 import "./MatchModal.css";
 
-const PLACEHOLDER = "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
+const PLACEHOLDER =
+  "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
 
-function MatchModal({mentor, closeModal, mentee}) {
-    const { user } = useContext(UserContext);  // Access the user context
-    const [errorMessage, setErrorMessage] = useState('');
+function MatchModal({ mentor, closeModal, mentee }) {
+  const { user } = useContext(UserContext); // Access the user context
+  const [errorMessage, setErrorMessage] = useState("");
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-        const reqData = {
-            mentorId: mentor.id,
-            menteeId: mentee.id,
-            menteeName: user.name,
-            menteeSchool: mentee.school,
-            menteeMajor: mentee.major,
-            mentorName: mentor.User.name,
-            mentorCompany: mentor.company,
-            mentorWorkRole: mentor.work_role,
-            status: 'pending'
-        };
-
-        try {
-            const response = await fetch(`${config.apiBaseUrl}/connect-requests`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(reqData),
-            });
-
-            if (response.ok) {
-                // Close the modal after a successful update
-                closeModal();
-            } else {
-                const data = await response.json();
-                setErrorMessage(data.error || 'Error creating connect request');
-            }
-        } catch (error) {
-            setErrorMessage('Error creating connect request');
-            console.error('Error creating connect request:', error);
-        }
+    const reqData = {
+      mentorId: mentor.id,
+      menteeId: mentee.id,
+      menteeName: user.name,
+      menteeSchool: mentee.school,
+      menteeMajor: mentee.major,
+      mentorName: mentor.User.name,
+      mentorCompany: mentor.company,
+      mentorWorkRole: mentor.work_role,
+      status: "pending",
     };
 
-    return (
-        <>
-        <div className="modal" id='match'> 
-            <div className="modal-content">
-                <span className="modal-close" onClick={closeModal}>×</span>
-                <div className='mp-container'>
-                    <div className='mp-body'>
-                        <div className='mp-left'>
-                            <img src={PLACEHOLDER} alt="profile picture" />
-                            <h3>{mentor.User.name}</h3>
-                        </div>
-                        <div className='mp-right'>
-                            <p>Industry: {mentor.industry}</p>
-                            <p>Company: {mentor.company}</p>
-                            <p>Role: {mentor.work_role}</p>
-                            <p>Years of Experience: {mentor.years_experience} years</p>
-                            <p>School: {mentor.school} </p>
-                            <p>Skills: {mentor.skills}</p>
-                            <p>Bio: {mentor.bio || "No Bio Available"}</p>
-                            <p>Rating: {mentor.averageRating}</p>
-                        </div>
-                    </div>
-                    <button id='save-button' onClick={handleSubmit}>Connect</button>
-                </div>  
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/connect-requests`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(reqData),
+      });
+
+      if (response.ok) {
+        // Close the modal after a successful update
+        closeModal();
+      } else {
+        const data = await response.json();
+        setErrorMessage(data.error || "Error creating connect request");
+      }
+    } catch (error) {
+      setErrorMessage("Error creating connect request");
+      console.error("Error creating connect request:", error);
+    }
+  };
+
+  return (
+    <>
+      <div className="modal" id="match">
+        <div className="modal-content">
+          <span className="modal-close" onClick={closeModal}>
+            ×
+          </span>
+          <div className="mp-container">
+            <div className="mp-body">
+              <div className="mp-left">
+                <img src={PLACEHOLDER} alt="profile picture" />
+                <h3>{mentor.User.name}</h3>
+              </div>
+              <div className="mp-right">
+                <p>Industry: {mentor.industry}</p>
+                <p>Company: {mentor.company}</p>
+                <p>Role: {mentor.work_role}</p>
+                <p>Years of Experience: {mentor.years_experience} years</p>
+                <p>School: {mentor.school} </p>
+                <p>Skills: {mentor.skills}</p>
+                <p>Bio: {mentor.bio || "No Bio Available"}</p>
+                <p>Rating: {mentor.averageRating}</p>
+              </div>
             </div>
+            <button id="save-button" onClick={handleSubmit}>
+              Connect
+            </button>
+          </div>
         </div>
-        </>
-    )
+      </div>
+    </>
+  );
 }
 
-export default MatchModal
+export default MatchModal;

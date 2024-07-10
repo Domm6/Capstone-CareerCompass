@@ -14,12 +14,20 @@ export const Meeting = sequelize.define('Meeting', {
       key: 'id',
     },
   },
+  mentorName: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   menteeId: {
     type: DataTypes.INTEGER,
     references: {
       model: 'Mentees',
       key: 'id',
     },
+  },
+  menteeName: {
+    type: DataTypes.STRING,
+    allowNull: true,
   },
   scheduledTime: {
     type: DataTypes.DATE,
@@ -28,6 +36,11 @@ export const Meeting = sequelize.define('Meeting', {
   endTime: {
     type: DataTypes.DATE,
     allowNull: true,
+  },
+  status: {
+    type: DataTypes.ENUM('pending', 'accepted', 'rejected'),
+    defaultValue: 'pending',
+    allowNull: false,
   },
   topic: {
     type: DataTypes.STRING,
