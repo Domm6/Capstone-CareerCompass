@@ -132,15 +132,13 @@ function MenteeProfileModal({
                 <div className="skills-dropdown">
                   {skillsList.map((skill) => (
                     <div key={skill}>
-                      <label>
-                        <input
-                          type="checkbox"
-                          value={skill}
-                          checked={selectedSkills.includes(skill)}
-                          onChange={() => handleCheckboxChange(skill)}
-                        />
-                        {skill}
-                      </label>
+                      <label>{skill}</label>
+                      <input
+                        type="checkbox"
+                        value={skill}
+                        checked={selectedSkills.includes(skill)}
+                        onChange={() => handleCheckboxChange(skill)}
+                      />
                     </div>
                   ))}
                 </div>

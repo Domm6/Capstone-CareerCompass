@@ -71,6 +71,11 @@
 .skills-dropdown div {
   margin-bottom: 5px;
   display: flex;
+  justify-content: space-around;
+}
+
+.skills-dropdown div label {
+  width: 100%;
 }
 
 .form-bio {
