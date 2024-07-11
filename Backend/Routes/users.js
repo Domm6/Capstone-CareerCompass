@@ -134,6 +134,8 @@ router.put("/mentors/:id", async (req, res) => {
     skills,
     schoolState,
     schoolCity,
+    preferredStartHour,
+    preferredEndHour,
   } = req.body;
 
   try {
@@ -155,6 +157,10 @@ router.put("/mentors/:id", async (req, res) => {
       years_experience,
       industry,
       skills,
+      meetingPreferences: {
+        preferredStartHour,
+        preferredEndHour,
+      },
     });
 
     // Return the updated mentor data in the response
@@ -207,8 +213,17 @@ router.get("/mentors", async (req, res) => {
 // Route to update mentee profile
 router.put("/mentees/:id", async (req, res) => {
   const mentorId = req.params.id;
-  const { school, bio, major, career_goals, skills, schoolState, schoolCity } =
-    req.body;
+  const {
+    school,
+    bio,
+    major,
+    career_goals,
+    skills,
+    schoolState,
+    schoolCity,
+    preferredStartHour,
+    preferredEndHour,
+  } = req.body;
 
   try {
     // Find the mentor by ID
@@ -227,6 +242,10 @@ router.put("/mentees/:id", async (req, res) => {
       major,
       career_goals,
       skills,
+      meetingPreferences: {
+        preferredStartHour,
+        preferredEndHour,
+      },
     });
 
     // Return the updated mentor data in the response

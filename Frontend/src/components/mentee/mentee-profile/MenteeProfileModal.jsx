@@ -29,6 +29,8 @@ function MenteeProfileModal({
     bio: "",
     career_goals: "",
     skills: selectedSkills.join(", "),
+    preferredStartHour: "00:00",
+    preferredEndHour: "23:59",
   });
   const [schoolSuggestions, setSchoolSuggestions] = useState([]);
   const [selectedSchool, setSelectedSchool] = useState(null);
@@ -46,6 +48,10 @@ function MenteeProfileModal({
         bio: menteeData.bio,
         career_goals: menteeData.career_goals,
         skills: menteeData.skills,
+        preferredStartHour:
+          menteeData.meetingPreferences?.preferredStartHour || "00:00",
+        preferredEndHour:
+          menteeData.meetingPreferences?.preferredEndHour || "23:59",
       });
     }
   }, [menteeData]);
@@ -100,6 +106,10 @@ function MenteeProfileModal({
     const preparedData = {
       ...formData,
       skills: selectedSkills.join(", "),
+      meetingPreferences: {
+        preferredStartHour: formData.preferredStartHour,
+        preferredEndHour: formData.preferredEndHour,
+      },
     };
 
     try {
@@ -182,6 +192,26 @@ function MenteeProfileModal({
               value={formData.bio}
               onChange={handleChange}
               required
+            />
+          </div>
+          <div className="form-time-preference">
+            <label htmlFor="preferredStartHour">Preferred Start Hour:</label>
+            <input
+              type="time"
+              id="preferredStartHour"
+              name="preferredStartHour"
+              value={formData.preferredStartHour}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-time-preference">
+            <label htmlFor="preferredEndHour">Preferred End Hour:</label>
+            <input
+              type="time"
+              id="preferredEndHour"
+              name="preferredEndHour"
+              value={formData.preferredEndHour}
+              onChange={handleChange}
             />
           </div>
           <div className="form-skills">

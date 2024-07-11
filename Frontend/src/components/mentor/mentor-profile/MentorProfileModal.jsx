@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../UserContext.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import moment from "moment";
 import "./MentorProfileModal.css";
 import config from "../../../../config.js";
 
@@ -35,6 +36,8 @@ function MentorProfileModal({
     schoolCity: "",
     bio: "",
     skills: selectedSkills.join(", "),
+    preferredStartHour: "00:00",
+    preferredEndHour: "23:59",
   });
   const [schoolSuggestions, setSchoolSuggestions] = useState([]);
   const [selectedSchool, setSelectedSchool] = useState(null);
@@ -42,7 +45,8 @@ function MentorProfileModal({
 
   useEffect(() => {
     if (mentorData) {
-      setFormData({
+      setFormData((prevFormData) => ({
+        ...prevFormData,
         industry: mentorData.industry || "",
         company: mentorData.company || "",
         work_role: mentorData.work_role || "",
@@ -52,7 +56,11 @@ function MentorProfileModal({
         schoolCity: mentorData.schoolCity || "",
         bio: mentorData.bio || "",
         skills: mentorData.skills || "",
-      });
+        preferredStartHour:
+          mentorData.meetingPreferences?.preferredStartHour || "00:00",
+        preferredEndHour:
+          mentorData.meetingPreferences?.preferredEndHour || "23:59",
+      }));
     }
   }, [mentorData]);
 
@@ -81,13 +89,10 @@ function MentorProfileModal({
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-
-    // Handle years_experience specifically
-    if (name === "years_experience") {
-      setFormData({ ...formData, [name]: value });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
 
     if (name === "school" && value.length > 2) {
       searchSchools(value);
@@ -111,6 +116,10 @@ function MentorProfileModal({
     const preparedData = {
       ...formData,
       skills: selectedSkills.join(", "),
+      meetingPreferences: {
+        preferredStartHour: formData.preferredStartHour,
+        preferredEndHour: formData.preferredEndHour,
+      },
     };
 
     try {
@@ -219,6 +228,26 @@ function MentorProfileModal({
               value={formData.bio}
               onChange={handleChange}
               required
+            />
+          </div>
+          <div className="form-time-preference">
+            <label htmlFor="preferredStartHour">Preferred Start Hour:</label>
+            <input
+              type="time"
+              id="preferredStartHour"
+              name="preferredStartHour"
+              value={formData.preferredStartHour}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-time-preference">
+            <label htmlFor="preferredEndHour">Preferred End Hour:</label>
+            <input
+              type="time"
+              id="preferredEndHour"
+              name="preferredEndHour"
+              value={formData.preferredEndHour}
+              onChange={handleChange}
             />
           </div>
           <div className="form-skills">

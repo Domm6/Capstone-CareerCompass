@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../UserContext.jsx";
 import { useNavigate, Link } from "react-router-dom";
 import "./MentorProfile.css";
+import moment from "moment";
 import MentorProfileModal from "./MentorProfileModal.jsx";
 import config from "../../../../config.js";
 
@@ -84,6 +85,8 @@ function MentorProfile() {
     years_experience: "",
     school: "",
     skills: "",
+    preferredStartHour: "",
+    preferredEndHour: "",
   });
 
   const fetchMentorData = () => {
@@ -107,6 +110,9 @@ function MentorProfile() {
             school: data.mentor.school,
             bio: data.mentor.bio,
             skills: data.mentor.skills,
+            preferredStartHour:
+              data.mentor.meetingPreferences.preferredStartHour,
+            preferredEndHour: data.mentor.meetingPreferences.preferredEndHour,
           });
         })
         .catch((error) => {
@@ -176,6 +182,14 @@ function MentorProfile() {
             <p>School: {userData.school}</p>
             <p>Skills: {userData.skills}</p>
             <p>Bio: {userData.bio}</p>
+            <p>
+              Preferred Start Hour:{" "}
+              {moment(userData.preferredStartHour, "HH:mm").format("h:mm A")}
+            </p>
+            <p>
+              Preferred End Hour:{" "}
+              {moment(userData.preferredEndHour, "HH:mm").format("h:mm A")}
+            </p>
           </div>
         </div>
         {isModalOpen && (

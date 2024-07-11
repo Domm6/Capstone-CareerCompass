@@ -122,6 +122,8 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
     );
   };
 
+  const getSuggestedTimes = () => {};
+
   return (
     <div className="modal">
       <div className="modal-content">

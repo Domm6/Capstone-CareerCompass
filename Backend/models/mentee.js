@@ -45,7 +45,10 @@ export const Mentee = sequelize.define(
     meetingPreferences: {
       type: DataTypes.JSON,
       allowNull: true,
-      defaultValue: {},
+      defaultValue: {
+        preferredStartHour: "00:00",
+        preferredEndHour: "23:59",
+      },
     },
   },
   {
