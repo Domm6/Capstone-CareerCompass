@@ -10,6 +10,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
   const { user } = useContext(UserContext);
   const [menteesOrMentors, setMenteesOrMentors] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [suggestedTimes, setSuggestedTimes] = useState([]);
   const [scheduledDate, setScheduledDate] = useState("");
   const [scheduledTime, setScheduledTime] = useState("");
   const [topic, setTopic] = useState("");
@@ -128,54 +129,69 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
           ×
         </span>
         <h3>Schedule Meeting:</h3>
-        <form onSubmit={handleScheduleMeeting} className="calendar-form">
-          <div className="form-group">
-            <label>Select {isMentor(user) ? "Mentees" : "Mentor"}:</label>
-            <div className="checkbox-list">
-              {menteesOrMentors.map((person) => (
-                <div key={person.id} className="checkbox-item">
-                  <p>{person.name}</p>
-                  <input
-                    type="checkbox"
-                    value={person.id}
-                    checked={selectedUsers.includes(person.id)}
-                    onChange={handleCheckboxChange}
-                  />
-                </div>
-              ))}
+        <div className="calendar-modal-container">
+          <form onSubmit={handleScheduleMeeting} className="calendar-form">
+            <div className="form-group">
+              <label>Select {isMentor(user) ? "Mentees" : "Mentor"}:</label>
+              <div className="checkbox-list">
+                {menteesOrMentors.map((person) => (
+                  <div key={person.id} className="checkbox-item">
+                    <p>{person.name}</p>
+                    <input
+                      type="checkbox"
+                      value={person.id}
+                      checked={selectedUsers.includes(person.id)}
+                      onChange={handleCheckboxChange}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
+            <div className="form-group">
+              <label htmlFor="date">Date:</label>
+              <input
+                type="date"
+                id="date"
+                value={scheduledDate}
+                onChange={(event) => setScheduledDate(event.target.value)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="time">Time:</label>
+              <input
+                type="time"
+                id="time"
+                value={scheduledTime}
+                onChange={(event) => setScheduledTime(event.target.value)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="topic">Topic:</label>
+              <input
+                type="text"
+                id="topic"
+                value={topic}
+                onChange={(event) => setTopic(event.target.value)}
+              />
+            </div>
+            <button type="submit">Submit</button>
+          </form>
+          <div className="calendar-suggested-times">
+            <label>Suggested Times</label>
+            <button>3:00 - 12:00</button>
+            <button>3:00 - 12:00</button>
+            <button>3:00 - 12:00</button>
+            <button>3:00 - 12:00</button>
+            <button>3:00 - 12:00</button>
+            <button>3:00 - 12:00</button>
+            <button>3:00 - 12:00</button>
+            <button>3:00 - 12:00</button>
+            <button>3:00 - 12:00</button>
+            <button>3:00 - 12:00</button>
           </div>
-          <div className="form-group">
-            <label htmlFor="date">Date:</label>
-            <input
-              type="date"
-              id="date"
-              value={scheduledDate}
-              onChange={(event) => setScheduledDate(event.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="time">Time:</label>
-            <input
-              type="time"
-              id="time"
-              value={scheduledTime}
-              onChange={(event) => setScheduledTime(event.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="topic">Topic:</label>
-            <input
-              type="text"
-              id="topic"
-              value={topic}
-              onChange={(event) => setTopic(event.target.value)}
-            />
-          </div>
-          <button type="submit">Submit</button>
-        </form>
+        </div>
       </div>
     </div>
   );

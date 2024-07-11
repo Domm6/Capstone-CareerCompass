@@ -1,5 +1,11 @@
+.calendar-modal-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+}
+
 .calendar-form {
-  width: 60%;
+  width: 70%;
   display: flex;
   flex-direction: column;
 }
@@ -29,4 +35,12 @@
 
 .checkbox-item input {
   margin-left: auto;
+}
+
+.calendar-suggested-times {
+  width: 30%;
+  margin: 10px;
+  padding: 10px;
+  overflow-y: auto;
+  max-height: 300px;
 }
