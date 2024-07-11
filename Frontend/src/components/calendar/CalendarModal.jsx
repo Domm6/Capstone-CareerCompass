@@ -4,12 +4,6 @@ import { useNavigate } from "react-router-dom";
 import "../mentor/mentor-profile/MentorProfileModal.css";
 import moment from "moment-timezone";
 import config from "../../../config.js";
-import React, { useContext, useEffect, useState } from "react";
-import { UserContext } from "../../UserContext.jsx";
-import { useNavigate } from "react-router-dom";
-import "../mentor/mentor-profile/MentorProfileModal.css";
-import moment from "moment-timezone";
-import config from "../../../config.js";
 
 function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
   const { user } = useContext(UserContext);
@@ -29,24 +23,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
         const url = isMentor(user)
           ? `${config.apiBaseUrl}/mentors/${user.id}`
           : `${config.apiBaseUrl}/mentees/${user.id}`;
-  // Fetch user data (mentor or mentee)
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const url = isMentor(user)
-          ? `${config.apiBaseUrl}/mentors/${user.id}`
-          : `${config.apiBaseUrl}/mentees/${user.id}`;
 
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error("Failed to fetch user data");
-        }
-        const data = await response.json();
-        setUserData(isMentor(user) ? data.mentor : data.mentee);
-      } catch (error) {
-        setErrorMessage(error.message);
-      }
-    };
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error("Failed to fetch user data");
@@ -62,18 +39,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
       fetchUserData();
     }
   }, [user]);
-    if (user && user.id) {
-      fetchUserData();
-    }
-  }, [user]);
 
-  // Fetch list of requests using mentor ID
-  useEffect(() => {
-    const fetchRequests = async (userId) => {
-      try {
-        const url = isMentor(user)
-          ? `${config.apiBaseUrl}/connect-requests/${userId}`
-          : `${config.apiBaseUrl}/connect-requests/mentee/${userId}`;
   // Fetch list of requests using mentor ID
   useEffect(() => {
     const fetchRequests = async (userId) => {
@@ -100,37 +66,12 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
         setErrorMessage(error.message);
       }
     };
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error("Failed to fetch requests");
-        }
-        const data = await response.json();
-        const acceptedRequests = data.requests.filter(
-          (request) => request.status === "accepted"
-        );
-        setMenteesOrMentors(
-          acceptedRequests.map((request) => ({
-            id: isMentor(user) ? request.menteeId : request.mentorId,
-            name: isMentor(user) ? request.menteeName : request.mentorName,
-          }))
-        );
-      } catch (error) {
-        setErrorMessage(error.message);
-      }
-    };
 
     if (userData && userData.id) {
       fetchRequests(userData.id);
     }
   }, [userData]);
-    if (userData && userData.id) {
-      fetchRequests(userData.id);
-    }
-  }, [userData]);
 
-  // Schedule a meeting
-  const handleScheduleMeeting = async (event) => {
-    event.preventDefault();
   // Schedule a meeting
   const handleScheduleMeeting = async (event) => {
     event.preventDefault();
@@ -142,27 +83,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
         "America/Los_Angeles"
       )
       .format();
-    const scheduledDateTime = moment
-      .tz(
-        `${scheduledDate}T${scheduledTime}`,
-        "YYYY-MM-DDTHH:mm",
-        "America/Los_Angeles"
-      )
-      .format();
 
-    try {
-      const response = await fetch(`${config.apiBaseUrl}/meetings`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          mentorId: isMentor(user) ? userData.id : selectedUser,
-          menteeId: user.userRole === "mentee" ? userData.id : selectedUser,
-          scheduledTime: scheduledDateTime,
-          topic,
-        }),
-      });
     try {
       const response = await fetch(`${config.apiBaseUrl}/meetings`, {
         method: "POST",
@@ -208,7 +129,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
                       type="checkbox"
                       value={person.id}
                       checked={selectedUsers.includes(person.id)}
-                    //   onChange={handleCheckboxChange}
+                      //   onChange={handleCheckboxChange}
                     />
                     {person.name}
                   </label>
@@ -251,7 +172,5 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
     </div>
   );
 }
-
-export default CalendarModal;
 
 export default CalendarModal;
