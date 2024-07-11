@@ -34,23 +34,23 @@
 }
 
 .mc-header {
-    display: flex;
-    justify-content: center;
-    margin: 10px;
-    padding: 10px;
+  display: flex;
+  justify-content: center;
+  margin: 10px;
+  padding: 10px;
 }
 
 .sc-list {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    margin: 20px;
-    width: 100%;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 20px;
+  width: 100%;
 }
 
 .sc-header {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 
 #suggestion-btn {
@@ -58,9 +58,9 @@
 }
 
 .divider {
-    height: 100px;
-    width: 100%;
-    background-color: grey;
-    margin: none;
-    padding: none;
+  height: 100px;
+  width: 100%;
+  background-color: grey;
+  margin: none;
+  padding: none;
 }

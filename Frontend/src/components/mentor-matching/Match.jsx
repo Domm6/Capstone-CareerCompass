@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import "./Match.css";
 import MentorCard from "./MentorCard.jsx";
 import MatchModal from "./MatchModal.jsx";
-import SuggestionModal from "./SuggestionModal.jsx";
 import config from "../../../config.js";
 
 const TechRolesEnum = Object.freeze({
