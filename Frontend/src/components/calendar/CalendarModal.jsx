@@ -2,13 +2,14 @@ import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../UserContext.jsx";
 import { useNavigate } from "react-router-dom";
 import "../mentor/mentor-profile/MentorProfileModal.css";
+import "./CalendarModal.css";
 import moment from "moment-timezone";
 import config from "../../../config.js";
 
 function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
   const { user } = useContext(UserContext);
   const [menteesOrMentors, setMenteesOrMentors] = useState([]);
-  const [selectedUsers, setSelectedUsers] = useState("");
+  const [selectedUsers, setSelectedUsers] = useState([]);
   const [scheduledDate, setScheduledDate] = useState("");
   const [scheduledTime, setScheduledTime] = useState("");
   const [topic, setTopic] = useState("");
@@ -91,8 +92,8 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          mentorId: isMentor(user) ? userData.id : selectedUser,
-          menteeId: user.userRole === "mentee" ? userData.id : selectedUser,
+          mentorId: isMentor(user) ? userData.id : selectedUsers,
+          menteeIds: user.userRole === "mentee" ? userData.id : selectedUsers,
           scheduledTime: scheduledDateTime,
           topic,
         }),
@@ -111,6 +112,15 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
     toggleModal();
   };
 
+  const handleCheckboxChange = (event) => {
+    const { value, checked } = event.target;
+    setSelectedUsers((prevSelectedUsers) =>
+      checked
+        ? [...prevSelectedUsers, parseInt(value)]
+        : prevSelectedUsers.filter((id) => id !== parseInt(value))
+    );
+  };
+
   return (
     <div className="modal">
       <div className="modal-content">
@@ -118,21 +128,19 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
           ×
         </span>
         <h3>Schedule Meeting:</h3>
-        <form onSubmit={handleScheduleMeeting}>
+        <form onSubmit={handleScheduleMeeting} className="calendar-form">
           <div className="form-group">
             <label>Select {isMentor(user) ? "Mentees" : "Mentor"}:</label>
             <div className="checkbox-list">
               {menteesOrMentors.map((person) => (
                 <div key={person.id} className="checkbox-item">
-                  <label>
-                    <input
-                      type="checkbox"
-                      value={person.id}
-                      checked={selectedUsers.includes(person.id)}
-                      //   onChange={handleCheckboxChange}
-                    />
-                    {person.name}
-                  </label>
+                  <p>{person.name}</p>
+                  <input
+                    type="checkbox"
+                    value={person.id}
+                    checked={selectedUsers.includes(person.id)}
+                    onChange={handleCheckboxChange}
+                  />
                 </div>
               ))}
             </div>

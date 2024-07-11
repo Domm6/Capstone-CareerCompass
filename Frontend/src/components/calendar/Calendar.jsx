@@ -46,7 +46,6 @@ function Calendar() {
     }
   }, [user]);
 
-  // Fetch meetings for the user (mentor or mentee)
   const fetchMeetings = async (userId) => {
     try {
       const url = isMentor(user)
@@ -58,23 +57,34 @@ function Calendar() {
         throw new Error("Failed to fetch meetings");
       }
       const data = await response.json();
+      console.log("Fetched meetings data:", data);
 
-      // Transform the meetings into FullCalendar event format
-      const meetings = data.meetings.map((meeting) => ({
-        id: meeting.id,
-        title: meeting.topic,
-        status: meeting.status,
-        backgroundColor: getMeetingColor(meeting.status),
-        start: moment.utc(meeting.scheduledTime).local().format(),
-        end: moment.utc(meeting.endTime).local().format(),
-      }));
+      const meetings = data.map((meeting) => {
+        const start = moment.utc(meeting.scheduledTime).local().format();
+        const end = meeting.endTime
+          ? moment.utc(meeting.endTime).local().format()
+          : moment
+              .utc(meeting.scheduledTime)
+              .add(30, "minutes")
+              .local()
+              .format();
+
+        return {
+          id: meeting.id,
+          title: meeting.topic,
+          status: meeting.status,
+          backgroundColor: getMeetingColor(meeting.status),
+          start: start,
+          end: end,
+        };
+      });
+      console.log("Transformed meetings:", meetings);
 
       setMeetings(meetings);
     } catch (error) {
       setErrorMessage(error.message);
     }
   };
-
   useEffect(() => {
     if (userData && userData.id) {
       fetchMeetings(userData.id);
