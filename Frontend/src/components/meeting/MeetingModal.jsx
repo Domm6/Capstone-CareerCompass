@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react";
-import { UserContext } from "../UserContext.jsx";
-import config from "../../config.js";
+import { UserContext } from "../../UserContext.jsx";
+import config from "../../../config.js";
 import moment from "moment";
-import "./mentor-matching/MatchModal.css";
+import "../mentor-matching/MatchModal.css";
 import "./MeetingModal.css";
 
 function MeetingModal({
@@ -13,7 +13,6 @@ function MeetingModal({
   declineMeeting,
   selectedMeeting,
 }) {
-  // this will be used for future implamentation
   // const formattedStartTime = moment(selectedMeeting.scheduledTime).format('MMMM Do YYYY, h:mm:ss a');
   // const formattedEndTime = moment(selectedMeeting.start).add(30, 'minutes').format('MMMM Do YYYY, h:mm:ss a');
 

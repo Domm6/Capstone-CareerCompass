@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../UserContext.jsx";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./MentorProfileModal.css";
 import config from "../../../../config.js";
 
@@ -28,9 +29,14 @@ function MentorProfileModal({
     work_role: "",
     years_experience: "",
     school: "",
+    schoolState: "",
+    schoolCity: "",
     bio: "",
     skills: selectedSkills.join(", "),
   });
+  const [schoolSuggestions, setSchoolSuggestions] = useState([]);
+  const [selectedSchool, setSelectedSchool] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     if (mentorData) {
@@ -38,24 +44,63 @@ function MentorProfileModal({
         industry: mentorData.industry || "",
         company: mentorData.company || "",
         work_role: mentorData.work_role || "",
-        years_experience:
-          experienceMappingReverse[mentorData.years_experience] || "",
+        years_experience: mentorData.years_experience || "",
         school: mentorData.school || "",
+        schoolState: mentorData.schoolState || "",
+        schoolCity: mentorData.schoolCity || "",
         bio: mentorData.bio || "",
         skills: mentorData.skills || "",
       });
     }
   }, [mentorData]);
 
+  const searchSchools = async (query) => {
+    try {
+      const response = await axios.get(
+        `https://api.data.gov/ed/collegescorecard/v1/schools`,
+        {
+          params: {
+            "school.name": query,
+            fields: "id,school.name,school.city,school.state",
+            api_key: "h4vhrQ91a1mE8DOWWaja1m5JguMfsPy1fjULWHZi",
+          },
+        }
+      );
+
+      if (response.data.results) {
+        setSchoolSuggestions(response.data.results);
+      } else {
+        setSchoolSuggestions([]);
+      }
+    } catch (error) {
+      setErrorMessage(error);
+    }
+  };
+
   const handleChange = (event) => {
     const { name, value } = event.target;
 
     // Handle years_experience specifically
     if (name === "years_experience") {
-      setFormData({ ...formData, [name]: parseInt(value) });
+      setFormData({ ...formData, [name]: value });
     } else {
       setFormData({ ...formData, [name]: value });
     }
+
+    if (name === "school" && value.length > 2) {
+      searchSchools(value);
+    }
+  };
+
+  const handleSchoolSelect = (school) => {
+    setFormData({
+      ...formData,
+      school: school["school.name"],
+      schoolCity: school["school.city"],
+      schoolState: school["school.state"],
+    });
+    setSelectedSchool(school);
+    setSchoolSuggestions([]);
   };
 
   const handleSubmit = async (event) => {
@@ -150,6 +195,20 @@ function MentorProfileModal({
               onChange={handleChange}
               required
             />
+            {schoolSuggestions.length > 0 && (
+              <div className="school-suggestions">
+                {schoolSuggestions.slice(0, 20).map((school) => (
+                  <div
+                    key={school.id}
+                    className="school-suggestion"
+                    onClick={() => handleSchoolSelect(school)}
+                  >
+                    {school["school.name"]}, {school["school.city"]},{" "}
+                    {school["school.state"]}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <div className="form-bio">
             <label htmlFor="bio">Bio</label>
@@ -170,13 +229,15 @@ function MentorProfileModal({
                 <div className="skills-dropdown">
                   {skillsList.map((skill) => (
                     <div key={skill}>
-                      <label>{skill}</label>
-                      <input
-                        type="checkbox"
-                        value={skill}
-                        checked={selectedSkills.includes(skill)}
-                        onChange={() => handleCheckboxChange(skill)}
-                      />
+                      <label>
+                        <input
+                          type="checkbox"
+                          value={skill}
+                          checked={selectedSkills.includes(skill)}
+                          onChange={() => handleCheckboxChange(skill)}
+                        />
+                        {skill}
+                      </label>
                     </div>
                   ))}
                 </div>

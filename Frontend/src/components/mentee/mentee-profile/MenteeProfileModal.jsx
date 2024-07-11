@@ -3,6 +3,7 @@ import { UserContext } from "../../../UserContext.jsx";
 import { useNavigate } from "react-router-dom";
 import "./MenteeProfileModal.css";
 import config from "../../../../config.js";
+import axios from "axios";
 
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
@@ -22,10 +23,15 @@ function MenteeProfileModal({
     profileImageUrl: "",
     major: "",
     school: "",
+    schoolState: "",
+    schoolCity: "",
     bio: "",
     career_goals: "",
     skills: selectedSkills.join(", "),
   });
+  const [schoolSuggestions, setSchoolSuggestions] = useState([]);
+  const [selectedSchool, setSelectedSchool] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     if (menteeData) {
@@ -34,6 +40,8 @@ function MenteeProfileModal({
         profileImageUrl: user.profileImageUrl || PLACEHOLDER,
         major: menteeData.major,
         school: menteeData.school,
+        schoolState: menteeData.schoolState || "",
+        schoolCity: menteeData.schoolCity || "",
         bio: menteeData.bio,
         career_goals: menteeData.career_goals,
         skills: menteeData.skills,
@@ -44,6 +52,45 @@ function MenteeProfileModal({
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
+
+    if (name === "school" && value.length > 2) {
+      searchSchools(value);
+    }
+  };
+
+  // serach for schools
+  const searchSchools = async (query) => {
+    try {
+      const response = await axios.get(
+        `https://api.data.gov/ed/collegescorecard/v1/schools`,
+        {
+          params: {
+            "school.name": query,
+            fields: "id,school.name,school.city,school.state",
+            api_key: "h4vhrQ91a1mE8DOWWaja1m5JguMfsPy1fjULWHZi",
+          },
+        }
+      );
+
+      if (response.data.results) {
+        setSchoolSuggestions(response.data.results);
+      } else {
+        setSchoolSuggestions([]);
+      }
+    } catch (error) {
+      console.error("Error fetching school suggestions:", error);
+    }
+  };
+
+  const handleSchoolSelect = (school) => {
+    setFormData({
+      ...formData,
+      school: school["school.name"],
+      schoolCity: school["school.city"],
+      schoolState: school["school.state"],
+    });
+    setSelectedSchool(school);
+    setSchoolSuggestions([]);
   };
 
   const handleSubmit = async (event) => {
@@ -92,6 +139,20 @@ function MenteeProfileModal({
               onChange={handleChange}
               required
             />
+            {schoolSuggestions.length > 0 && (
+              <div className="school-suggestions">
+                {schoolSuggestions.map((school) => (
+                  <div
+                    key={school.id}
+                    className="school-suggestion"
+                    onClick={() => handleSchoolSelect(school)}
+                  >
+                    {school["school.name"]}, {school["school.city"]},{" "}
+                    {school["school.state"]}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <div className="form-major">
             <label htmlFor="major">Major</label>
@@ -132,13 +193,15 @@ function MenteeProfileModal({
                 <div className="skills-dropdown">
                   {skillsList.map((skill) => (
                     <div key={skill}>
-                      <label>{skill}</label>
-                      <input
-                        type="checkbox"
-                        value={skill}
-                        checked={selectedSkills.includes(skill)}
-                        onChange={() => handleCheckboxChange(skill)}
-                      />
+                      <label>
+                        <input
+                          type="checkbox"
+                          value={skill}
+                          checked={selectedSkills.includes(skill)}
+                          onChange={() => handleCheckboxChange(skill)}
+                        />
+                        {skill}
+                      </label>
                     </div>
                   ))}
                 </div>

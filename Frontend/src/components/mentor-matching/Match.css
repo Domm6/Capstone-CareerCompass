@@ -33,6 +33,34 @@
   width: 100%;
 }
 
+.mc-header {
+  display: flex;
+  justify-content: center;
+  margin: 10px;
+  padding: 10px;
+}
+
+.sc-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 20px;
+  width: 100%;
+}
+
+.sc-header {
+  display: flex;
+  justify-content: center;
+}
+
 #suggestion-btn {
   width: 10%;
+}
+
+.divider {
+  height: 100px;
+  width: 100%;
+  background-color: grey;
+  margin: none;
+  padding: none;
 }

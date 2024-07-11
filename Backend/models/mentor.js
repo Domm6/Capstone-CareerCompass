@@ -16,6 +16,14 @@ export const Mentor = sequelize.define('Mentor', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  schoolState: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  schoolCity: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   bio: {
     type: DataTypes.STRING,
     allowNull: true,

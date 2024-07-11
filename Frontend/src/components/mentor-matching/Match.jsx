@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import "./Match.css";
 import MentorCard from "./MentorCard.jsx";
 import MatchModal from "./MatchModal.jsx";
-import SuggestionModal from "./SuggestionModal.jsx";
 import config from "../../../config.js";
 
 const TechRolesEnum = Object.freeze({
@@ -95,34 +94,26 @@ const IndustriesEnum = Object.freeze({
 
 const industries = Object.values(IndustriesEnum);
 
-const calculateMentorScore = (mentor, mentee) => {
-  const NORMALIZE = 100;
-  const MAX_RATING = 5;
-  const RATING_WEIGHT = 0.3;
-  const EXPERIENCE_WEIGHT = 0.2;
-  const MATCHING_SKILLS_WEIGHT = 0.2;
-  const NON_MATCHING_SKILLS_WEIGHT = 0.1;
-  const SCHOOL_MATCH_WEIGHT = 0.1;
-  const CAREER_GOALS_MATCH_WEIGHT = 0.2;
+const NORMALIZE = 100;
+const MAX_RATING = 5;
+const RATING_WEIGHT = 0.3;
+const EXPERIENCE_WEIGHT = 0.2;
+const MATCHING_SKILLS_WEIGHT = 0.2;
+const NON_MATCHING_SKILLS_WEIGHT = 0.1;
+const SCHOOL_MATCH_WEIGHT = 0.02;
+const SCHOOL_STATE_MATCH_WEIGHT = 0.03;
+const SCHOOL_CITY_MATCH_WEIGHT = 0.05;
+const CAREER_GOALS_MATCH_WEIGHT = 0.2;
 
-  // normalize rating to a 0-10 scale
-  const normalizedRating = (mentor.averageRating / MAX_RATING) * NORMALIZE;
-  const ratingScore = normalizedRating * RATING_WEIGHT;
+const normalizeRating = (rating) => {
+  return (rating / MAX_RATING) * NORMALIZE * RATING_WEIGHT;
+};
 
-  // normalize experience to a 0-10 scale
-  const normalizedExperience = Math.min(mentor.years_experience, NORMALIZE);
-  const experienceScore = normalizedExperience * EXPERIENCE_WEIGHT;
+const normalizeExperience = (years_experience) => {
+  return Math.min(years_experience, NORMALIZE) * EXPERIENCE_WEIGHT;
+};
 
-  // skill scores
-  // gets mentee and mentor list of skills
-  const menteeSkills = mentee.skills
-    .split(",")
-    .map((skill) => skill.trim().toLowerCase());
-  const mentorSkills = mentor.skills
-    .split(",")
-    .map((skill) => skill.trim().toLowerCase());
-
-  // gets list of matching, then mentor skills length - matchign skills length
+const calculateSkillScores = (mentorSkills, menteeSkills) => {
   const matchingSkillsCount = menteeSkills.filter((skill) =>
     mentorSkills.includes(skill)
   ).length;
@@ -135,15 +126,32 @@ const calculateMentorScore = (mentor, mentee) => {
     (nonMatchingSkillsCount / mentorSkills.length) *
     NORMALIZE *
     NON_MATCHING_SKILLS_WEIGHT;
-  const skillScore = matchingSkillScore + nonMatchingSkillScore;
+  return matchingSkillScore + nonMatchingSkillScore;
+};
 
-  // check if school strings match and multiply by match weight
+const calculateSchoolScores = (mentor, mentee) => {
+  const menteeSchool = mentee.school ?? "";
+  const mentorSchool = mentor.school ?? "";
+  const menteeSchoolState = mentee.schoolState ?? "";
+  const mentorSchoolState = mentor.schoolState ?? "";
+  const menteeSchoolCity = mentee.schoolCity ?? "";
+  const mentorSchoolCity = mentor.schoolCity ?? "";
+
+  const schoolMatch =
+    mentorSchool.toLowerCase() === menteeSchool.toLowerCase() ? 1 : 0;
+  const schoolStateMatch =
+    mentorSchoolState.toLowerCase() === menteeSchoolState.toLowerCase() ? 1 : 0;
+  const schoolCityMatch =
+    mentorSchoolCity.toLowerCase() === menteeSchoolCity.toLowerCase() ? 1 : 0;
+
   const schoolScore =
-    mentor.school.toLowerCase() === mentee.school.toLowerCase()
-      ? NORMALIZE * SCHOOL_MATCH_WEIGHT
-      : 0;
+    schoolMatch * NORMALIZE * SCHOOL_MATCH_WEIGHT +
+    schoolStateMatch * NORMALIZE * SCHOOL_STATE_MATCH_WEIGHT +
+    schoolCityMatch * NORMALIZE * SCHOOL_CITY_MATCH_WEIGHT;
+  return schoolScore;
+};
 
-  // score of matching key words in mentee career goal section to mentor fields
+const calculateCareerGoalsMatchScore = (mentor, mentee) => {
   const careerGoalText = mentee.career_goals;
   const keywordsArray = careerGoalText.split(/\s+/); // splits based on whitespace
   const careerGoalsKeywords = keywordsArray.map((keyword) =>
@@ -157,10 +165,27 @@ const calculateMentorScore = (mentor, mentee) => {
       mentor.company.toLowerCase().includes(keyword) ||
       mentor.industry.toLowerCase().includes(keyword)
   ).length;
-  const careerGoalsMatchScore =
+  return (
     (careerGoalsMatchCount / careerGoalsKeywords.length) *
     NORMALIZE *
-    CAREER_GOALS_MATCH_WEIGHT;
+    CAREER_GOALS_MATCH_WEIGHT
+  );
+};
+
+const calculateMentorScore = (mentor, mentee) => {
+  const ratingScore = normalizeRating(mentor.averageRating);
+  const experienceScore = normalizeExperience(mentor.years_experience);
+
+  const menteeSkills = mentee.skills
+    .split(",")
+    .map((skill) => skill.trim().toLowerCase());
+  const mentorSkills = mentor.skills
+    .split(",")
+    .map((skill) => skill.trim().toLowerCase());
+  const skillScore = calculateSkillScores(mentorSkills, menteeSkills);
+
+  const schoolScore = calculateSchoolScores(mentor, mentee);
+  const careerGoalsMatchScore = calculateCareerGoalsMatchScore(mentor, mentee);
 
   const totalScore =
     ratingScore +
@@ -168,7 +193,6 @@ const calculateMentorScore = (mentor, mentee) => {
     skillScore +
     schoolScore +
     careerGoalsMatchScore;
-
   return totalScore;
 };
 
@@ -195,22 +219,12 @@ function Match() {
   const [selectedRole, setSelectedRole] = useState("");
   const [selectedIndustry, setSelectedIndustry] = useState("");
   const [mentee, setMentee] = useState(null);
-  const [isSuggestionModalOpen, setIsSuggestionModalOpen] = useState(false);
   const [topMentors, setTopMentors] = useState([]);
+  const [matchedMentorIds, setMatchedMentorIds] = useState([]);
 
   const handleCardClick = (mentor) => {
     setSelectedMentor(mentor);
     setIsMatchModalOpen(true);
-  };
-
-  const openSuggestionModal = () => {
-    const suggestions = getTopMentorSuggestions(mentors, mentee);
-    setTopMentors(suggestions);
-    setIsSuggestionModalOpen(true);
-  };
-
-  const closeSuggestionModal = () => {
-    setIsSuggestionModalOpen(false);
   };
 
   const handleRoleChange = (event) => {
@@ -224,6 +238,34 @@ function Match() {
   const closeModal = () => {
     setIsMatchModalOpen(false);
     setSelectedMentor(null);
+  };
+
+  const fetchMatchedMentors = (menteeId) => {
+    fetch(`${config.apiBaseUrl}/connect-requests/mentee/${menteeId}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(
+            "Failed to fetch connect requests. Please try again later."
+          );
+        }
+        return response.json();
+      })
+      .then((data) => {
+        const acceptedRequests = data.requests.filter(
+          (request) => request.status === "accepted"
+        );
+        const matchedMentorIds = acceptedRequests.map(
+          (request) => request.mentorId
+        );
+        setMatchedMentorIds(matchedMentorIds);
+      })
+      .catch((error) => {
+        setErrorMessage(error.message);
+      });
+  };
+
+  const getUnmatchedMentors = (mentors, matchedMentorIds) => {
+    return mentors.filter((mentor) => !matchedMentorIds.includes(mentor.id));
   };
 
   const fetchMentorsData = () => {
@@ -256,6 +298,7 @@ function Match() {
       })
       .then((data) => {
         setMentee(data.mentee);
+        fetchMatchedMentors(data.mentee.id);
       })
       .catch((error) => {
         setErrorMessage(error.message);
@@ -263,9 +306,17 @@ function Match() {
   };
 
   useEffect(() => {
-    fetchMentorsData();
     fetchMenteeData();
+    fetchMentorsData();
   }, []);
+
+  useEffect(() => {
+    if (mentors.length && mentee) {
+      const unmatchedMentors = getUnmatchedMentors(mentors, matchedMentorIds);
+      const suggestions = getTopMentorSuggestions(unmatchedMentors, mentee);
+      setTopMentors(suggestions);
+    }
+  }, [mentors, mentee, matchedMentorIds]);
 
   const filteredMentors = mentors.filter(
     (mentor) =>
@@ -278,7 +329,9 @@ function Match() {
         (mentor.industry &&
           mentor.industry
             .toLowerCase()
-            .includes(selectedIndustry.toLowerCase())))
+            .includes(selectedIndustry.toLowerCase()))) &&
+      !matchedMentorIds.includes(mentor.id) &&
+      !topMentors.some((topMentor) => topMentor.id === mentor.id)
   );
 
   return (
@@ -294,9 +347,6 @@ function Match() {
         <h1>Choose a Mentor</h1>
       </div>
       <div className="match-nav">
-        <button id="suggestion-btn" onClick={openSuggestionModal}>
-          Suggestions
-        </button>
         <select name="role" value={selectedRole} onChange={handleRoleChange}>
           <option value="">Select a role</option>
           {techRoles.map((role, index) => (
@@ -319,16 +369,35 @@ function Match() {
           ))}
         </select>
       </div>
-      <div className="match-container">
-        <div className="mc-list">
-          {filteredMentors.map((mentor) => (
+      <div className="suggested-container">
+        <div className="sc-header">
+          <h3>Suggested</h3>
+        </div>
+        <div className="sc-list">
+          {topMentors.map((mentor) => (
+            <MentorCard
+              key={mentor.id}
+              mentor={mentor}
+              onCardClick={handleCardClick}
+              score={mentor.score}
+            />
+          ))}
+        </div>
+      </div>
+      <div className="divider"></div>
+      <div className="mc-header">
+        <h3>Other Mentors</h3>
+      </div>
+      <div className="mc-list">
+        {filteredMentors
+          .filter((mentor) => !topMentors.includes(mentor))
+          .map((mentor) => (
             <MentorCard
               key={mentor.id}
               mentor={mentor}
               onCardClick={handleCardClick}
             />
           ))}
-        </div>
       </div>
       {isMatchModalOpen && (
         <MatchModal
@@ -336,15 +405,6 @@ function Match() {
           closeModal={closeModal}
           mentee={mentee}
         />
-      )}
-      {isSuggestionModalOpen && (
-        <SuggestionModal
-          closeSuggestionModal={closeSuggestionModal}
-          mentors={topMentors}
-          handleCardClick={handleCardClick}
-          mentee={mentee}
-          closeModal={closeModal}
-        ></SuggestionModal>
       )}
     </>
   );
