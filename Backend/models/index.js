@@ -5,6 +5,7 @@ import { MentorshipMatch } from "./mentorship-match.js";
 import { Meeting } from "./Meeting.js";
 import { ConnectRequest } from "./connect-request.js";
 import { Review } from "./review.js";
+import { MenteeMeeting } from "./mentee-meeting.js";
 
 User.hasOne(Mentor, { foreignKey: "userId", as: "mentorProfile" });
 User.hasOne(Mentee, { foreignKey: "userId", as: "menteeProfile" });
@@ -23,7 +24,14 @@ Mentee.belongsToMany(Mentor, {
   as: "mentors",
 });
 Meeting.belongsTo(Mentor, { foreignKey: "mentorId" });
-Meeting.belongsTo(Mentee, { foreignKey: "menteeId" });
+Meeting.belongsToMany(Mentee, {
+  through: MenteeMeeting,
+  foreignKey: "meetingId",
+});
+Mentee.belongsToMany(Meeting, {
+  through: MenteeMeeting,
+  foreignKey: "menteeId",
+});
 
 Mentor.hasMany(ConnectRequest, {
   foreignKey: "mentorId",
@@ -33,6 +41,7 @@ Mentee.hasMany(ConnectRequest, {
   foreignKey: "menteeId",
   as: "connectRequests",
 });
+
 ConnectRequest.belongsTo(Mentor, { foreignKey: "mentorId" });
 ConnectRequest.belongsTo(Mentee, { foreignKey: "menteeId" });
 
@@ -41,4 +50,12 @@ Mentee.hasMany(Review, { foreignKey: "menteeId", as: "reviews" });
 Review.belongsTo(Mentor, { foreignKey: "mentorId" });
 Review.belongsTo(Mentee, { foreignKey: "menteeId" });
 
-export { User, Mentor, Mentee, MentorshipMatch, Meeting, Review };
+export {
+  User,
+  Mentor,
+  Mentee,
+  MentorshipMatch,
+  Meeting,
+  Review,
+  MenteeMeeting,
+};

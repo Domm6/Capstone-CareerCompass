@@ -435,17 +435,45 @@ router.get("/connect-requests/:mentorId", async (req, res) => {
 });
 
 // route to get mentee specific requests
-router.get("/connect-requests/mentee/:menteeId", async (req, res) => {
+router.get("/meetings/mentee/:menteeId", async (req, res) => {
   const { menteeId } = req.params;
 
   try {
-    const requests = await ConnectRequest.findAll({
-      where: { menteeId },
+    const meetings = await Meeting.findAll({
+      include: [
+        {
+          model: Mentor,
+          attributes: ["userId"],
+          include: [{ model: User, attributes: ["name"] }],
+        },
+        {
+          model: Mentee,
+          attributes: ["userId"],
+          where: { userId: menteeId },
+          include: [{ model: User, attributes: ["name"] }],
+        },
+      ],
     });
 
-    res.json({ requests });
+    const response = meetings.map((meeting) => ({
+      id: meeting.id,
+      mentorId: meeting.mentorId,
+      mentorName: meeting.Mentor.User.name,
+      scheduledTime: meeting.scheduledTime,
+      endTime: meeting.endTime,
+      topic: meeting.topic,
+      status: meeting.status,
+      createdAt: meeting.createdAt,
+      updatedAt: meeting.updatedAt,
+      mentees: meeting.Mentees.map((mentee) => ({
+        menteeId: mentee.userId,
+        menteeName: mentee.User.name,
+      })),
+    }));
+
+    res.json(response);
   } catch (error) {
-    res.status(500).json({ error: "Error fetching connect requests" });
+    res.status(500).json({ error: "Error fetching meetings" });
   }
 });
 
@@ -456,24 +484,37 @@ router.get("/meetings/mentor/:mentorId", async (req, res) => {
   try {
     const meetings = await Meeting.findAll({
       where: { mentorId },
+      include: [
+        {
+          model: Mentor,
+          attributes: ["userId"],
+          include: [{ model: User, attributes: ["name"] }],
+        },
+        {
+          model: Mentee,
+          attributes: ["userId"],
+          include: [{ model: User, attributes: ["name"] }],
+        },
+      ],
     });
 
-    res.json({ meetings });
-  } catch (error) {
-    res.status(500).json({ error: "Error fetching meetings" });
-  }
-});
+    const response = meetings.map((meeting) => ({
+      id: meeting.id,
+      mentorId: meeting.mentorId,
+      mentorName: meeting.Mentor.User.name,
+      scheduledTime: meeting.scheduledTime,
+      endTime: meeting.endTime,
+      topic: meeting.topic,
+      status: meeting.status,
+      createdAt: meeting.createdAt,
+      updatedAt: meeting.updatedAt,
+      mentees: meeting.Mentees.map((mentee) => ({
+        menteeId: mentee.userId,
+        menteeName: mentee.User.name,
+      })),
+    }));
 
-// get a mentees meetings
-router.get("/meetings/mentee/:menteeId", async (req, res) => {
-  const { menteeId } = req.params;
-
-  try {
-    const meetings = await Meeting.findAll({
-      where: { menteeId },
-    });
-
-    res.json({ meetings });
+    res.json(response);
   } catch (error) {
     res.status(500).json({ error: "Error fetching meetings" });
   }
@@ -521,7 +562,7 @@ router.post("/meetings", async (req, res) => {
   const MEETING_DURATION_MINUTES = 30;
   const MILLISECONDS_IN_MINUTE = 60 * 1000;
 
-  const { mentorId, menteeId, scheduledTime, topic } = req.body;
+  const { mentorId, menteeIds, scheduledTime, topic } = req.body;
   const startTime = new Date(scheduledTime).toISOString();
   const endTime = new Date(
     new Date(scheduledTime).getTime() +
@@ -529,42 +570,52 @@ router.post("/meetings", async (req, res) => {
   ).toISOString(); // 30 minute meeting
 
   try {
-    // Check if there is a conflict
-    const conflict = await Meeting.findOne({
-      where: {
-        [Op.or]: [
-          {
-            mentorId,
-            [Op.and]: [
-              { scheduledTime: { [Op.lte]: endTime } },
-              { endTime: { [Op.gte]: startTime } },
-            ],
-          },
-          {
-            menteeId,
-            [Op.and]: [
-              { scheduledTime: { [Op.lte]: endTime } },
-              { endTime: { [Op.gte]: startTime } },
-            ],
-          },
-        ],
-      },
-    });
-
-    if (conflict) {
-      return res.status(400).json({ error: "Scheduling conflict detected" });
-    }
-
     // Create the new meeting
     const newMeeting = await Meeting.create({
       mentorId,
-      menteeId,
       scheduledTime: startTime,
       endTime: endTime,
       topic,
     });
 
-    res.status(201).json(newMeeting);
+    // Add mentees to the meeting
+    await newMeeting.setMentees(menteeIds);
+
+    // Fetch the meeting with associated mentor and mentees
+    const meetingWithDetails = await Meeting.findOne({
+      where: { id: newMeeting.id },
+      include: [
+        {
+          model: Mentor,
+          attributes: ["userId"],
+          include: [{ model: User, attributes: ["name"] }],
+        },
+        {
+          model: Mentee,
+          attributes: ["userId"],
+          include: [{ model: User, attributes: ["name"] }],
+        },
+      ],
+    });
+
+    // Prepare the response with mentor and mentee details
+    const response = {
+      id: meetingWithDetails.id,
+      mentorId: meetingWithDetails.mentorId,
+      mentorName: meetingWithDetails.Mentor.User.name,
+      scheduledTime: meetingWithDetails.scheduledTime,
+      endTime: meetingWithDetails.endTime,
+      topic: meetingWithDetails.topic,
+      status: meetingWithDetails.status,
+      createdAt: meetingWithDetails.createdAt,
+      updatedAt: meetingWithDetails.updatedAt,
+      mentees: meetingWithDetails.Mentees.map((mentee) => ({
+        menteeId: mentee.userId,
+        menteeName: mentee.User.name,
+      })),
+    };
+
+    res.status(201).json(response);
   } catch (error) {
     res.status(500).json({ error: "Error scheduling meeting" });
   }

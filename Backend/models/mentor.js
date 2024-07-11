@@ -62,6 +62,11 @@ export const Mentor = sequelize.define(
       type: DataTypes.FLOAT,
       defaultValue: 0,
     },
+    meetingPreferences: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: {},
+    },
   },
   {
     tableName: "Mentors",

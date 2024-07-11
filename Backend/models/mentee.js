@@ -42,6 +42,11 @@ export const Mentee = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    meetingPreferences: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: {},
+    },
   },
   {
     tableName: "Mentees",

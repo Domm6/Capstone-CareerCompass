@@ -1,5 +1,7 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../database.js";
+import { MenteeMeeting } from "./mentee-meeting.js";
+import { Mentee } from "./mentee.js";
 
 export const Meeting = sequelize.define(
   "Meeting",
@@ -17,17 +19,6 @@ export const Meeting = sequelize.define(
       },
     },
     mentorName: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    menteeId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: "Mentees",
-        key: "id",
-      },
-    },
-    menteeName: {
       type: DataTypes.STRING,
       allowNull: true,
     },
@@ -53,3 +44,12 @@ export const Meeting = sequelize.define(
     tableName: "Meetings",
   }
 );
+
+Meeting.belongsToMany(Mentee, {
+  through: MenteeMeeting,
+  foreignKey: "meetingId",
+});
+Mentee.belongsToMany(Meeting, {
+  through: MenteeMeeting,
+  foreignKey: "menteeId",
+});
