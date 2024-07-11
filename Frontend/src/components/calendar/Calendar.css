@@ -1,25 +1,24 @@
 .calendar-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: grey;
-    margin: 10px;
-    padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: grey;
+  margin: 10px;
+  padding: 10px;
 }
 
 .fc-media-screen {
-    width: 100%;
-    padding: 10px;
+  width: 100%;
+  padding: 10px;
 }
 
 .fc-toolbar-chunk {
-    display: flex;
-
+  display: flex;
 }
 
 .add-meeting-btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 30%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30%;
 }

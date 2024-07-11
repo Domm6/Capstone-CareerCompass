@@ -1,6 +1,0 @@
-.scroll-container {
-    display: flex;
-    overflow-x: auto;
-    width: 100%;
-    padding: 10px 0; /* Optional: Add some padding for better spacing */
-}

@@ -1,20 +1,20 @@
 .md-container {
-    margin: 10px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  margin: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .md-nav {
-    margin: 10px;
-    padding: 10px;
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
+  margin: 10px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
 }
 
 .md-body {
-    width: 100%;
+  width: 100%;
 }

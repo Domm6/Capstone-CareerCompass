@@ -1,90 +1,90 @@
 .mp-header {
-    background-color: #2c3e50;
-    color: #ecf0f1;
-    padding: 10px;
-    display: flex;
-    justify-content: center;
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
 }
 
 .mp-top {
-    display: flex;
-    justify-content: space-between; /* Ensures the title is on the left and button on the right */
-    align-items: center; /* Vertically center the items */
-    background-color: white;
-    padding: 15px;
-    border-radius: 8px;
-    width: 100%;
+  display: flex;
+  justify-content: space-between; /* Ensures the title is on the left and button on the right */
+  align-items: center; /* Vertically center the items */
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  width: 100%;
 }
 
 .mp-top-left {
-    background-color: #95a5a6;
-    flex: 1; /* Allow this div to grow and take available space */
+  background-color: #95a5a6;
+  flex: 1; /* Allow this div to grow and take available space */
 }
 
 .mp-top-right {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    height: 70%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 70%;
 }
 
 .mp-container {
-    margin: 10px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  margin: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .mp-body {
-    margin: 10px;
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
+  margin: 10px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .mp-left {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 1;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
 }
 
 .mp-right {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    flex: 2;
-    margin-left: 20px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  flex: 2;
+  margin-left: 20px;
 }
 
 .mp-right p {
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    border-radius: 8px;
-    padding: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 10px;
 }
 
 .mp-right-company {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .mp-right-company img {
-    width: 50px;
-    margin: 10px;
-    padding: 10px;
+  width: 50px;
+  margin: 10px;
+  padding: 10px;
 }
 
 .mp-form {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .mp-form input {
-    width: 10%;
+  width: 10%;
 }
 
 #save-button {
-    width: 20%;
+  width: 20%;
 }
