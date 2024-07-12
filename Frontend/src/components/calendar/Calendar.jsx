@@ -175,9 +175,11 @@ function Calendar() {
 
   return (
     <>
-      <div className="add-meeting-btn">
-        <button onClick={handleModalToggle}>Add Meeting</button>
-      </div>
+      {isMentor(user) && (
+        <div className="add-meeting-btn">
+          <button onClick={handleModalToggle}>Add Meeting</button>
+        </div>
+      )}
       <div className="calendar-container">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
