@@ -292,12 +292,13 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
 
     // Split slots into 30-minute intervals
     const splitInto30MinuteSlots = (slots) => {
+      const THIRTY_MIN_SLOT = 30;
       const result = [];
       slots.forEach((slot) => {
         let currentTime = slot.start.clone();
         while (currentTime.isBefore(slot.end)) {
           const endTime = moment.min(
-            currentTime.clone().add(30, "minutes"),
+            currentTime.clone().add(THIRTY_MIN_SLOT, "minutes"),
             slot.end
           );
           if (endTime.isAfter(currentTime)) {
@@ -306,7 +307,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
               end: endTime.format("HH:mm"),
             });
           }
-          currentTime.add(30, "minutes");
+          currentTime.add(THIRTY_MIN_SLOT, "minutes");
         }
       });
       return result;
