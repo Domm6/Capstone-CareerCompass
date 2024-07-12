@@ -101,7 +101,6 @@ function Calendar() {
     if (userData && userData.id) {
       fetchMeetings(userData.id);
     }
-    t;
   };
 
   const handleMeetingClick = (info) => {

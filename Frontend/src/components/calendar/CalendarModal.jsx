@@ -115,19 +115,18 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
           scheduledDate
         );
         setSuggestedTimes(suggestedTimes);
+      } else {
+        setSuggestedTimes([]); // Clear suggested times when no users are selected
       }
     };
 
     fetchSuggestedTimes();
   }, [userData, selectedUsers, scheduledDate]);
 
-  // Schedule a meeting
-  const handleScheduleMeeting = async (event) => {
-    event.preventDefault();
-
+  const handleScheduleMeeting = async (timeSlot) => {
     const scheduledDateTime = moment
       .tz(
-        `${scheduledDate}T${scheduledTime}`,
+        `${scheduledDate}T${timeSlot.start}`,
         "YYYY-MM-DDTHH:mm",
         "America/Los_Angeles"
       )
@@ -157,16 +156,21 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
     } catch (error) {
       setErrorMessage(error.message);
     }
-    toggleModal();
   };
 
   const handleCheckboxChange = (event) => {
     const { value, checked } = event.target;
-    setSelectedUsers((prevSelectedUsers) =>
-      checked
+    setSelectedUsers((prevSelectedUsers) => {
+      const updatedSelectedUsers = checked
         ? [...prevSelectedUsers, parseInt(value)]
-        : prevSelectedUsers.filter((id) => id !== parseInt(value))
-    );
+        : prevSelectedUsers.filter((id) => id !== parseInt(value));
+
+      if (updatedSelectedUsers.length === 0) {
+        setSuggestedTimes([]); // Clear suggested times when no users are selected
+      }
+
+      return updatedSelectedUsers;
+    });
   };
 
   const getSuggestedTimes = async (mentorId, selectedMentees, selectedDate) => {
@@ -322,7 +326,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
         </span>
         <h3>Schedule Meeting:</h3>
         <div className="calendar-modal-container">
-          <form onSubmit={handleScheduleMeeting} className="calendar-form">
+          <form className="calendar-form">
             <div className="form-group">
               <label>Select {isMentor(user) ? "Mentees" : "Mentor"}:</label>
               <div className="checkbox-list">
@@ -350,16 +354,6 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="time">Time:</label>
-              <input
-                type="time"
-                id="time"
-                value={scheduledTime}
-                onChange={(event) => setScheduledTime(event.target.value)}
-                required
-              />
-            </div>
-            <div className="form-group">
               <label htmlFor="topic">Topic:</label>
               <input
                 type="text"
@@ -368,16 +362,24 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
                 onChange={(event) => setTopic(event.target.value)}
               />
             </div>
-            <button type="submit">Submit</button>
           </form>
           <div className="calendar-suggested-times">
             <label>Suggested Times</label>
-            {suggestedTimes.map((timeSlot, index) => (
-              <button key={index}>
-                {timeSlot.start} - {timeSlot.end}
-              </button>
-            ))}
-            <button>3:00 - 12:00</button>
+            {suggestedTimes.length > 0 ? (
+              suggestedTimes.map((timeSlot, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleScheduleMeeting(timeSlot)}
+                >
+                  {timeSlot.start} - {timeSlot.end}
+                </button>
+              ))
+            ) : (
+              <p>
+                No suggested times available. Please select a mentees and a
+                date.
+              </p>
+            )}
           </div>
         </div>
       </div>
