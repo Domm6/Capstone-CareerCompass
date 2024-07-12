@@ -16,63 +16,110 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
   const [topic, setTopic] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [userData, setUserData] = useState("");
+  const [mentorsMeetings, setMentorsMeetings] = useState([]);
   const navigate = useNavigate();
 
-  // Fetch user data (mentor or mentee)
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const url = isMentor(user)
-          ? `${config.apiBaseUrl}/mentors/${user.id}`
-          : `${config.apiBaseUrl}/mentees/${user.id}`;
+  const fetchUserData = async (user, isMentor) => {
+    const url = isMentor(user)
+      ? `${config.apiBaseUrl}/mentors/${user.id}`
+      : `${config.apiBaseUrl}/mentees/${user.id}`;
 
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error("Failed to fetch user data");
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error("Failed to fetch user data");
+    }
+    const data = await response.json();
+    return isMentor(user) ? data.mentor : data.mentee;
+  };
+
+  const fetchRequests = async (userId, isMentor) => {
+    const url = isMentor(user)
+      ? `${config.apiBaseUrl}/connect-requests/${userId}`
+      : `${config.apiBaseUrl}/connect-requests/mentee/${userId}`;
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error("Failed to fetch requests");
+    }
+    const data = await response.json();
+    return data.requests.filter((request) => request.status === "accepted");
+  };
+
+  const fetchMentorMeetings = async (mentorId) => {
+    const response = await fetch(
+      `${config.apiBaseUrl}/meetings/mentor/${mentorId}`
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch meetings");
+    }
+    const data = await response.json();
+    return data;
+  };
+
+  const fetchMenteeMeetings = async (menteeId) => {
+    const response = await fetch(
+      `${config.apiBaseUrl}/meetings/mentee/${menteeId}`
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch meetings");
+    }
+    const data = await response.json();
+    return data;
+  };
+
+  const fetchMenteeData = async (menteeId) => {
+    const response = await fetch(
+      `${config.apiBaseUrl}/mentees/menteeId/${menteeId}`
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch meetings");
+    }
+    const data = await response.json();
+    return data.mentee;
+  };
+
+  useEffect(() => {
+    const initialize = async () => {
+      try {
+        if (user && user.id) {
+          const fetchedUserData = await fetchUserData(user, isMentor);
+          setUserData(fetchedUserData);
+
+          if (isMentor(user)) {
+            const requests = await fetchRequests(fetchedUserData.id, isMentor);
+            setMenteesOrMentors(
+              requests.map((request) => ({
+                id: isMentor(user) ? request.menteeId : request.mentorId,
+                name: isMentor(user) ? request.menteeName : request.mentorName,
+              }))
+            );
+
+            const meetings = await fetchMeetings(fetchedUserData.id);
+            setMentorsMeetings(meetings);
+          }
         }
-        const data = await response.json();
-        setUserData(isMentor(user) ? data.mentor : data.mentee);
       } catch (error) {
         setErrorMessage(error.message);
       }
     };
 
-    if (user && user.id) {
-      fetchUserData();
-    }
-  }, [user]);
+    initialize();
+  }, [user, isMentor]);
 
-  // Fetch list of requests using mentor ID
   useEffect(() => {
-    const fetchRequests = async (userId) => {
-      try {
-        const url = isMentor(user)
-          ? `${config.apiBaseUrl}/connect-requests/${userId}`
-          : `${config.apiBaseUrl}/connect-requests/mentee/${userId}`;
-
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error("Failed to fetch requests");
-        }
-        const data = await response.json();
-        const acceptedRequests = data.requests.filter(
-          (request) => request.status === "accepted"
+    const fetchSuggestedTimes = async () => {
+      if (userData && selectedUsers.length > 0 && scheduledDate) {
+        const suggestedTimes = await getSuggestedTimes(
+          userData.id,
+          selectedUsers,
+          scheduledDate
         );
-        setMenteesOrMentors(
-          acceptedRequests.map((request) => ({
-            id: isMentor(user) ? request.menteeId : request.mentorId,
-            name: isMentor(user) ? request.menteeName : request.mentorName,
-          }))
-        );
-      } catch (error) {
-        setErrorMessage(error.message);
+        setSuggestedTimes(suggestedTimes);
       }
     };
 
-    if (userData && userData.id) {
-      fetchRequests(userData.id);
-    }
-  }, [userData]);
+    fetchSuggestedTimes();
+  }, [userData, selectedUsers, scheduledDate]);
 
   // Schedule a meeting
   const handleScheduleMeeting = async (event) => {
@@ -122,7 +169,150 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
     );
   };
 
-  const getSuggestedTimes = () => {};
+  const getSuggestedTimes = async (mentorId, selectedMentees, selectedDate) => {
+    // Parse the selected date
+    const selectedDateMoment = moment(selectedDate, "YYYY-MM-DD");
+
+    // Fetch and parse mentor's preferred hours
+    const { preferredStartHour, preferredEndHour } =
+      userData.meetingPreferences;
+    const preferredStartTime = moment(
+      `${selectedDate} ${preferredStartHour}`,
+      "YYYY-MM-DD HH:mm"
+    );
+    const preferredEndTime = moment(
+      `${selectedDate} ${preferredEndHour}`,
+      "YYYY-MM-DD HH:mm"
+    );
+
+    // Fetch mentor's meetings
+    const mentorMeetings = await fetchMentorMeetings(mentorId);
+
+    // Filter mentor meetings by the selected date
+    const filteredMentorMeetings = mentorMeetings.filter((meeting) => {
+      const meetingDate = moment(meeting.scheduledTime).format("YYYY-MM-DD");
+      return meetingDate === selectedDateMoment.format("YYYY-MM-DD");
+    });
+
+    // Sort mentor meetings by start time
+    const sortedMentorMeetings = filteredMentorMeetings.sort(
+      (a, b) => new Date(a.scheduledTime) - new Date(b.scheduledTime)
+    );
+
+    // Calculate mentor's free time slots within preferred hours
+    const mentorFreeSlots = [];
+    let lastEndTime = preferredStartTime;
+
+    sortedMentorMeetings.forEach((meeting) => {
+      const meetingStartTime = moment(meeting.scheduledTime);
+      const meetingEndTime = moment(meeting.endTime);
+
+      if (
+        meetingStartTime.isAfter(lastEndTime) &&
+        meetingStartTime.isBefore(preferredEndTime)
+      ) {
+        mentorFreeSlots.push({
+          start: lastEndTime.clone(),
+          end: meetingStartTime.clone(),
+        });
+      }
+
+      if (meetingEndTime.isAfter(lastEndTime)) {
+        lastEndTime = meetingEndTime;
+      }
+    });
+
+    // Add the last slot from the end of the last meeting to the end of the preferred time
+    if (lastEndTime.isBefore(preferredEndTime)) {
+      mentorFreeSlots.push({
+        start: lastEndTime.clone(),
+        end: preferredEndTime.clone(),
+      });
+    }
+
+    // Initialize arrays to store mentees' data and meetings
+    const menteesData = [];
+    const menteesMeetings = [];
+
+    // Loop through selected mentees
+    for (const menteeId of selectedMentees) {
+      // Fetch mentee's data and store preferred hours
+      const menteeData = await fetchMenteeData(menteeId);
+      menteesData.push({
+        menteeId: menteeId,
+        preferredStartHour: menteeData.meetingPreferences.preferredStartHour,
+        preferredEndHour: menteeData.meetingPreferences.preferredEndHour,
+      });
+
+      // Fetch mentee's meetings and store
+      const menteeMeetings = await fetchMenteeMeetings(menteeId);
+      menteesMeetings.push({
+        menteeId: menteeId,
+        meetings: menteeMeetings.filter((meeting) => {
+          const meetingDate = moment(meeting.scheduledTime).format(
+            "YYYY-MM-DD"
+          );
+          return meetingDate === selectedDateMoment.format("YYYY-MM-DD");
+        }),
+      });
+    }
+
+    // Function to find common free slots
+    const findCommonFreeSlots = (freeSlots, meetings) => {
+      const commonSlots = [];
+      freeSlots.forEach((slot) => {
+        let isFree = true;
+        meetings.forEach((meeting) => {
+          const meetingStartTime = moment(meeting.scheduledTime);
+          const meetingEndTime = moment(meeting.endTime);
+
+          if (
+            meetingStartTime.isBefore(slot.end) &&
+            meetingEndTime.isAfter(slot.start)
+          ) {
+            isFree = false;
+          }
+        });
+        if (isFree) {
+          commonSlots.push(slot);
+        }
+      });
+      return commonSlots;
+    };
+
+    // Find common free slots for all mentees
+    let commonFreeSlots = mentorFreeSlots;
+    menteesMeetings.forEach((mentee) => {
+      commonFreeSlots = findCommonFreeSlots(commonFreeSlots, mentee.meetings);
+    });
+
+    // Split slots into 30-minute intervals
+    const splitInto30MinuteSlots = (slots) => {
+      const result = [];
+      slots.forEach((slot) => {
+        let currentTime = slot.start.clone();
+        while (currentTime.isBefore(slot.end)) {
+          const endTime = moment.min(
+            currentTime.clone().add(30, "minutes"),
+            slot.end
+          );
+          if (endTime.isAfter(currentTime)) {
+            result.push({
+              start: currentTime.format("HH:mm"),
+              end: endTime.format("HH:mm"),
+            });
+          }
+          currentTime.add(30, "minutes");
+        }
+      });
+      return result;
+    };
+
+    const formattedCommonFreeSlots = splitInto30MinuteSlots(commonFreeSlots);
+
+    // Return the common free slots
+    return formattedCommonFreeSlots;
+  };
 
   return (
     <div className="modal">
@@ -182,15 +372,11 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
           </form>
           <div className="calendar-suggested-times">
             <label>Suggested Times</label>
-            <button>3:00 - 12:00</button>
-            <button>3:00 - 12:00</button>
-            <button>3:00 - 12:00</button>
-            <button>3:00 - 12:00</button>
-            <button>3:00 - 12:00</button>
-            <button>3:00 - 12:00</button>
-            <button>3:00 - 12:00</button>
-            <button>3:00 - 12:00</button>
-            <button>3:00 - 12:00</button>
+            {suggestedTimes.map((timeSlot, index) => (
+              <button key={index}>
+                {timeSlot.start} - {timeSlot.end}
+              </button>
+            ))}
             <button>3:00 - 12:00</button>
           </div>
         </div>

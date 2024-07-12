@@ -276,6 +276,26 @@ router.get("/mentees/:id", async (req, res) => {
   }
 });
 
+// Route to fetch mentee profile based on user ID
+router.get("/mentees/menteeId/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    // Find the mentor by user ID
+    const mentee = await Mentee.findOne({ where: { id } });
+
+    if (!mentee) {
+      return res.status(404).json({ error: "Mentee not found" });
+    }
+
+    // Return the mentor data in the response
+    res.json({ mentee });
+  } catch (error) {
+    console.error("Error fetching mentor profile:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 // Route to fetch mentee profiles
 router.get("/mentees", async (req, res) => {
   try {
@@ -477,13 +497,13 @@ router.get("/meetings/mentee/:menteeId", async (req, res) => {
       include: [
         {
           model: Mentor,
-          attributes: ["userId"],
+          attributes: ["id"],
           include: [{ model: User, attributes: ["name"] }],
         },
         {
           model: Mentee,
-          attributes: ["userId"],
-          where: { userId: menteeId },
+          attributes: ["id"],
+          where: { id: menteeId }, // Corrected the where clause to filter by id
           include: [{ model: User, attributes: ["name"] }],
         },
       ],
@@ -500,7 +520,7 @@ router.get("/meetings/mentee/:menteeId", async (req, res) => {
       createdAt: meeting.createdAt,
       updatedAt: meeting.updatedAt,
       mentees: meeting.Mentees.map((mentee) => ({
-        menteeId: mentee.userId,
+        menteeId: mentee.id,
         menteeName: mentee.User.name,
       })),
     }));
@@ -521,12 +541,12 @@ router.get("/meetings/mentor/:mentorId", async (req, res) => {
       include: [
         {
           model: Mentor,
-          attributes: ["userId"],
+          attributes: ["id"],
           include: [{ model: User, attributes: ["name"] }],
         },
         {
           model: Mentee,
-          attributes: ["userId"],
+          attributes: ["id"],
           include: [{ model: User, attributes: ["name"] }],
         },
       ],
@@ -543,7 +563,7 @@ router.get("/meetings/mentor/:mentorId", async (req, res) => {
       createdAt: meeting.createdAt,
       updatedAt: meeting.updatedAt,
       mentees: meeting.Mentees.map((mentee) => ({
-        menteeId: mentee.userId,
+        menteeId: mentee.id,
         menteeName: mentee.User.name,
       })),
     }));
@@ -612,7 +632,7 @@ router.post("/meetings", async (req, res) => {
       topic,
     });
 
-    // Add mentees to the meeting
+    // Add mentees to the meeting by setting mentee IDs
     await newMeeting.setMentees(menteeIds);
 
     // Fetch the meeting with associated mentor and mentees
@@ -621,12 +641,12 @@ router.post("/meetings", async (req, res) => {
       include: [
         {
           model: Mentor,
-          attributes: ["userId"],
+          attributes: ["id"],
           include: [{ model: User, attributes: ["name"] }],
         },
         {
           model: Mentee,
-          attributes: ["userId"],
+          attributes: ["id"],
           include: [{ model: User, attributes: ["name"] }],
         },
       ],
@@ -644,7 +664,7 @@ router.post("/meetings", async (req, res) => {
       createdAt: meetingWithDetails.createdAt,
       updatedAt: meetingWithDetails.updatedAt,
       mentees: meetingWithDetails.Mentees.map((mentee) => ({
-        menteeId: mentee.userId,
+        menteeId: mentee.id,
         menteeName: mentee.User.name,
       })),
     };

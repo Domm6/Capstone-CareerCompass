@@ -57,7 +57,6 @@ function Calendar() {
         throw new Error("Failed to fetch meetings");
       }
       const data = await response.json();
-      console.log("Fetched meetings data:", data);
 
       const meetings = data.map((meeting) => {
         const start = moment.utc(meeting.scheduledTime).local().format();
@@ -78,7 +77,6 @@ function Calendar() {
           end: end,
         };
       });
-      console.log("Transformed meetings:", meetings);
 
       setMeetings(meetings);
     } catch (error) {
