@@ -371,7 +371,8 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
                   key={index}
                   onClick={() => handleScheduleMeeting(timeSlot)}
                 >
-                  {timeSlot.start} - {timeSlot.end}
+                  {moment(timeSlot.start, "HH:mm").format("h:mm A")} -{" "}
+                  {moment(timeSlot.end, "HH:mm").format("h:mm A")}
                 </button>
               ))
             ) : (
