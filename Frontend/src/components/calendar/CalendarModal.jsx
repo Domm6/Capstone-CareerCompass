@@ -174,6 +174,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
   };
 
   const getSuggestedTimes = async (mentorId, selectedMentees, selectedDate) => {
+    const THIRTY_MIN_MEETING = 30;
     const selectedDateMoment = moment(selectedDate, "YYYY-MM-DD");
 
     // fetch and format mentors preferred hours
@@ -291,13 +292,15 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
       let currentStart = slot.start.clone();
 
       while (currentStart.isBefore(slot.end)) {
-        const currentEnd = currentStart.clone().add(30, "minutes");
+        const currentEnd = currentStart
+          .clone()
+          .add(THIRTY_MIN_MEETING, "minutes");
         if (currentEnd.isAfter(slot.end)) break;
         intervals.push({
           start: currentStart.clone(),
           end: currentEnd.clone(),
         });
-        currentStart.add(30, "minutes");
+        currentStart.add(THIRTY_MIN_MEETING, "minutes");
       }
 
       return intervals;
