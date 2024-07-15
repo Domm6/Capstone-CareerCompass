@@ -122,7 +122,6 @@ function Calendar() {
       end: event.end,
     };
 
-    console.log(meeting);
     setSelectedMeeting(meeting);
     setIsMeetingModalOpen(true);
   };
