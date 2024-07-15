@@ -232,6 +232,18 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
     // fetch mentors meetings
     const mentorMeetings = await fetchMentorMeetings(mentorId);
 
+    // add fixed lunch break from 12:00 - 1:00
+    const lunchStart = moment(`${selectedDate} 12:00`, "YYYY-MM-DD HH:mm");
+    const lunchEnd = moment(`${selectedDate} 13:00`, "YYYY-MM-DD HH:mm");
+
+    mentorMeetings.push({
+      id: "lunch",
+      mentorId: mentorId,
+      mentorName: "Lunch Break",
+      scheduledTime: lunchStart.format(),
+      endTime: lunchEnd.format(),
+    });
+
     // filter mentor meetings by the selected date
     const filteredMentorMeetings = mentorMeetings.filter((meeting) => {
       const meetingDate = moment(meeting.scheduledTime).format("YYYY-MM-DD");
