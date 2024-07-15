@@ -70,7 +70,7 @@ function MentorProfile() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
-  // const logoApiKey = process.env.REACT_APP_LOGO_API_KEY; getting error process not defined
+  const { handleSignout } = useContext(UserContext);
 
   const fetchLogo = () => {
     // use api to fetch logo
@@ -161,6 +161,7 @@ function MentorProfile() {
             <h1>Mentor Profile</h1>
           </div>
           <div className="mp-top-right">
+            <button onClick={handleSignout}>Log Out</button>
             <button onClick={handleModalToggle}>Edit</button>
           </div>
         </div>

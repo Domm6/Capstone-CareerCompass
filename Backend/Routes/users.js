@@ -103,6 +103,18 @@ router.post("/users/login", async (req, res) => {
   }
 });
 
+// route for user sign out
+router.post("/users/signout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Error destroying session:", err);
+      return res.status(500).json({ error: "Failed to sign out" });
+    }
+    res.clearCookie("connect.sid", { path: "/" });
+    return res.status(200).json({ message: "Successfully signed out" });
+  });
+});
+
 // router to get userinfo
 router.get("/users/:id", async (req, res) => {
   try {
