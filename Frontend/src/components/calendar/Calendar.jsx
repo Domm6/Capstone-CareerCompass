@@ -46,7 +46,6 @@ function Calendar() {
     }
   }, [user]);
 
-  // Fetch meetings for the user (mentor or mentee)
   const fetchMeetings = async (userId) => {
     try {
       const url = isMentor(user)
@@ -59,22 +58,31 @@ function Calendar() {
       }
       const data = await response.json();
 
-      // Transform the meetings into FullCalendar event format
-      const meetings = data.meetings.map((meeting) => ({
-        id: meeting.id,
-        title: meeting.topic,
-        status: meeting.status,
-        backgroundColor: getMeetingColor(meeting.status),
-        start: moment.utc(meeting.scheduledTime).local().format(),
-        end: moment.utc(meeting.endTime).local().format(),
-      }));
+      const meetings = data.map((meeting) => {
+        const start = moment.utc(meeting.scheduledTime).local().format();
+        const end = meeting.endTime
+          ? moment.utc(meeting.endTime).local().format()
+          : moment
+              .utc(meeting.scheduledTime)
+              .add(30, "minutes")
+              .local()
+              .format();
+
+        return {
+          id: meeting.id,
+          title: meeting.topic,
+          status: meeting.status,
+          backgroundColor: getMeetingColor(meeting.status),
+          start: start,
+          end: end,
+        };
+      });
 
       setMeetings(meetings);
     } catch (error) {
       setErrorMessage(error.message);
     }
   };
-
   useEffect(() => {
     if (userData && userData.id) {
       fetchMeetings(userData.id);
@@ -93,7 +101,6 @@ function Calendar() {
     if (userData && userData.id) {
       fetchMeetings(userData.id);
     }
-    t;
   };
 
   const handleMeetingClick = (info) => {
@@ -168,9 +175,11 @@ function Calendar() {
 
   return (
     <>
-      <div className="add-meeting-btn">
-        <button onClick={handleModalToggle}>Add Meeting</button>
-      </div>
+      {isMentor(user) && (
+        <div className="add-meeting-btn">
+          <button onClick={handleModalToggle}>Add Meeting</button>
+        </div>
+      )}
       <div className="calendar-container">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}

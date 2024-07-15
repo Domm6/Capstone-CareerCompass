@@ -2,8 +2,11 @@ import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../UserContext.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import moment from "moment";
 import "./MentorProfileModal.css";
 import config from "../../../../config.js";
+
+const API_KEY = import.meta.env.VITE_SCHOOL_API;
 
 const experienceMappingReverse = {
   1: "0-2",
@@ -33,6 +36,8 @@ function MentorProfileModal({
     schoolCity: "",
     bio: "",
     skills: selectedSkills.join(", "),
+    preferredStartHour: "00:00",
+    preferredEndHour: "23:59",
   });
   const [schoolSuggestions, setSchoolSuggestions] = useState([]);
   const [selectedSchool, setSelectedSchool] = useState(null);
@@ -40,7 +45,8 @@ function MentorProfileModal({
 
   useEffect(() => {
     if (mentorData) {
-      setFormData({
+      setFormData((prevFormData) => ({
+        ...prevFormData,
         industry: mentorData.industry || "",
         company: mentorData.company || "",
         work_role: mentorData.work_role || "",
@@ -50,7 +56,11 @@ function MentorProfileModal({
         schoolCity: mentorData.schoolCity || "",
         bio: mentorData.bio || "",
         skills: mentorData.skills || "",
-      });
+        preferredStartHour:
+          mentorData.meetingPreferences?.preferredStartHour || "00:00",
+        preferredEndHour:
+          mentorData.meetingPreferences?.preferredEndHour || "23:59",
+      }));
     }
   }, [mentorData]);
 
@@ -62,7 +72,7 @@ function MentorProfileModal({
           params: {
             "school.name": query,
             fields: "id,school.name,school.city,school.state",
-            api_key: "h4vhrQ91a1mE8DOWWaja1m5JguMfsPy1fjULWHZi",
+            api_key: API_KEY,
           },
         }
       );
@@ -79,13 +89,10 @@ function MentorProfileModal({
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-
-    // Handle years_experience specifically
-    if (name === "years_experience") {
-      setFormData({ ...formData, [name]: value });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
 
     if (name === "school" && value.length > 2) {
       searchSchools(value);
@@ -109,6 +116,10 @@ function MentorProfileModal({
     const preparedData = {
       ...formData,
       skills: selectedSkills.join(", "),
+      meetingPreferences: {
+        preferredStartHour: formData.preferredStartHour,
+        preferredEndHour: formData.preferredEndHour,
+      },
     };
 
     try {
@@ -219,6 +230,26 @@ function MentorProfileModal({
               required
             />
           </div>
+          <div className="form-time-preference">
+            <label htmlFor="preferredStartHour">Preferred Start Hour:</label>
+            <input
+              type="time"
+              id="preferredStartHour"
+              name="preferredStartHour"
+              value={formData.preferredStartHour}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-time-preference">
+            <label htmlFor="preferredEndHour">Preferred End Hour:</label>
+            <input
+              type="time"
+              id="preferredEndHour"
+              name="preferredEndHour"
+              value={formData.preferredEndHour}
+              onChange={handleChange}
+            />
+          </div>
           <div className="form-skills">
             <label htmlFor="skills">Skills</label>
             <div>
@@ -229,15 +260,13 @@ function MentorProfileModal({
                 <div className="skills-dropdown">
                   {skillsList.map((skill) => (
                     <div key={skill}>
-                      <label>
-                        <input
-                          type="checkbox"
-                          value={skill}
-                          checked={selectedSkills.includes(skill)}
-                          onChange={() => handleCheckboxChange(skill)}
-                        />
-                        {skill}
-                      </label>
+                      <label>{skill}</label>
+                      <input
+                        type="checkbox"
+                        value={skill}
+                        checked={selectedSkills.includes(skill)}
+                        onChange={() => handleCheckboxChange(skill)}
+                      />
                     </div>
                   ))}
                 </div>

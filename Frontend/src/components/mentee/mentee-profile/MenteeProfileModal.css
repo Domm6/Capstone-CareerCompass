@@ -1,22 +1,22 @@
 .school-suggestions {
-    margin-top: 10px;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    max-height: 250px;
-    overflow-y: auto;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-height: 250px;
+  overflow-y: auto;
 }
 
 .school-suggestion {
-    display: flex;
-    padding: 10px;
-    margin: 5px;
-    background-color: grey;
-    border: 1px solid;
-    border-radius: 8px;
-    cursor: pointer;
-    width: 23%;
-    flex-wrap: wrap;
-    font-size: 0.8em;
-    text-align: center;
+  display: flex;
+  padding: 10px;
+  margin: 5px;
+  background-color: grey;
+  border: 1px solid;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 23%;
+  flex-wrap: wrap;
+  font-size: 0.8em;
+  text-align: center;
 }

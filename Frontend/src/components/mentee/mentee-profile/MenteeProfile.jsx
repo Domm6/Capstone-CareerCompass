@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../UserContext.jsx";
 import { useNavigate, Link } from "react-router-dom";
-
+import moment from "moment";
 import "./MenteeProfile.css";
 import MenteeProfileModal from "./MenteeProfileModal.jsx";
 import config from "../../../../config.js";
@@ -71,6 +71,8 @@ function MenteeProfile() {
     career_goals: "",
     school: "",
     skills: "",
+    preferredStartHour: "",
+    preferredEndHour: "",
   });
 
   const fetchMenteeData = () => {
@@ -91,6 +93,10 @@ function MenteeProfile() {
             bio: data.mentee.bio,
             career_goals: data.mentee.career_goals,
             skills: data.mentee.skills,
+            preferredStartHour:
+              data.mentee.meetingPreferences?.preferredStartHour || "00:00",
+            preferredEndHour:
+              data.mentee.meetingPreferences?.preferredEndHour || "23:59",
           });
         })
         .catch((error) => {
@@ -154,6 +160,14 @@ function MenteeProfile() {
             <p>Career Goals: {userData.career_goals}</p>
             <p>Skills: {userData.skills}</p>
             <p>Bio: {userData.bio}</p>
+            <p>
+              Preferred Start Hour:{" "}
+              {moment(userData.preferredStartHour, "HH:mm").format("h:mm A")}
+            </p>
+            <p>
+              Preferred End Hour:{" "}
+              {moment(userData.preferredEndHour, "HH:mm").format("h:mm A")}
+            </p>
           </div>
         </div>
         {isModalOpen && (

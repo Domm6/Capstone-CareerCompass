@@ -1,13 +1,13 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../database.js";
 
-export const MentorshipMatch = sequelize.define(
-  "MentorshipMatch",
+export const MenteeMeeting = sequelize.define(
+  "MenteeMeeting",
   {
-    mentorId: {
+    meetingId: {
       type: DataTypes.INTEGER,
       references: {
-        model: "Mentors",
+        model: "Meeting",
         key: "id",
       },
     },
@@ -20,13 +20,6 @@ export const MentorshipMatch = sequelize.define(
     },
   },
   {
-    tableName: "MentorshipMatch",
-    timestamps: false,
-    indexes: [
-      {
-        unique: true,
-        fields: ["mentorId", "menteeId"],
-      },
-    ],
+    tableName: "MenteeMeetings",
   }
 );

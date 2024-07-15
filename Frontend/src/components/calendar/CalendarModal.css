@@ -1,0 +1,51 @@
+.calendar-modal-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+}
+
+.calendar-form {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+}
+
+.checkbox-list {
+  max-height: 200px; /* Adjust the height as needed */
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.checkbox-item {
+  margin: 5px;
+  padding: 5px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  justify-content: center;
+}
+
+.checkbox-item p {
+  margin: 0;
+  margin-right: 10px;
+}
+
+.checkbox-item input {
+  margin-left: auto;
+}
+
+.calendar-suggested-times {
+  width: 30%;
+  margin: 10px;
+  padding: 10px;
+  overflow-y: auto;
+  max-height: 300px;
+}

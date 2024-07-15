@@ -7,6 +7,7 @@ const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
 const STAR_ICON =
   "https://cdn.iconscout.com/icon/free/png-256/free-star-bookmark-favorite-shape-rank-16-28621.png";
+const API_KEY = import.meta.env.VITE_LOGO_API;
 
 function MentorCard({ mentor, onCardClick, score }) {
   const { User: user } = mentor; // Access user data from mentor
@@ -34,7 +35,12 @@ function MentorCard({ mentor, onCardClick, score }) {
           </div>
           <div className="mc-body-right">
             <img
-              src={`${config.logoDevApiBaseUrl}/${mentor.company}.com?token=pk_DCOxK2D7TA68fkEDQQ2_fQ`}
+              src={`${config.logoDevApiBaseUrl}/${mentor.company}.com?token=${API_KEY}`}
+              alt="company logo"
+              onError={(error) => {
+                error.target.onerror = null;
+                error.target.src = PLACEHOLDER;
+              }}
             />
             <div className="mc-body-right-rating">
               <p>{mentor.averageRating}</p>

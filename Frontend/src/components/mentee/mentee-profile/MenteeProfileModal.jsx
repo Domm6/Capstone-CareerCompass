@@ -7,6 +7,7 @@ import axios from "axios";
 
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
+const API_KEY = import.meta.env.VITE_SCHOOL_API;
 
 function MenteeProfileModal({
   handleCheckboxChange,
@@ -28,6 +29,8 @@ function MenteeProfileModal({
     bio: "",
     career_goals: "",
     skills: selectedSkills.join(", "),
+    preferredStartHour: "00:00",
+    preferredEndHour: "23:59",
   });
   const [schoolSuggestions, setSchoolSuggestions] = useState([]);
   const [selectedSchool, setSelectedSchool] = useState(null);
@@ -45,6 +48,10 @@ function MenteeProfileModal({
         bio: menteeData.bio,
         career_goals: menteeData.career_goals,
         skills: menteeData.skills,
+        preferredStartHour:
+          menteeData.meetingPreferences?.preferredStartHour || "00:00",
+        preferredEndHour:
+          menteeData.meetingPreferences?.preferredEndHour || "23:59",
       });
     }
   }, [menteeData]);
@@ -67,7 +74,7 @@ function MenteeProfileModal({
           params: {
             "school.name": query,
             fields: "id,school.name,school.city,school.state",
-            api_key: "h4vhrQ91a1mE8DOWWaja1m5JguMfsPy1fjULWHZi",
+            api_key: API_KEY,
           },
         }
       );
@@ -99,6 +106,10 @@ function MenteeProfileModal({
     const preparedData = {
       ...formData,
       skills: selectedSkills.join(", "),
+      meetingPreferences: {
+        preferredStartHour: formData.preferredStartHour,
+        preferredEndHour: formData.preferredEndHour,
+      },
     };
 
     try {
@@ -183,6 +194,26 @@ function MenteeProfileModal({
               required
             />
           </div>
+          <div className="form-time-preference">
+            <label htmlFor="preferredStartHour">Preferred Start Hour:</label>
+            <input
+              type="time"
+              id="preferredStartHour"
+              name="preferredStartHour"
+              value={formData.preferredStartHour}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-time-preference">
+            <label htmlFor="preferredEndHour">Preferred End Hour:</label>
+            <input
+              type="time"
+              id="preferredEndHour"
+              name="preferredEndHour"
+              value={formData.preferredEndHour}
+              onChange={handleChange}
+            />
+          </div>
           <div className="form-skills">
             <label htmlFor="skills">Skills</label>
             <div>
@@ -193,15 +224,13 @@ function MenteeProfileModal({
                 <div className="skills-dropdown">
                   {skillsList.map((skill) => (
                     <div key={skill}>
-                      <label>
-                        <input
-                          type="checkbox"
-                          value={skill}
-                          checked={selectedSkills.includes(skill)}
-                          onChange={() => handleCheckboxChange(skill)}
-                        />
-                        {skill}
-                      </label>
+                      <label>{skill}</label>
+                      <input
+                        type="checkbox"
+                        value={skill}
+                        checked={selectedSkills.includes(skill)}
+                        onChange={() => handleCheckboxChange(skill)}
+                      />
                     </div>
                   ))}
                 </div>
