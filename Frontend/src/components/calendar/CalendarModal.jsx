@@ -188,7 +188,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
       "YYYY-MM-DD HH:mm"
     );
 
-    //  arrays to store mentees data and meetings
+    // arrays holding mentees data and meetings
     const menteesData = [];
     const menteesMeetings = {};
 
@@ -207,8 +207,6 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
         return meetingDate === selectedDateMoment.format("YYYY-MM-DD");
       });
     }
-
-    console.log(menteesMeetings);
 
     // calc the overlapping time range
     const overlapStartTime = menteesData.reduce((latestStartTime, mentee) => {
@@ -245,7 +243,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
       (a, b) => new Date(a.scheduledTime) - new Date(b.scheduledTime)
     );
 
-    // Calculate mentor's free time slots within the overlapping time range
+    // calc mentor's free time slots within the overlapping time range
     const mentorFreeSlots = [];
     let lastEndTime = overlapStartTime;
 
@@ -275,7 +273,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
       });
     }
 
-    // Function to break slots into 30-minute intervals
+    // function to break slots into 30 min intervals
     const breakIntoIntervals = (slot) => {
       const intervals = [];
       let currentStart = slot.start.clone();
@@ -293,29 +291,31 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
       return intervals;
     };
 
-    // Filter mentor's free slots to remove conflicts with mentees' meetings
-    const finalFreeSlots = mentorFreeSlots.filter((slot) => {
-      return selectedMentees.every((menteeId) => {
-        return !menteesMeetings[menteeId].some((meeting) => {
-          const meetingStartTime = moment(meeting.scheduledTime);
-          const meetingEndTime = moment(meeting.endTime);
-          return (
-            (slot.start.isBefore(meetingEndTime) &&
-              slot.end.isAfter(meetingStartTime)) ||
-            (slot.start.isSame(meetingStartTime) &&
-              slot.end.isSame(meetingEndTime))
-          );
-        });
-      });
-    });
-
-    // Break final free slots into 30-minute intervals
-    const intervals = finalFreeSlots.flatMap((slot) =>
+    // break mentor free slots into 30 min intervals
+    const allIntervals = mentorFreeSlots.flatMap((slot) =>
       breakIntoIntervals(slot)
     );
 
-    // Return the suggested times
-    return intervals.map((slot) => ({
+    // filter intervals to remove conflicts with mentees meetings
+    const finalFreeSlots = allIntervals.filter((interval) => {
+      return selectedMentees.every((menteeId) => {
+        const hasConflict = menteesMeetings[menteeId].some((meeting) => {
+          const meetingStartTime = moment(meeting.scheduledTime);
+          const meetingEndTime = moment(meeting.endTime);
+
+          const conflict =
+            interval.start.isBefore(meetingEndTime) &&
+            interval.end.isAfter(meetingStartTime);
+
+          return conflict;
+        });
+
+        return !hasConflict;
+      });
+    });
+
+    // return suggested times
+    return finalFreeSlots.map((slot) => ({
       start: slot.start.format("HH:mm"),
       end: slot.end.format("HH:mm"),
     }));
