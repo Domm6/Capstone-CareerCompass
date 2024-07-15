@@ -83,6 +83,7 @@ function Calendar() {
       setErrorMessage(error.message);
     }
   };
+
   useEffect(() => {
     if (userData && userData.id) {
       fetchMeetings(userData.id);
@@ -104,6 +105,7 @@ function Calendar() {
   };
 
   const handleMeetingClick = (info) => {
+    console.log(info.event);
     setSelectedMeeting(info.event);
     setIsMeetingModalOpen(true);
   };
@@ -185,7 +187,6 @@ function Calendar() {
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="timeGridWeek"
           events={meetings}
-          timeZone="PST"
           eventClick={handleMeetingClick}
         />
       </div>

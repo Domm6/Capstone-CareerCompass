@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { startTransition, useContext, useEffect, useState } from "react";
 import { UserContext } from "../../UserContext.jsx";
 import { useNavigate } from "react-router-dom";
 import "../mentor/mentor-profile/MentorProfileModal.css";
@@ -174,10 +174,9 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
   };
 
   const getSuggestedTimes = async (mentorId, selectedMentees, selectedDate) => {
-    // Parse the selected date
     const selectedDateMoment = moment(selectedDate, "YYYY-MM-DD");
 
-    // Fetch and parse mentor's preferred hours
+    // fetch and format mentors preferred hours
     const { preferredStartHour, preferredEndHour } =
       userData.meetingPreferences;
     const preferredStartTime = moment(
@@ -189,10 +188,53 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
       "YYYY-MM-DD HH:mm"
     );
 
-    // Fetch mentor's meetings
+    //  arrays to store mentees data and meetings
+    const menteesData = [];
+    const menteesMeetings = {};
+
+    // Fetch mentees' data and meetings
+    for (const menteeId of selectedMentees) {
+      const menteeData = await fetchMenteeData(menteeId);
+      menteesData.push({
+        menteeId: menteeId,
+        preferredStartHour: menteeData.meetingPreferences.preferredStartHour,
+        preferredEndHour: menteeData.meetingPreferences.preferredEndHour,
+      });
+
+      const menteeMeetings = await fetchMenteeMeetings(menteeId);
+      menteesMeetings[menteeId] = menteeMeetings.filter((meeting) => {
+        const meetingDate = moment(meeting.scheduledTime).format("YYYY-MM-DD");
+        return meetingDate === selectedDateMoment.format("YYYY-MM-DD");
+      });
+    }
+
+    console.log(menteesMeetings);
+
+    // calc the overlapping time range
+    const overlapStartTime = menteesData.reduce((latestStartTime, mentee) => {
+      const menteeStartTime = moment(
+        `${selectedDate} ${mentee.preferredStartHour}`,
+        "YYYY-MM-DD HH:mm"
+      );
+      return menteeStartTime.isAfter(latestStartTime)
+        ? menteeStartTime
+        : latestStartTime;
+    }, preferredStartTime);
+
+    const overlapEndTime = menteesData.reduce((earliestEndTime, mentee) => {
+      const menteeEndTime = moment(
+        `${selectedDate} ${mentee.preferredEndHour}`,
+        "YYYY-MM-DD HH:mm"
+      );
+      return menteeEndTime.isBefore(earliestEndTime)
+        ? menteeEndTime
+        : earliestEndTime;
+    }, preferredEndTime);
+
+    // fetch mentors meetings
     const mentorMeetings = await fetchMentorMeetings(mentorId);
 
-    // Filter mentor meetings by the selected date
+    // filter mentor meetings by the selected date
     const filteredMentorMeetings = mentorMeetings.filter((meeting) => {
       const meetingDate = moment(meeting.scheduledTime).format("YYYY-MM-DD");
       return meetingDate === selectedDateMoment.format("YYYY-MM-DD");
@@ -203,9 +245,9 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
       (a, b) => new Date(a.scheduledTime) - new Date(b.scheduledTime)
     );
 
-    // Calculate mentor's free time slots within preferred hours
+    // Calculate mentor's free time slots within the overlapping time range
     const mentorFreeSlots = [];
-    let lastEndTime = preferredStartTime;
+    let lastEndTime = overlapStartTime;
 
     sortedMentorMeetings.forEach((meeting) => {
       const meetingStartTime = moment(meeting.scheduledTime);
@@ -213,7 +255,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
 
       if (
         meetingStartTime.isAfter(lastEndTime) &&
-        meetingStartTime.isBefore(preferredEndTime)
+        meetingStartTime.isBefore(overlapEndTime)
       ) {
         mentorFreeSlots.push({
           start: lastEndTime.clone(),
@@ -226,97 +268,57 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
       }
     });
 
-    // Add the last slot from the end of the last meeting to the end of the preferred time
-    if (lastEndTime.isBefore(preferredEndTime)) {
+    if (lastEndTime.isBefore(overlapEndTime)) {
       mentorFreeSlots.push({
         start: lastEndTime.clone(),
-        end: preferredEndTime.clone(),
+        end: overlapEndTime.clone(),
       });
     }
 
-    // Initialize arrays to store mentees' data and meetings
-    const menteesData = [];
-    const menteesMeetings = [];
+    // Function to break slots into 30-minute intervals
+    const breakIntoIntervals = (slot) => {
+      const intervals = [];
+      let currentStart = slot.start.clone();
 
-    // Loop through selected mentees
-    for (const menteeId of selectedMentees) {
-      // Fetch mentee's data and store preferred hours
-      const menteeData = await fetchMenteeData(menteeId);
-      menteesData.push({
-        menteeId: menteeId,
-        preferredStartHour: menteeData.meetingPreferences.preferredStartHour,
-        preferredEndHour: menteeData.meetingPreferences.preferredEndHour,
-      });
+      while (currentStart.isBefore(slot.end)) {
+        const currentEnd = currentStart.clone().add(30, "minutes");
+        if (currentEnd.isAfter(slot.end)) break;
+        intervals.push({
+          start: currentStart.clone(),
+          end: currentEnd.clone(),
+        });
+        currentStart.add(30, "minutes");
+      }
 
-      // Fetch mentee's meetings and store
-      const menteeMeetings = await fetchMenteeMeetings(menteeId);
-      menteesMeetings.push({
-        menteeId: menteeId,
-        meetings: menteeMeetings.filter((meeting) => {
-          const meetingDate = moment(meeting.scheduledTime).format(
-            "YYYY-MM-DD"
-          );
-          return meetingDate === selectedDateMoment.format("YYYY-MM-DD");
-        }),
-      });
-    }
+      return intervals;
+    };
 
-    // Function to find common free slots
-    const findCommonFreeSlots = (freeSlots, meetings) => {
-      const commonSlots = [];
-      freeSlots.forEach((slot) => {
-        let isFree = true;
-        meetings.forEach((meeting) => {
+    // Filter mentor's free slots to remove conflicts with mentees' meetings
+    const finalFreeSlots = mentorFreeSlots.filter((slot) => {
+      return selectedMentees.every((menteeId) => {
+        return !menteesMeetings[menteeId].some((meeting) => {
           const meetingStartTime = moment(meeting.scheduledTime);
           const meetingEndTime = moment(meeting.endTime);
-
-          if (
-            meetingStartTime.isBefore(slot.end) &&
-            meetingEndTime.isAfter(slot.start)
-          ) {
-            isFree = false;
-          }
+          return (
+            (slot.start.isBefore(meetingEndTime) &&
+              slot.end.isAfter(meetingStartTime)) ||
+            (slot.start.isSame(meetingStartTime) &&
+              slot.end.isSame(meetingEndTime))
+          );
         });
-        if (isFree) {
-          commonSlots.push(slot);
-        }
       });
-      return commonSlots;
-    };
-
-    // Find common free slots for all mentees
-    let commonFreeSlots = mentorFreeSlots;
-    menteesMeetings.forEach((mentee) => {
-      commonFreeSlots = findCommonFreeSlots(commonFreeSlots, mentee.meetings);
     });
 
-    // Split slots into 30-minute intervals
-    const splitInto30MinuteSlots = (slots) => {
-      const THIRTY_MIN_SLOT = 30;
-      const result = [];
-      slots.forEach((slot) => {
-        let currentTime = slot.start.clone();
-        while (currentTime.isBefore(slot.end)) {
-          const endTime = moment.min(
-            currentTime.clone().add(THIRTY_MIN_SLOT, "minutes"),
-            slot.end
-          );
-          if (endTime.isAfter(currentTime)) {
-            result.push({
-              start: currentTime.format("HH:mm"),
-              end: endTime.format("HH:mm"),
-            });
-          }
-          currentTime.add(THIRTY_MIN_SLOT, "minutes");
-        }
-      });
-      return result;
-    };
+    // Break final free slots into 30-minute intervals
+    const intervals = finalFreeSlots.flatMap((slot) =>
+      breakIntoIntervals(slot)
+    );
 
-    const formattedCommonFreeSlots = splitInto30MinuteSlots(commonFreeSlots);
-
-    // Return the common free slots
-    return formattedCommonFreeSlots;
+    // Return the suggested times
+    return intervals.map((slot) => ({
+      start: slot.start.format("HH:mm"),
+      end: slot.end.format("HH:mm"),
+    }));
   };
 
   return (
