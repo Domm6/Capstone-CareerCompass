@@ -23,7 +23,7 @@
 
 .mp-top-right {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-around;
   align-items: center;
   height: 70%;
   width: 20%;

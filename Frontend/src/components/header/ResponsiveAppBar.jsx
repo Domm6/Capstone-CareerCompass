@@ -21,8 +21,13 @@ function ResponsiveAppBar({ pages, userName }) {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-  const handleDashboardClick = () => {
-    navigate("/mentor-dashboard");
+  const handleNavigation = (page) => {
+    if (page === "Dashboard") {
+      navigate("/mentor-dashboard");
+    } else if (page === "Profile") {
+      navigate("/mentor-profile");
+    }
+    handleCloseNavMenu();
   };
 
   const handleOpenNavMenu = (event) => {
@@ -92,17 +97,9 @@ function ResponsiveAppBar({ pages, userName }) {
               }}
             >
               {pages.map((page) => (
-                <Button
-                  key={page}
-                  onClick={
-                    page === "Dashboard"
-                      ? handleDashboardClick
-                      : handleCloseNavMenu
-                  }
-                  sx={{ my: 2, color: "white", display: "block" }}
-                >
-                  {page}
-                </Button>
+                <MenuItem key={page} onClick={() => handleNavigation(page)}>
+                  <Typography textAlign="center">{page}</Typography>
+                </MenuItem>
               ))}
             </Menu>
           </Box>
@@ -126,17 +123,9 @@ function ResponsiveAppBar({ pages, userName }) {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={
-                  page === "Dashboard"
-                    ? handleDashboardClick
-                    : handleCloseNavMenu
-                }
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                {page}
-              </Button>
+              <MenuItem key={page} onClick={() => handleNavigation(page)}>
+                <Typography textAlign="center">{page}</Typography>
+              </MenuItem>
             ))}
           </Box>
 

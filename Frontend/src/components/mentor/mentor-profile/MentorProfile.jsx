@@ -152,7 +152,6 @@ function MentorProfile() {
         handleSignout={handleSignout}
         pages={pages}
         userName={user.name}
-        pageDirect={() => navigate("/mentor-dashboard")}
       />{" "}
       <Container>
         <Box sx={{ my: 2 }}>

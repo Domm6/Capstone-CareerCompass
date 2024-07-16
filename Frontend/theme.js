@@ -3,14 +3,14 @@ import { createTheme } from "@mui/material/styles";
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#546e7a", // Neutral grey for primary color
+      main: "#3D52A0", // Neutral grey for primary color
     },
     secondary: {
-      main: "#ffab00", // Accent color
+      main: "#7091E6", // Accent color
     },
     background: {
-      default: "#f5f5f5", // Light grey background for modern look
-      paper: "#ffffff", // White background for paper elements
+      default: "#EDE8F5", // Light grey background for modern look
+      paper: "#FFFFFF", // White background for paper elements
     },
     text: {
       primary: "#212121", // Dark grey text color
