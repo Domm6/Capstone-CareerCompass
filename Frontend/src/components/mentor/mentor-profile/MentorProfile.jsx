@@ -5,6 +5,8 @@ import "./MentorProfile.css";
 import moment from "moment";
 import MentorProfileModal from "./MentorProfileModal.jsx";
 import config from "../../../../config.js";
+import ResponsiveAppBar from "../../header/ResponsiveAppBar.jsx";
+import { Container, Box, Typography, Button } from "@mui/material";
 
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
@@ -71,10 +73,7 @@ function MentorProfile() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const { handleSignout } = useContext(UserContext);
-
-  const fetchLogo = () => {
-    // use api to fetch logo
-  };
+  const pages = ["Dashboard"];
 
   const [userData, setUserData] = useState({
     name: "Loading",
@@ -149,68 +148,90 @@ function MentorProfile() {
 
   return (
     <>
-      <div className="mp-header">
-        <h1>CareerCompass</h1>
-        <div className="mp-nav">
-          <Link to="/mentor-dashboard">Dashboard</Link>
-        </div>
-      </div>
-      <div className="mp-container">
-        <div className="mp-top">
-          <div className="mp-top-left">
-            <h1>Mentor Profile</h1>
-          </div>
-          <div className="mp-top-right">
-            <button onClick={handleSignout}>Log Out</button>
-            <button onClick={handleModalToggle}>Edit</button>
-          </div>
-        </div>
-        <div className="mp-body">
-          <div className="mp-left">
-            <img src={userData.profileImageUrl} alt="profile picture" />
-            <h3>{userData.name}</h3>
-          </div>
-          <div className="mp-right">
-            <p>Industry: {userData.industry}</p>
-            <div className="mp-right-company">
-              <p>Company: {userData.company}</p>
-              <img
-                src={`https://img.logo.dev/${userData.company}.com?token=${API_KEY}`}
-              />
+      <ResponsiveAppBar
+        handleSignout={handleSignout}
+        pages={pages}
+        userName={user.name}
+        pageDirect={() => navigate("/mentor-dashboard")}
+      />{" "}
+      <Container>
+        <Box sx={{ my: 2 }}>
+          <div className="mp-top">
+            <div className="mp-top-left">
+              <Typography variant="h4">Mentor Profile</Typography>
             </div>
-            <p>Role: {userData.work_role}</p>
-            <p>Years of Experience: {userData.years_experience} years</p>
-            <p>School: {userData.school}</p>
-            <p>Skills: {userData.skills}</p>
-            <p>Bio: {userData.bio}</p>
-            <p>
-              Preferred Start Hour:{" "}
-              {moment(userData.preferredStartHour, "HH:mm").format("h:mm A")}
-            </p>
-            <p>
-              Preferred End Hour:{" "}
-              {moment(userData.preferredEndHour, "HH:mm").format("h:mm A")}
-            </p>
+            <div className="mp-top-right">
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSignout}
+              >
+                Log Out
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleModalToggle}
+              >
+                Edit
+              </Button>
+            </div>
           </div>
-        </div>
-        {isModalOpen && (
-          <MentorProfileModal
-            mentorData={userData}
-            handleDropdownToggle={handleDropdownToggle}
-            dropdownOpen={dropdownOpen}
-            selectedSkills={selectedSkills}
-            handleCheckboxChange={handleCheckboxChange}
-            skillsList={skillsList}
-            closeModal={() => {
-              handleModalToggle();
-              fetchMentorData();
-            }}
-          />
-        )}
-        <button onClick={() => navigate("/mentor-dashboard")} id="save-button">
-          Save
-        </button>
-      </div>
+          <div className="mp-body">
+            <div className="mp-left">
+              <img src={userData.profileImageUrl} alt="profile picture" />
+              <Typography variant="h6">{userData.name}</Typography>
+            </div>
+            <div className="mp-right">
+              <Typography>Industry: {userData.industry}</Typography>
+              <div className="mp-right-company">
+                <Typography>Company: {userData.company}</Typography>
+                <img
+                  src={`https://img.logo.dev/${userData.company}.com?token=${API_KEY}`}
+                  alt={`${userData.company} logo`}
+                />
+              </div>
+              <Typography>Role: {userData.work_role}</Typography>
+              <Typography>
+                Years of Experience: {userData.years_experience} years
+              </Typography>
+              <Typography>School: {userData.school}</Typography>
+              <Typography>Skills: {userData.skills}</Typography>
+              <Typography>Bio: {userData.bio}</Typography>
+              <Typography>
+                Preferred Start Hour:{" "}
+                {moment(userData.preferredStartHour, "HH:mm").format("h:mm A")}
+              </Typography>
+              <Typography>
+                Preferred End Hour:{" "}
+                {moment(userData.preferredEndHour, "HH:mm").format("h:mm A")}
+              </Typography>
+            </div>
+          </div>
+          {isModalOpen && (
+            <MentorProfileModal
+              mentorData={userData}
+              handleDropdownToggle={handleDropdownToggle}
+              dropdownOpen={dropdownOpen}
+              selectedSkills={selectedSkills}
+              handleCheckboxChange={handleCheckboxChange}
+              skillsList={skillsList}
+              closeModal={() => {
+                handleModalToggle();
+                fetchMentorData();
+              }}
+            />
+          )}
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate("/mentor-dashboard")}
+            id="save-button"
+          >
+            Save
+          </Button>
+        </Box>
+      </Container>
     </>
   );
 }
