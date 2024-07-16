@@ -129,7 +129,7 @@ function ResponsiveAppBar({ pages, userName, userRole }) {
               textDecoration: "none",
             }}
           >
-            LOGO
+            CareerCompass
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
@@ -162,7 +162,7 @@ function ResponsiveAppBar({ pages, userName, userRole }) {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                <MenuItem key={setting} onClick={handleNavigation}>
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}

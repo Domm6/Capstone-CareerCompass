@@ -5,6 +5,8 @@ import "./Match.css";
 import MentorCard from "./MentorCard.jsx";
 import MatchModal from "./MatchModal.jsx";
 import config from "../../../config.js";
+import ResponsiveAppBar from "../header/ResponsiveAppBar.jsx";
+import { Container, Box, Typography, Button } from "@mui/material";
 
 const TechRolesEnum = Object.freeze({
   SOFTWARE_ENGINEER: "Software Engineer",
@@ -221,6 +223,7 @@ function Match() {
   const [mentee, setMentee] = useState(null);
   const [topMentors, setTopMentors] = useState([]);
   const [matchedMentorIds, setMatchedMentorIds] = useState([]);
+  const pages = ["Dashboard", "Profile"];
 
   const handleCardClick = (mentor) => {
     setSelectedMentor(mentor);
@@ -336,13 +339,11 @@ function Match() {
 
   return (
     <>
-      <div className="mp-header">
-        <h1>CareerCompass</h1>
-        <div className="mp-nav">
-          <Link to="/mentee-profile">Profile</Link>
-          <Link to="/mentee-dashboard">Dashboard</Link>
-        </div>
-      </div>
+      <ResponsiveAppBar
+        pages={pages}
+        userName={user.name}
+        userRole="mentee"
+      ></ResponsiveAppBar>
       <div className="match-top">
         <h1>Choose a Mentor</h1>
       </div>
