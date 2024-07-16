@@ -12,7 +12,7 @@ import { Container, Box, Typography, Button } from "@mui/material";
 function MenteeDashboard() {
   const { user } = useContext(UserContext);
   const [activeComponent, setActiveComponent] = useState("Calendar");
-  const pages = ["Dashboard", "Find Mentors"];
+  const pages = ["Dashboard", "Profile", "Find Mentors"];
 
   return (
     <>

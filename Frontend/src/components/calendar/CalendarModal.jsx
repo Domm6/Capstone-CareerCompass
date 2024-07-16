@@ -3,6 +3,8 @@ import { UserContext } from "../../UserContext.jsx";
 import { useNavigate } from "react-router-dom";
 import "../mentor/mentor-profile/MentorProfileModal.css";
 import "./CalendarModal.css";
+import { Container, Box, Typography, Button, ButtonGroup } from "@mui/material";
+
 import moment from "moment-timezone";
 import config from "../../../config.js";
 
@@ -385,18 +387,20 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
             <label>Suggested Times</label>
             {suggestedTimes.length > 0 ? (
               suggestedTimes.map((timeSlot, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleScheduleMeeting(timeSlot)}
-                >
-                  {moment(timeSlot.start, "HH:mm").format("h:mm A")} -{" "}
-                  {moment(timeSlot.end, "HH:mm").format("h:mm A")}
-                </button>
+                <div key={index} className="time-slot">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleScheduleMeeting(timeSlot)}
+                  >
+                    {moment(timeSlot.start, "HH:mm").format("h:mm A")} -{" "}
+                    {moment(timeSlot.end, "HH:mm").format("h:mm A")}
+                  </Button>
+                </div>
               ))
             ) : (
               <p>
-                No suggested times available. Please select a mentees and a
-                date.
+                No suggested times available. Please select a mentee and a date.
               </p>
             )}
           </div>

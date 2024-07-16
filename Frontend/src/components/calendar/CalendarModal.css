@@ -49,3 +49,7 @@
   overflow-y: auto;
   max-height: 300px;
 }
+
+.time-slot {
+  margin: 8px 0; /* Adjust the margin value as needed */
+}

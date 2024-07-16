@@ -8,17 +8,25 @@
 
 .mp-top {
   display: flex;
-  justify-content: space-between; /* Ensures the title is on the left and button on the right */
+  justify-content: center;
   align-items: center; /* Vertically center the items */
-  background-color: white;
   padding: 15px;
   border-radius: 8px;
   width: 100%;
 }
 
 .mp-top-left {
-  background-color: #95a5a6;
   flex: 1; /* Allow this div to grow and take available space */
+  display: flex;
+  justify-content: center;
+}
+
+.mp-left h4 {
+  margin: 20px;
+}
+
+.mp-left img {
+  border-radius: 8px;
 }
 
 .mp-top-right {

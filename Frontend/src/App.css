@@ -1,8 +1,8 @@
-/* body {
+body {
   margin: 0px;
 }
 
-button {
+/* button {
   margin: 5px;
   padding: 5px;
   border: none;
@@ -19,7 +19,7 @@ button {
 button:hover {
   transform: scale(1.05);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-}
+} */
 
 input {
   margin: 5px;
@@ -33,4 +33,4 @@ select {
   border: 1px solid #ccc;
   background: #fff;
   font-size: 14px;
-} */
+}

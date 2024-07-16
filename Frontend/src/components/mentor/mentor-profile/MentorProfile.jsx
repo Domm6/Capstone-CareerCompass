@@ -180,7 +180,7 @@ function MentorProfile() {
           <div className="mp-body">
             <div className="mp-left">
               <img src={userData.profileImageUrl} alt="profile picture" />
-              <Typography variant="h6">{userData.name}</Typography>
+              <Typography variant="h4">{userData.name}</Typography>
             </div>
             <div className="mp-right">
               <Typography>Industry: {userData.industry}</Typography>
@@ -222,16 +222,6 @@ function MentorProfile() {
               }}
             />
           )}
-          <div className="mp-button">
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => navigate("/mentor-dashboard")}
-              id="save-button"
-            >
-              Save
-            </Button>
-          </div>
         </Box>
       </Container>
     </>

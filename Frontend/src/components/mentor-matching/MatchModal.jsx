@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../UserContext.jsx";
 import config from "../../../config.js";
 import "./MatchModal.css";
+import { Container, Box, Typography, Button, ButtonGroup } from "@mui/material";
 
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
@@ -71,9 +72,9 @@ function MatchModal({ mentor, closeModal, mentee }) {
                 <p>Rating: {mentor.averageRating}</p>
               </div>
             </div>
-            <button id="save-button" onClick={handleSubmit}>
+            <Button variant="contained" color="primary" onClick={handleSubmit}>
               Connect
-            </button>
+            </Button>
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@ import config from "../../../config.js";
 import moment from "moment";
 import "../mentor-matching/MatchModal.css";
 import "./MeetingModal.css";
+import { Container, Box, Typography, Button, ButtonGroup } from "@mui/material";
 
 function MeetingModal({
   mentor,
@@ -38,12 +39,20 @@ function MeetingModal({
               <p>No attendees</p>
             )}
             <div className="mm-btns">
-              <button onClick={() => acceptMeeting(selectedMeeting.id)}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => acceptMeeting(selectedMeeting.id)}
+              >
                 Accept
-              </button>
-              <button onClick={() => declineMeeting(selectedMeeting.id)}>
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => declineMeeting(selectedMeeting.id)}
+              >
                 Decline
-              </button>
+              </Button>
             </div>
           </div>
         </div>
