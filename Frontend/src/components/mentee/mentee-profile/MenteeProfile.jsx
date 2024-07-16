@@ -5,6 +5,8 @@ import moment from "moment";
 import "./MenteeProfile.css";
 import MenteeProfileModal from "./MenteeProfileModal.jsx";
 import config from "../../../../config.js";
+import ResponsiveAppBar from "../../header/ResponsiveAppBar.jsx";
+import { Container, Box, Typography, Button } from "@mui/material";
 
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
@@ -133,62 +135,82 @@ function MenteeProfile() {
 
   return (
     <>
-      <div className="mp-header">
-        <h1>CareerCompass</h1>
-        <div className="mp-nav">
-          <Link to="/mentee-dashboard">Dashboard</Link>
-          <Link to="/matching">Find Mentors</Link>
-        </div>
-      </div>
-      <div className="mp-container">
-        <div className="mp-top">
-          <div className="mp-top-left">
-            <h1>Mentee Profile</h1>
+      <ResponsiveAppBar
+        handleSignout={handleSignout}
+        pages={["Dashboard", "Find Mentors"]}
+        userName={user.name}
+        userRole="mentee"
+      />
+      <Container>
+        <Box sx={{ my: 2 }}>
+          <div className="mp-top">
+            <div className="mp-top-left">
+              <Typography variant="h4">Mentee Profile</Typography>
+            </div>
+            <div className="mp-top-right">
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSignout}
+              >
+                Log Out
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleModalToggle}
+              >
+                Edit
+              </Button>
+            </div>
           </div>
-          <div className="mp-top-right">
-            <button onClick={handleSignout}>Log Out</button>
-            <button onClick={handleModalToggle}>Edit</button>
+          <div className="mp-body">
+            <div className="mp-left">
+              <img src={userData.profileImageUrl} alt="profile picture" />
+              <Typography variant="h6">{userData.name}</Typography>
+            </div>
+            <div className="mp-right">
+              <Typography>School: {userData.school}</Typography>
+              <Typography>Major: {userData.major}</Typography>
+              <Typography>Career Goals: {userData.career_goals}</Typography>
+              <Typography>Skills: {userData.skills}</Typography>
+              <Typography>Bio: {userData.bio}</Typography>
+              <Typography>
+                Preferred Start Hour:{" "}
+                {moment(userData.preferredStartHour, "HH:mm").format("h:mm A")}
+              </Typography>
+              <Typography>
+                Preferred End Hour:{" "}
+                {moment(userData.preferredEndHour, "HH:mm").format("h:mm A")}
+              </Typography>
+            </div>
           </div>
-        </div>
-        <div className="mp-body">
-          <div className="mp-left">
-            <img src={userData.profileImageUrl} alt="profile picture" />
-            <h3>{userData.name}</h3>
+          {isModalOpen && (
+            <MenteeProfileModal
+              menteeData={userData}
+              handleDropdownToggle={handleDropdownToggle}
+              dropdownOpen={dropdownOpen}
+              selectedSkills={selectedSkills}
+              handleCheckboxChange={handleCheckboxChange}
+              skillsList={skillsList}
+              closeModal={() => {
+                handleModalToggle();
+                fetchMenteeData();
+              }}
+            />
+          )}
+          <div className="mp-button">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => navigate("/mentee-dashboard")}
+              id="save-button"
+            >
+              Save
+            </Button>
           </div>
-          <div className="mp-right">
-            <p>School: {userData.school}</p>
-            <p>Major: {userData.major}</p>
-            <p>Career Goals: {userData.career_goals}</p>
-            <p>Skills: {userData.skills}</p>
-            <p>Bio: {userData.bio}</p>
-            <p>
-              Preferred Start Hour:{" "}
-              {moment(userData.preferredStartHour, "HH:mm").format("h:mm A")}
-            </p>
-            <p>
-              Preferred End Hour:{" "}
-              {moment(userData.preferredEndHour, "HH:mm").format("h:mm A")}
-            </p>
-          </div>
-        </div>
-        {isModalOpen && (
-          <MenteeProfileModal
-            menteeData={userData}
-            handleDropdownToggle={handleDropdownToggle}
-            dropdownOpen={dropdownOpen}
-            selectedSkills={selectedSkills}
-            handleCheckboxChange={handleCheckboxChange}
-            skillsList={skillsList}
-            closeModal={() => {
-              handleModalToggle();
-              fetchMenteeData();
-            }}
-          />
-        )}
-        <button onClick={() => navigate("/mentee-dashboard")} id="save-button">
-          Save
-        </button>
-      </div>
+        </Box>
+      </Container>
     </>
   );
 }

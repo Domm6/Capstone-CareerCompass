@@ -152,6 +152,7 @@ function MentorProfile() {
         handleSignout={handleSignout}
         pages={pages}
         userName={user.name}
+        userRole="mentor"
       />{" "}
       <Container>
         <Box sx={{ my: 2 }}>
@@ -221,14 +222,16 @@ function MentorProfile() {
               }}
             />
           )}
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => navigate("/mentor-dashboard")}
-            id="save-button"
-          >
-            Save
-          </Button>
+          <div className="mp-button">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => navigate("/mentor-dashboard")}
+              id="save-button"
+            >
+              Save
+            </Button>
+          </div>
         </Box>
       </Container>
     </>

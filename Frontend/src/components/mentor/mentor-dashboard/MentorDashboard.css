@@ -17,6 +17,32 @@
 
 .md-body {
   width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.md-body-calendar {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.md-body-matches {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.md-body-requests {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
 
 .md-top-title {

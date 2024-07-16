@@ -16,16 +16,26 @@ import { useNavigate } from "react-router-dom";
 
 const settings = ["Profile"];
 
-function ResponsiveAppBar({ pages, userName }) {
+function ResponsiveAppBar({ pages, userName, userRole }) {
   const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
   const handleNavigation = (page) => {
     if (page === "Dashboard") {
-      navigate("/mentor-dashboard");
-    } else if (page === "Profile") {
-      navigate("/mentor-profile");
+      if (userRole === "mentor") {
+        navigate("/mentor-dashboard");
+      } else if (userRole === "mentee") {
+        navigate("/mentee-dashboard");
+      }
+    } else if (page === "Find Mentors") {
+      navigate("/matching");
+    } else {
+      if (userRole === "mentor") {
+        navigate("/mentor-profile");
+      } else if (userRole === "mentee") {
+        navigate("/mentee-profile");
+      }
     }
     handleCloseNavMenu();
   };
