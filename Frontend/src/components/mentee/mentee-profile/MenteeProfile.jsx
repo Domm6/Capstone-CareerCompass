@@ -216,20 +216,6 @@ function MenteeProfile() {
               />
             </Box>
           </Modal>
-          {/* {isModalOpen && (
-            <MenteeProfileModal
-              menteeData={userData}
-              handleDropdownToggle={handleDropdownToggle}
-              dropdownOpen={dropdownOpen}
-              selectedSkills={selectedSkills}
-              handleCheckboxChange={handleCheckboxChange}
-              skillsList={skillsList}
-              closeModal={() => {
-                handleModalToggle();
-                fetchMenteeData();
-              }}
-            />
-          )} */}
         </Box>
       </Container>
     </>
