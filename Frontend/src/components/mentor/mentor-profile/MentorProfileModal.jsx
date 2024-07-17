@@ -43,12 +43,11 @@ function MentorProfileModal({
     schoolState: "",
     schoolCity: "",
     bio: "",
-    skills: selectedSkills.join(", "),
+    skills: selectedSkills,
     preferredStartHour: "00:00",
     preferredEndHour: "23:59",
   });
   const [schoolSuggestions, setSchoolSuggestions] = useState([]);
-  const [selectedSchool, setSelectedSchool] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
 
   console.log(mentorData);
@@ -69,9 +68,8 @@ function MentorProfileModal({
         schoolState: mentorData.schoolState || "",
         schoolCity: mentorData.schoolCity || "",
         bio: mentorData.bio || "",
-        skills: mentorData.skills || "",
-        preferredStartHour: mentorData?.preferredStartHour || "00:00",
-        preferredEndHour: mentorData?.preferredEndHour || "23:59",
+        preferredStartHour: mentorData.preferredStartHour || "00:00",
+        preferredEndHour: mentorData.preferredEndHour || "23:59",
       }));
     }
   }, [mentorData]);
@@ -118,7 +116,6 @@ function MentorProfileModal({
       schoolCity: school["school.city"],
       schoolState: school["school.state"],
     });
-    setSelectedSchool(school);
     setSchoolSuggestions([]);
   };
 
@@ -259,7 +256,12 @@ function MentorProfileModal({
           margin="normal"
         />
         <Box className="form-skills">
-          <Button type="button" onClick={handleDropdownToggle}>
+          <Button
+            type="button"
+            onClick={handleDropdownToggle}
+            variant="contained"
+            color="primary"
+          >
             {dropdownOpen ? "Hide Skills" : "Show Skills"}
           </Button>
           {dropdownOpen && (

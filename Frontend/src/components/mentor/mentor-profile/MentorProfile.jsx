@@ -129,13 +129,11 @@ function MentorProfile() {
   }, [user]);
 
   const handleCheckboxChange = (skill) => {
-    if (selectedSkills.includes(skill)) {
-      setSelectedSkills(
-        selectedSkills.filter((currentSkill) => currentSkill !== skill)
-      );
-    } else {
-      setSelectedSkills([...selectedSkills, skill]);
-    }
+    setSelectedSkills((prevSelectedSkills) =>
+      prevSelectedSkills.includes(skill)
+        ? prevSelectedSkills.filter((s) => s !== skill)
+        : [...prevSelectedSkills, skill]
+    );
   };
 
   const handleDropdownToggle = () => {
@@ -239,20 +237,6 @@ function MentorProfile() {
               />
             </Box>
           </Modal>
-          {/* {isModalOpen && (
-            <MentorProfileModal
-              mentorData={userData}
-              handleDropdownToggle={handleDropdownToggle}
-              dropdownOpen={dropdownOpen}
-              selectedSkills={selectedSkills}
-              handleCheckboxChange={handleCheckboxChange}
-              skillsList={skillsList}
-              closeModal={() => {
-                handleModalToggle();
-                fetchMentorData();
-              }}
-            />
-          )} */}
         </Box>
       </Container>
     </>

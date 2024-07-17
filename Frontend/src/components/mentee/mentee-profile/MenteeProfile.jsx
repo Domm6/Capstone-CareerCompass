@@ -6,7 +6,7 @@ import "./MenteeProfile.css";
 import MenteeProfileModal from "./MenteeProfileModal.jsx";
 import config from "../../../../config.js";
 import ResponsiveAppBar from "../../header/ResponsiveAppBar.jsx";
-import { Container, Box, Typography, Button } from "@mui/material";
+import { Container, Box, Typography, Button, Modal } from "@mui/material";
 
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
@@ -185,7 +185,38 @@ function MenteeProfile() {
               </Typography>
             </div>
           </div>
-          {isModalOpen && (
+          <Modal open={isModalOpen} onClose={handleModalToggle}>
+            <Box
+              sx={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: "50%",
+                height: "75%",
+                bgcolor: "background.paper",
+                border: "1px solid #000",
+                borderRadius: "8px",
+                boxShadow: 24,
+                p: 4,
+                overflow: "auto",
+              }}
+            >
+              <MenteeProfileModal
+                menteeData={userData}
+                handleDropdownToggle={handleDropdownToggle}
+                dropdownOpen={dropdownOpen}
+                selectedSkills={selectedSkills}
+                handleCheckboxChange={handleCheckboxChange}
+                skillsList={skillsList}
+                closeModal={() => {
+                  handleModalToggle();
+                  fetchMentorData();
+                }}
+              />
+            </Box>
+          </Modal>
+          {/* {isModalOpen && (
             <MenteeProfileModal
               menteeData={userData}
               handleDropdownToggle={handleDropdownToggle}
@@ -198,7 +229,7 @@ function MenteeProfile() {
                 fetchMenteeData();
               }}
             />
-          )}
+          )} */}
         </Box>
       </Container>
     </>
