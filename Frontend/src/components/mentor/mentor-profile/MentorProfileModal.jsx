@@ -51,6 +51,8 @@ function MentorProfileModal({
   const [selectedSchool, setSelectedSchool] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
 
+  console.log(mentorData);
+
   useEffect(() => {
     if (mentorData) {
       setFormData((prevFormData) => ({
@@ -68,10 +70,8 @@ function MentorProfileModal({
         schoolCity: mentorData.schoolCity || "",
         bio: mentorData.bio || "",
         skills: mentorData.skills || "",
-        preferredStartHour:
-          mentorData.meetingPreferences?.preferredStartHour || "00:00",
-        preferredEndHour:
-          mentorData.meetingPreferences?.preferredEndHour || "23:59",
+        preferredStartHour: mentorData?.preferredStartHour || "00:00",
+        preferredEndHour: mentorData?.preferredEndHour || "23:59",
       }));
     }
   }, [mentorData]);

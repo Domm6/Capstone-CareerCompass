@@ -48,10 +48,8 @@ function MenteeProfileModal({
         bio: menteeData.bio,
         career_goals: menteeData.career_goals,
         skills: menteeData.skills,
-        preferredStartHour:
-          menteeData.meetingPreferences?.preferredStartHour || "00:00",
-        preferredEndHour:
-          menteeData.meetingPreferences?.preferredEndHour || "23:59",
+        preferredStartHour: menteeData?.preferredStartHour || "00:00",
+        preferredEndHour: menteeData?.preferredEndHour || "23:59",
       });
     }
   }, [menteeData]);
