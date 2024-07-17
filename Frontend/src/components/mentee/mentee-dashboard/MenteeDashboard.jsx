@@ -24,7 +24,7 @@ function MenteeDashboard() {
       <Container maxWidth="xl" className="md-container">
         <Box className="md-top" sx={{ my: 4 }}>
           <Typography variant="h3" component="h1" className="md-top-title">
-            Mentor Dashboard
+            Mentee Dashboard
           </Typography>
         </Box>
         <Box className="md-nav" sx={{ mb: 4 }}>
