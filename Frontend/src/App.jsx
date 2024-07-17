@@ -56,9 +56,7 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      {" "}
-      {/* Wrap with ThemeProvider */}
-      <CssBaseline /> {/* Apply CssBaseline for consistent styling */}
+      <CssBaseline />
       <div className="App">
         <UserContext.Provider value={{ user, updateUser, handleSignout }}>
           <Router>

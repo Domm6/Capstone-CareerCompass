@@ -350,19 +350,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
 
   return (
     <Modal open={true} onClose={toggleModal}>
-      <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "50%",
-          height: "auto",
-          bgcolor: "background.paper",
-          boxShadow: 24,
-          p: 4,
-        }}
-      >
+      <Box className="modal-box">
         <Typography variant="h6" gutterBottom>
           Schedule Meeting
         </Typography>
