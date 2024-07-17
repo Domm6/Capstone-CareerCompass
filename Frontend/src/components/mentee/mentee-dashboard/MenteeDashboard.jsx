@@ -21,11 +21,13 @@ function MenteeDashboard() {
         userName={user.name}
         userRole="mentee"
       ></ResponsiveAppBar>
-      <div className="md-container">
-        <div className="md-top">
-          <h1>Mentee Dashboard</h1>
-        </div>
-        <div className="md-nav">
+      <Container maxWidth="xl" className="md-container">
+        <Box className="md-top" sx={{ my: 4 }}>
+          <Typography variant="h3" component="h1" className="md-top-title">
+            Mentor Dashboard
+          </Typography>
+        </Box>
+        <Box className="md-nav" sx={{ mb: 4 }}>
           <Button
             onClick={() => setActiveComponent("Calendar")}
             variant="contained"
@@ -40,12 +42,20 @@ function MenteeDashboard() {
           >
             Matches
           </Button>
-        </div>
-        <div className="md-body">
-          {activeComponent == "Calendar" && <Calendar></Calendar>}
-          {activeComponent == "Matches" && <MenteeMatches></MenteeMatches>}
-        </div>
-      </div>
+        </Box>
+        <Box className="md-body">
+          {activeComponent === "Calendar" && (
+            <Box className="md-body-calendar">
+              <Calendar />
+            </Box>
+          )}
+          {activeComponent === "Matches" && (
+            <Box className="md-body-matches">
+              <MenteeMatches></MenteeMatches>
+            </Box>
+          )}
+        </Box>
+      </Container>
     </>
   );
 }
