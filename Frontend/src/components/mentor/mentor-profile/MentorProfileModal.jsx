@@ -50,8 +50,6 @@ function MentorProfileModal({
   const [schoolSuggestions, setSchoolSuggestions] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
 
-  console.log(mentorData);
-
   useEffect(() => {
     if (mentorData) {
       setFormData((prevFormData) => ({
