@@ -24,8 +24,19 @@ function MeetingModal({
             ×
           </span>
           <div className="mm-body">
-            <p>Attendees</p>
-            <p>Date and Time</p>
+            <h3>{selectedMeeting.title}</h3>
+            <p>Status: {selectedMeeting.status}</p>
+            <p>Mentor: {selectedMeeting.mentorName}</p>
+            <p>Attendees:</p>
+            {selectedMeeting.menteeNames.length > 0 ? (
+              <ul>
+                {selectedMeeting.menteeNames.map((name, index) => (
+                  <li key={index}>{name}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>No attendees</p>
+            )}
             <div className="mm-btns">
               <button onClick={() => acceptMeeting(selectedMeeting.id)}>
                 Accept

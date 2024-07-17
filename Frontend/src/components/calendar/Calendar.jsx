@@ -68,10 +68,16 @@ function Calendar() {
               .local()
               .format();
 
+        const menteeNames = meeting.mentees
+          ? meeting.mentees.map((mentee) => mentee.menteeName)
+          : [];
+
         return {
           id: meeting.id,
           title: meeting.topic,
           status: meeting.status,
+          mentorName: meeting.mentorName,
+          menteeNames: menteeNames,
           backgroundColor: getMeetingColor(meeting.status),
           start: start,
           end: end,
@@ -83,6 +89,7 @@ function Calendar() {
       setErrorMessage(error.message);
     }
   };
+
   useEffect(() => {
     if (userData && userData.id) {
       fetchMeetings(userData.id);
@@ -104,7 +111,18 @@ function Calendar() {
   };
 
   const handleMeetingClick = (info) => {
-    setSelectedMeeting(info.event);
+    const event = info.event;
+    const meeting = {
+      id: event.id,
+      title: event.title,
+      status: event.extendedProps.status,
+      mentorName: event.extendedProps.mentorName,
+      menteeNames: event.extendedProps.menteeNames,
+      start: event.start,
+      end: event.end,
+    };
+
+    setSelectedMeeting(meeting);
     setIsMeetingModalOpen(true);
   };
 
@@ -185,7 +203,6 @@ function Calendar() {
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="timeGridWeek"
           events={meetings}
-          timeZone="PST"
           eventClick={handleMeetingClick}
         />
       </div>

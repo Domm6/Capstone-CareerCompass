@@ -2,7 +2,10 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { UserContext } from "./UserContext";
+import { useNavigate, Link } from "react-router-dom";
 import "./App.css";
+import config from "../config";
+import ProtectedRoute from "./ProtectedRoute";
 import HomePage from "./components/home-page/HomePage";
 import LoginPage from "./components/login&signup/login/LoginPage";
 import SignUpPage from "./components/login&signup/signup/SignUpPage";
@@ -28,31 +31,74 @@ function App() {
     localStorage.setItem("user", JSON.stringify(user));
   }, [user]);
 
+  const handleSignout = async () => {
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/users/signout`, {
+        method: "POST",
+        credentials: "include", // This ensures the session cookie is sent
+      });
+
+      if (response.ok) {
+        updateUser(null); // Clear the user state
+        localStorage.removeItem("user"); // Clear the local storage
+        navigate("/login"); // Redirect to the login page
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error("Sign out error:", error);
+    }
+  };
+
   return (
     <div className="App">
-      <UserContext.Provider value={{ user, updateUser }}>
+      <UserContext.Provider value={{ user, updateUser, handleSignout }}>
         <Router>
           <Routes>
             <Route path="/" element={user ? <HomePage /> : <LoginPage />} />
-            <Route path="/login" element={<LoginPage></LoginPage>}></Route>
-            <Route path="/signup" element={<SignUpPage></SignUpPage>}></Route>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignUpPage />} />
             <Route
               path="/mentor-profile"
-              element={<MentorProfile></MentorProfile>}
-            ></Route>
+              element={
+                <ProtectedRoute>
+                  <MentorProfile />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/mentee-profile"
-              element={<MenteeProfile></MenteeProfile>}
-            ></Route>
+              element={
+                <ProtectedRoute>
+                  <MenteeProfile />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/mentor-dashboard"
-              element={<MentorDashboard></MentorDashboard>}
-            ></Route>
+              element={
+                <ProtectedRoute>
+                  <MentorDashboard />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/mentee-dashboard"
-              element={<MenteeDashboard></MenteeDashboard>}
-            ></Route>
-            <Route path="/matching" element={<Match></Match>}></Route>
+              element={
+                <ProtectedRoute>
+                  <MenteeDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/matching"
+              element={
+                <ProtectedRoute>
+                  <Match />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </Router>
       </UserContext.Provider>
