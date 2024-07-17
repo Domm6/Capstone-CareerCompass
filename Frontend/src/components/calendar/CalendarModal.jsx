@@ -154,7 +154,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
           mentorId: isMentor(user) ? userData.id : selectedUsers,
           menteeIds: user.userRole === "mentee" ? userData.id : selectedUsers,
           scheduledTime: scheduledDateTime,
-          topic,
+          topic: topic.trim() ? topic : "No Title",
         }),
       });
 
