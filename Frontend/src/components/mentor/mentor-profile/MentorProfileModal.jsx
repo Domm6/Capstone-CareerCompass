@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../UserContext.jsx";
 import axios from "axios";
 import config from "../../../../config.js";
+// import { ProfileImage } from "@daym3l/react-profile-image";
 import {
   Box,
   Button,
@@ -278,7 +279,6 @@ function MentorProfileModal({
             </Box>
           )}
         </Box>
-        <Box></Box>
         <Button type="submit" variant="contained" color="primary">
           Save
         </Button>
