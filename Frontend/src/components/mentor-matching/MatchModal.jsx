@@ -2,7 +2,14 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../UserContext.jsx";
 import config from "../../../config.js";
 import "./MatchModal.css";
-import { Container, Box, Typography, Button, ButtonGroup } from "@mui/material";
+import {
+  Container,
+  Box,
+  Typography,
+  Button,
+  ButtonGroup,
+  Modal,
+} from "@mui/material";
 
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
@@ -50,34 +57,79 @@ function MatchModal({ mentor, closeModal, mentee }) {
 
   return (
     <>
-      <div className="modal" id="match">
-        <div className="modal-content">
-          <span className="modal-close" onClick={closeModal}>
-            ×
-          </span>
-          <div className="mp-container">
-            <div className="mp-body">
-              <div className="mp-left">
-                <img src={PLACEHOLDER} alt="profile picture" />
-                <h3>{mentor.User.name}</h3>
-              </div>
-              <div className="mp-right">
-                <p>Industry: {mentor.industry}</p>
-                <p>Company: {mentor.company}</p>
-                <p>Role: {mentor.work_role}</p>
-                <p>Years of Experience: {mentor.years_experience} years</p>
-                <p>School: {mentor.school} </p>
-                <p>Skills: {mentor.skills}</p>
-                <p>Bio: {mentor.bio || "No Bio Available"}</p>
-                <p>Rating: {mentor.averageRating}</p>
-              </div>
-            </div>
-            <Button variant="contained" color="primary" onClick={handleSubmit}>
+      <Modal open={true} onClose={closeModal}>
+        <Box
+          className="modal-content"
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "50%",
+            height: "50%",
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+            borderRadius: "8px",
+            overflow: "auto",
+          }}
+        >
+          <Box
+            className="modal-close"
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+            }}
+          ></Box>
+          <Box
+            className="mp-container"
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Box
+              className="mp-body"
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                mb: 2,
+              }}
+            >
+              <Box className="mp-left" sx={{ mr: 2 }}>
+                <img
+                  src={PLACEHOLDER}
+                  alt="profile picture"
+                  style={{ borderRadius: "50%", width: 100, height: 100 }}
+                />
+                <Typography variant="h5">{mentor.User.name}</Typography>
+              </Box>
+              <Box className="mp-right" sx={{ textAlign: "left" }}>
+                <Typography>Industry: {mentor.industry}</Typography>
+                <Typography>Company: {mentor.company}</Typography>
+                <Typography>Role: {mentor.work_role}</Typography>
+                <Typography>
+                  Years of Experience: {mentor.years_experience} years
+                </Typography>
+                <Typography>School: {mentor.school}</Typography>
+                <Typography>Skills: {mentor.skills}</Typography>
+                <Typography>Bio: {mentor.bio || "No Bio Available"}</Typography>
+                <Typography>Rating: {mentor.averageRating}</Typography>
+              </Box>
+            </Box>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSubmit}
+              sx={{ mt: 2 }}
+            >
               Connect
             </Button>
-          </div>
-        </div>
-      </div>
+          </Box>
+        </Box>
+      </Modal>
     </>
   );
 }
