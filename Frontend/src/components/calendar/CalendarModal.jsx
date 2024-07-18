@@ -24,7 +24,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [suggestedTimes, setSuggestedTimes] = useState([]);
   const [scheduledDate, setScheduledDate] = useState("");
-  const [scheduledTime, setScheduledTime] = useState(""); // For the start time
+  const [scheduledTime, setScheduledTime] = useState("");
   const [topic, setTopic] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [userData, setUserData] = useState("");
