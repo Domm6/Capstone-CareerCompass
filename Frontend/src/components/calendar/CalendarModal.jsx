@@ -250,9 +250,6 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
         : earliestEndTime;
     }, preferredEndTime);
 
-    console.log("overlapping starttime slot", overlapStartTime);
-    console.log("overlapping endtime slot", overlapEndTime);
-
     // fetch mentors meetings
     const mentorMeetings = await fetchMentorMeetings(mentorId);
 
@@ -303,10 +300,19 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
         meetingStartTime.isAfter(lastEndTime) &&
         meetingStartTime.isBefore(overlapEndTime)
       ) {
-        mentorFreeSlots.push({
-          start: lastEndTime.clone(),
-          end: meetingStartTime.clone(),
-        });
+        // adjust the start time to the nearest multiple of 10 minutes
+        let adjustedStart = lastEndTime.clone();
+        if (adjustedStart.minutes() % 10 !== 0) {
+          adjustedStart.add(10 - (adjustedStart.minutes() % 10), "minutes");
+        }
+
+        // only add the slot if the adjusted start time is before the meeting start time
+        if (adjustedStart.isBefore(meetingStartTime)) {
+          mentorFreeSlots.push({
+            start: adjustedStart,
+            end: meetingStartTime.clone(),
+          });
+        }
       }
 
       if (meetingEndTime.isAfter(lastEndTime)) {
@@ -315,13 +321,20 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
     });
 
     if (lastEndTime.isBefore(overlapEndTime)) {
-      mentorFreeSlots.push({
-        start: lastEndTime.clone(),
-        end: overlapEndTime.clone(),
-      });
-    }
+      // Adjust the start time to the nearest multiple of 10 minutes
+      let adjustedStart = lastEndTime.clone();
+      if (adjustedStart.minutes() % 10 !== 0) {
+        adjustedStart.add(10 - (adjustedStart.minutes() % 10), "minutes");
+      }
 
-    console.log("mentor free slots in overlapping time range", mentorFreeSlots);
+      // Only add the slot if the adjusted start time is before the overlap end time
+      if (adjustedStart.isBefore(overlapEndTime)) {
+        mentorFreeSlots.push({
+          start: adjustedStart,
+          end: overlapEndTime.clone(),
+        });
+      }
+    }
 
     // Subtract mentee meetings from mentor's free slots and break mentors slots into smaller slots
     const subtractMeetings = (freeSlots, meetings) => {
@@ -337,12 +350,12 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
           const meetingStart = moment(meeting.scheduledTime);
           const meetingEnd = moment(meeting.endTime);
 
-          // Check if the meeting overlaps with the curr free slot
+          // check if the meeting overlaps with the current free slot
           if (
             meetingStart.isBefore(slot.end) &&
             meetingEnd.isAfter(slot.start)
           ) {
-            // Check if there is a porition of the free slot before the meeting starst, and add it to the result
+            // check if there is a portion of the free slot before the meeting starts, and add it to the result
             if (currentStart.isBefore(meetingStart)) {
               resultSlots.push({
                 start: currentStart.clone(),
@@ -354,7 +367,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
           }
         });
 
-        // Check if portion of free slot after the meeing ends, and add to the free slots
+        // check if portion of free slot after the meeting ends, and add to free slots
         if (currentStart.isBefore(slot.end)) {
           resultSlots.push({
             start: currentStart.clone(),
@@ -374,8 +387,6 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
         menteesMeetings[menteeId]
       );
     });
-
-    console.log("final free slots", finalFreeSlots);
 
     // Function to break slots into 30 min intervals
     const breakIntoIntervals = (slot) => {
