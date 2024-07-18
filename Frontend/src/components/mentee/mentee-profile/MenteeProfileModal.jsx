@@ -4,6 +4,17 @@ import { useNavigate } from "react-router-dom";
 import "./MenteeProfileModal.css";
 import config from "../../../../config.js";
 import axios from "axios";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Modal,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
@@ -48,10 +59,8 @@ function MenteeProfileModal({
         bio: menteeData.bio,
         career_goals: menteeData.career_goals,
         skills: menteeData.skills,
-        preferredStartHour:
-          menteeData.meetingPreferences?.preferredStartHour || "00:00",
-        preferredEndHour:
-          menteeData.meetingPreferences?.preferredEndHour || "23:59",
+        preferredStartHour: menteeData?.preferredStartHour || "00:00",
+        preferredEndHour: menteeData?.preferredEndHour || "23:59",
       });
     }
   }, [menteeData]);
@@ -133,114 +142,120 @@ function MenteeProfileModal({
   };
 
   return (
-    <div className="modal">
-      <div className="modal-content">
-        <span className="modal-close" onClick={closeModal}>
-          ×
-        </span>
-        <form className="mp-form" onSubmit={handleSubmit}>
-          <div className="form-school">
-            <label htmlFor="school" required>
-              School
-            </label>
-            <input
-              type="text"
-              name="school"
-              value={formData.school}
-              onChange={handleChange}
-              required
-            />
-            {schoolSuggestions.length > 0 && (
-              <div className="school-suggestions">
-                {schoolSuggestions.map((school) => (
-                  <div
-                    key={school.id}
-                    className="school-suggestion"
-                    onClick={() => handleSchoolSelect(school)}
-                  >
-                    {school["school.name"]}, {school["school.city"]},{" "}
-                    {school["school.state"]}
-                  </div>
+    <Box>
+      <Typography variant="h6" gutterBottom>
+        Edit Mentee Profile
+      </Typography>
+      <form onSubmit={handleSubmit}>
+        <FormControl fullWidth margin="normal">
+          <TextField
+            label="School"
+            name="school"
+            value={formData.school}
+            onChange={handleChange}
+            required
+          />
+          {schoolSuggestions.length > 0 && (
+            <Box className="school-suggestions">
+              {schoolSuggestions.map((school) => (
+                <Box
+                  key={school.id}
+                  className="school-suggestion"
+                  onClick={() => handleSchoolSelect(school)}
+                >
+                  {school["school.name"]}, {school["school.city"]},{" "}
+                  {school["school.state"]}
+                </Box>
+              ))}
+            </Box>
+          )}
+        </FormControl>
+        <FormControl fullWidth margin="normal">
+          <TextField
+            label="Major"
+            name="major"
+            value={formData.major}
+            onChange={handleChange}
+            required
+          />
+        </FormControl>
+        <FormControl fullWidth margin="normal">
+          <TextField
+            label="Career Goals"
+            name="career_goals"
+            value={formData.career_goals}
+            onChange={handleChange}
+            required
+          />
+        </FormControl>
+        <FormControl fullWidth margin="normal">
+          <TextField
+            label="Bio"
+            name="bio"
+            value={formData.bio}
+            onChange={handleChange}
+            multiline
+            rows={4}
+            required
+          />
+        </FormControl>
+        <FormControl fullWidth margin="normal">
+          <TextField
+            label="Preferred Start Hour"
+            type="time"
+            name="preferredStartHour"
+            value={formData.preferredStartHour}
+            onChange={handleChange}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </FormControl>
+        <FormControl fullWidth margin="normal">
+          <TextField
+            label="Preferred End Hour"
+            type="time"
+            name="preferredEndHour"
+            value={formData.preferredEndHour}
+            onChange={handleChange}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </FormControl>
+        <FormControl fullWidth margin="normal">
+          <Box>
+            <Button
+              type="button"
+              onClick={handleDropdownToggle}
+              variant="contained"
+              color="primary"
+              sx={{ mb: 1 }}
+            >
+              {dropdownOpen ? "Hide Skills" : "Show Skills"}
+            </Button>
+            {dropdownOpen && (
+              <Box className="skills-dropdown">
+                {skillsList.map((skill) => (
+                  <Box key={skill}>
+                    <label>{skill}</label>
+                    <input
+                      type="checkbox"
+                      value={skill}
+                      checked={selectedSkills.includes(skill)}
+                      onChange={() => handleCheckboxChange(skill)}
+                    />
+                  </Box>
                 ))}
-              </div>
+              </Box>
             )}
-          </div>
-          <div className="form-major">
-            <label htmlFor="major">Major</label>
-            <input
-              type="text"
-              name="major"
-              value={formData.major}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-career-goals">
-            <label htmlFor="career-goals">Career Goals</label>
-            <input
-              type="text"
-              name="career_goals"
-              value={formData.career_goals}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-bio">
-            <label htmlFor="bio">Bio</label>
-            <textarea
-              name="bio"
-              value={formData.bio}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-time-preference">
-            <label htmlFor="preferredStartHour">Preferred Start Hour:</label>
-            <input
-              type="time"
-              id="preferredStartHour"
-              name="preferredStartHour"
-              value={formData.preferredStartHour}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="form-time-preference">
-            <label htmlFor="preferredEndHour">Preferred End Hour:</label>
-            <input
-              type="time"
-              id="preferredEndHour"
-              name="preferredEndHour"
-              value={formData.preferredEndHour}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="form-skills">
-            <label htmlFor="skills">Skills</label>
-            <div>
-              <button type="button" onClick={handleDropdownToggle}>
-                {dropdownOpen ? "Hide Skills" : "Show Skills"}
-              </button>
-              {dropdownOpen && (
-                <div className="skills-dropdown">
-                  {skillsList.map((skill) => (
-                    <div key={skill}>
-                      <label>{skill}</label>
-                      <input
-                        type="checkbox"
-                        value={skill}
-                        checked={selectedSkills.includes(skill)}
-                        onChange={() => handleCheckboxChange(skill)}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-          <button type="submit">Save</button>
-        </form>
-      </div>
-    </div>
+          </Box>
+        </FormControl>
+        <Button type="submit" variant="contained" color="primary">
+          Save
+        </Button>
+      </form>
+    </Box>
   );
 }
 

@@ -1,3 +1,7 @@
 #match {
   z-index: 3;
 }
+
+.modal-content {
+  border-radius: 8px;
+}

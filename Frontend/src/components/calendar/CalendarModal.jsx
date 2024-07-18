@@ -3,6 +3,18 @@ import { UserContext } from "../../UserContext.jsx";
 import { useNavigate } from "react-router-dom";
 import "../mentor/mentor-profile/MentorProfileModal.css";
 import "./CalendarModal.css";
+import {
+  Container,
+  Box,
+  Typography,
+  Button,
+  Modal,
+  TextField,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+  FormControl,
+} from "@mui/material";
 import moment from "moment-timezone";
 import config from "../../../config.js";
 
@@ -142,7 +154,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
           mentorId: isMentor(user) ? userData.id : selectedUsers,
           menteeIds: user.userRole === "mentee" ? userData.id : selectedUsers,
           scheduledTime: scheduledDateTime,
-          topic,
+          topic: topic.trim() ? topic : "No Title",
         }),
       });
 
@@ -337,72 +349,77 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
   };
 
   return (
-    <div className="modal">
-      <div className="modal-content">
-        <span className="modal-close" onClick={toggleModal}>
-          ×
-        </span>
-        <h3>Schedule Meeting:</h3>
+    <Modal open={true} onClose={toggleModal}>
+      <Box className="modal-box">
+        <Typography variant="h6" gutterBottom>
+          Schedule Meeting
+        </Typography>
         <div className="calendar-modal-container">
           <form className="calendar-form">
-            <div className="form-group">
-              <label>Select {isMentor(user) ? "Mentees" : "Mentor"}:</label>
-              <div className="checkbox-list">
+            <FormControl fullWidth margin="normal">
+              <Typography>
+                Select {isMentor(user) ? "Mentees" : "Mentor"}:
+              </Typography>
+              <FormGroup>
                 {menteesOrMentors.map((person) => (
-                  <div key={person.id} className="checkbox-item">
-                    <p>{person.name}</p>
-                    <input
-                      type="checkbox"
-                      value={person.id}
-                      checked={selectedUsers.includes(person.id)}
-                      onChange={handleCheckboxChange}
-                    />
-                  </div>
+                  <FormControlLabel
+                    key={person.id}
+                    control={
+                      <Checkbox
+                        value={person.id}
+                        checked={selectedUsers.includes(person.id)}
+                        onChange={handleCheckboxChange}
+                      />
+                    }
+                    label={person.name}
+                  />
                 ))}
-              </div>
-            </div>
-            <div className="form-group">
-              <label htmlFor="date">Date:</label>
-              <input
+              </FormGroup>
+            </FormControl>
+            <FormControl fullWidth margin="normal">
+              <TextField
+                label="Date"
                 type="date"
-                id="date"
                 value={scheduledDate}
                 onChange={(event) => setScheduledDate(event.target.value)}
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 required
               />
-            </div>
-            <div className="form-group">
-              <label htmlFor="topic">Topic:</label>
-              <input
-                type="text"
-                id="topic"
+            </FormControl>
+            <FormControl fullWidth margin="normal">
+              <TextField
+                label="Topic"
                 value={topic}
                 onChange={(event) => setTopic(event.target.value)}
               />
-            </div>
+            </FormControl>
           </form>
-          <div className="calendar-suggested-times">
-            <label>Suggested Times</label>
+          <Box className="calendar-suggested-times" mt={2}>
+            <Typography>Suggested Times</Typography>
             {suggestedTimes.length > 0 ? (
               suggestedTimes.map((timeSlot, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleScheduleMeeting(timeSlot)}
-                >
-                  {moment(timeSlot.start, "HH:mm").format("h:mm A")} -{" "}
-                  {moment(timeSlot.end, "HH:mm").format("h:mm A")}
-                </button>
+                <Box key={index} mt={1}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleScheduleMeeting(timeSlot)}
+                  >
+                    {moment(timeSlot.start, "HH:mm").format("h:mm A")} -{" "}
+                    {moment(timeSlot.end, "HH:mm").format("h:mm A")}
+                  </Button>
+                </Box>
               ))
             ) : (
-              <p>
-                No suggested times available. Please select a mentees and a
-                date.
-              </p>
+              <Typography>
+                No suggested times available. Please select a mentee and a date.
+              </Typography>
             )}
-          </div>
+          </Box>
         </div>
-      </div>
-    </div>
+      </Box>
+    </Modal>
   );
 }
 

@@ -4,6 +4,7 @@ import config from "../../../config.js";
 import moment from "moment";
 import "../mentor-matching/MatchModal.css";
 import "./MeetingModal.css";
+import { Container, Box, Typography, Button, Modal } from "@mui/material";
 
 function MeetingModal({
   mentor,
@@ -13,21 +14,42 @@ function MeetingModal({
   declineMeeting,
   selectedMeeting,
 }) {
-  // const formattedStartTime = moment(selectedMeeting.scheduledTime).format('MMMM Do YYYY, h:mm:ss a');
-  // const formattedEndTime = moment(selectedMeeting.start).add(30, 'minutes').format('MMMM Do YYYY, h:mm:ss a');
+  const formattedDate = moment(selectedMeeting.end).format("MMMM Do YYYY");
+  const formattedStartTime = moment(selectedMeeting.start).format("h:mm a");
+  const formattedEndTime = moment(selectedMeeting.end).format("h:mm a");
 
   return (
     <>
-      <div className="modal" id="match">
-        <div className="modal-content">
-          <span className="modal-close" onClick={toggleModal}>
-            ×
-          </span>
-          <div className="mm-body">
-            <h3>{selectedMeeting.title}</h3>
-            <p>Status: {selectedMeeting.status}</p>
-            <p>Mentor: {selectedMeeting.mentorName}</p>
-            <p>Attendees:</p>
+      <Modal open={true} onClose={toggleModal}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "50%",
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Box className="mm-body">
+            <Typography variant="h4" gutterBottom>
+              {selectedMeeting.title
+                ? selectedMeeting.title
+                : "No Meeting Title"}
+            </Typography>
+            <Typography>Status: {selectedMeeting.status}</Typography>
+            <Typography>Mentor: {selectedMeeting.mentorName}</Typography>
+            <Typography>Date: {formattedDate}</Typography>
+            <Typography>
+              Time: {formattedStartTime} - {formattedEndTime}
+            </Typography>
+            <Typography>Attendees:</Typography>
             {selectedMeeting.menteeNames.length > 0 ? (
               <ul>
                 {selectedMeeting.menteeNames.map((name, index) => (
@@ -35,19 +57,28 @@ function MeetingModal({
                 ))}
               </ul>
             ) : (
-              <p>No attendees</p>
+              <Typography>No attendees</Typography>
             )}
-            <div className="mm-btns">
-              <button onClick={() => acceptMeeting(selectedMeeting.id)}>
+            <Box className="mm-btns" mt={2}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => acceptMeeting(selectedMeeting.id)}
+                sx={{ mr: 1 }}
+              >
                 Accept
-              </button>
-              <button onClick={() => declineMeeting(selectedMeeting.id)}>
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => declineMeeting(selectedMeeting.id)}
+              >
                 Decline
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+      </Modal>
     </>
   );
 }

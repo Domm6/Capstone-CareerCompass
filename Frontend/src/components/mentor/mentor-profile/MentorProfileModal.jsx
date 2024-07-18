@@ -1,10 +1,18 @@
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../UserContext.jsx";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import moment from "moment";
-import "./MentorProfileModal.css";
 import config from "../../../../config.js";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Modal,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 
 const API_KEY = import.meta.env.VITE_SCHOOL_API;
 
@@ -35,12 +43,11 @@ function MentorProfileModal({
     schoolState: "",
     schoolCity: "",
     bio: "",
-    skills: selectedSkills.join(", "),
+    skills: selectedSkills,
     preferredStartHour: "00:00",
     preferredEndHour: "23:59",
   });
   const [schoolSuggestions, setSchoolSuggestions] = useState([]);
-  const [selectedSchool, setSelectedSchool] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
@@ -50,16 +57,17 @@ function MentorProfileModal({
         industry: mentorData.industry || "",
         company: mentorData.company || "",
         work_role: mentorData.work_role || "",
-        years_experience: mentorData.years_experience || "",
+        years_experience:
+          Object.keys(experienceMappingReverse).find(
+            (key) =>
+              experienceMappingReverse[key] === mentorData.years_experience
+          ) || "",
         school: mentorData.school || "",
         schoolState: mentorData.schoolState || "",
         schoolCity: mentorData.schoolCity || "",
         bio: mentorData.bio || "",
-        skills: mentorData.skills || "",
-        preferredStartHour:
-          mentorData.meetingPreferences?.preferredStartHour || "00:00",
-        preferredEndHour:
-          mentorData.meetingPreferences?.preferredEndHour || "23:59",
+        preferredStartHour: mentorData.preferredStartHour || "00:00",
+        preferredEndHour: mentorData.preferredEndHour || "23:59",
       }));
     }
   }, [mentorData]);
@@ -106,7 +114,6 @@ function MentorProfileModal({
       schoolCity: school["school.city"],
       schoolState: school["school.state"],
     });
-    setSelectedSchool(school);
     setSchoolSuggestions([]);
   };
 
@@ -132,7 +139,6 @@ function MentorProfileModal({
       });
 
       if (response.ok) {
-        // Close the modal after a successful update
         closeModal();
       } else {
         console.error("Error updating mentor profile:", response.statusText);
@@ -143,140 +149,140 @@ function MentorProfileModal({
   };
 
   return (
-    <div className="modal">
-      <div className="modal-content">
-        <span className="modal-close" onClick={closeModal}>
-          ×
-        </span>
-        <form className="mp-form" onSubmit={handleSubmit}>
-          <div className="form-industry">
-            <label htmlFor="industry" required>
-              Industry
-            </label>
-            <input
-              type="text"
-              name="industry"
-              value={formData.industry}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-company">
-            <label htmlFor="company">Company</label>
-            <input
-              type="text"
-              name="company"
-              value={formData.company}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-role">
-            <label htmlFor="role">Role</label>
-            <input
-              type="text"
-              name="work_role"
-              value={formData.work_role}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-years-experience">
-            <label htmlFor="years_experience">Years of Experiencce</label>
-            <select
-              name="years_experience"
-              value={formData.years_experience}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select</option>
-              <option value="1">0 - 2</option>
-              <option value="2">2 - 5</option>
-              <option value="3">5 - 10</option>
-              <option value="4">10+</option>
-              <option value="5">20+</option>
-            </select>
-          </div>
-          <div className="form-school">
-            <label htmlFor="school">School</label>
-            <input
-              type="text"
-              name="school"
-              value={formData.school}
-              onChange={handleChange}
-              required
-            />
-            {schoolSuggestions.length > 0 && (
-              <div className="school-suggestions">
-                {schoolSuggestions.slice(0, 20).map((school) => (
-                  <div
-                    key={school.id}
-                    className="school-suggestion"
-                    onClick={() => handleSchoolSelect(school)}
-                  >
-                    {school["school.name"]}, {school["school.city"]},{" "}
-                    {school["school.state"]}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-          <div className="form-bio">
-            <label htmlFor="bio">Bio</label>
-            <textarea
-              name="bio"
-              value={formData.bio}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-time-preference">
-            <label htmlFor="preferredStartHour">Preferred Start Hour:</label>
-            <input
-              type="time"
-              id="preferredStartHour"
-              name="preferredStartHour"
-              value={formData.preferredStartHour}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="form-time-preference">
-            <label htmlFor="preferredEndHour">Preferred End Hour:</label>
-            <input
-              type="time"
-              id="preferredEndHour"
-              name="preferredEndHour"
-              value={formData.preferredEndHour}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="form-skills">
-            <label htmlFor="skills">Skills</label>
-            <div>
-              <button type="button" onClick={handleDropdownToggle}>
-                {dropdownOpen ? "Hide Skills" : "Show Skills"}
-              </button>
-              {dropdownOpen && (
-                <div className="skills-dropdown">
-                  {skillsList.map((skill) => (
-                    <div key={skill}>
-                      <label>{skill}</label>
-                      <input
-                        type="checkbox"
-                        value={skill}
-                        checked={selectedSkills.includes(skill)}
-                        onChange={() => handleCheckboxChange(skill)}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-          <button type="submit">Save</button>
-        </form>
-      </div>
-    </div>
+    <Box>
+      <Typography variant="h6" gutterBottom>
+        Edit Mentor Profile
+      </Typography>
+      <form onSubmit={handleSubmit}>
+        <TextField
+          label="Industry"
+          name="industry"
+          value={formData.industry}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+          required
+        />
+        <TextField
+          label="Company"
+          name="company"
+          value={formData.company}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+          required
+        />
+        <TextField
+          label="Role"
+          name="work_role"
+          value={formData.work_role}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+          required
+        />
+        <FormControl fullWidth margin="normal" required>
+          <InputLabel id="years-experience-label">
+            Years of Experience
+          </InputLabel>
+          <Select
+            labelId="years-experience-label"
+            name="years_experience"
+            value={formData.years_experience}
+            onChange={handleChange}
+          >
+            <MenuItem value="">
+              <em>Select</em>
+            </MenuItem>
+            <MenuItem value="1">0 - 2</MenuItem>
+            <MenuItem value="2">2 - 5</MenuItem>
+            <MenuItem value="3">5 - 10</MenuItem>
+            <MenuItem value="4">10+</MenuItem>
+            <MenuItem value="5">20+</MenuItem>
+          </Select>
+        </FormControl>
+        <TextField
+          label="School"
+          name="school"
+          value={formData.school}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+          required
+        />
+        {schoolSuggestions.length > 0 && (
+          <Box className="school-suggestions">
+            {schoolSuggestions.slice(0, 20).map((school) => (
+              <Box
+                key={school.id}
+                className="school-suggestion"
+                onClick={() => handleSchoolSelect(school)}
+              >
+                {school["school.name"]}, {school["school.city"]},{" "}
+                {school["school.state"]}
+              </Box>
+            ))}
+          </Box>
+        )}
+        <TextField
+          label="Bio"
+          name="bio"
+          value={formData.bio}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+          multiline
+          rows={4}
+          required
+        />
+        <TextField
+          label="Preferred Start Hour"
+          type="time"
+          name="preferredStartHour"
+          value={formData.preferredStartHour}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          label="Preferred End Hour"
+          type="time"
+          name="preferredEndHour"
+          value={formData.preferredEndHour}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+        />
+        <Box className="form-skills">
+          <Button
+            type="button"
+            onClick={handleDropdownToggle}
+            variant="contained"
+            color="primary"
+          >
+            {dropdownOpen ? "Hide Skills" : "Show Skills"}
+          </Button>
+          {dropdownOpen && (
+            <Box className="skills-dropdown">
+              {skillsList.map((skill) => (
+                <Box key={skill}>
+                  <label>{skill}</label>
+                  <input
+                    type="checkbox"
+                    value={skill}
+                    checked={selectedSkills.includes(skill)}
+                    onChange={() => handleCheckboxChange(skill)}
+                  />
+                </Box>
+              ))}
+            </Box>
+          )}
+        </Box>
+        <Button type="submit" variant="contained" color="primary">
+          Save
+        </Button>
+      </form>
+    </Box>
   );
 }
 

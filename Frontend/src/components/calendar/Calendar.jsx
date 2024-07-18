@@ -9,6 +9,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import MeetingModal from "../meeting/MeetingModal.jsx";
+import { Container, Box, Typography, Button } from "@mui/material";
 
 function Calendar() {
   const { user } = useContext(UserContext);
@@ -195,7 +196,13 @@ function Calendar() {
     <>
       {isMentor(user) && (
         <div className="add-meeting-btn">
-          <button onClick={handleModalToggle}>Add Meeting</button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleModalToggle}
+          >
+            Add Meeting
+          </Button>
         </div>
       )}
       <div className="calendar-container">

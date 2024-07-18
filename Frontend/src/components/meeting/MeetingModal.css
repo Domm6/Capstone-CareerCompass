@@ -1,3 +1,13 @@
 .mm-btns {
   display: flex;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.mm-btns Button {
+  margin: 10px;
+}
+
+.mm-body p {
+  margin: 10px;
 }

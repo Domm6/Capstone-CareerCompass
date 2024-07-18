@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { UserContext } from "./UserContext";
 import { useNavigate, Link } from "react-router-dom";
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 import "./App.css";
 import config from "../config";
 import ProtectedRoute from "./ProtectedRoute";
@@ -14,6 +16,7 @@ import MenteeProfile from "./components/mentee/mentee-profile/MenteeProfile";
 import MentorDashboard from "./components/mentor/mentor-dashboard/MentorDashboard";
 import MenteeDashboard from "./components/mentee/mentee-dashboard/MenteeDashboard";
 import Match from "./components/mentor-matching/Match";
+import theme from "../theme";
 
 function App() {
   const [user, setUser] = useState(() => {
@@ -52,57 +55,60 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <UserContext.Provider value={{ user, updateUser, handleSignout }}>
-        <Router>
-          <Routes>
-            <Route path="/" element={user ? <HomePage /> : <LoginPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignUpPage />} />
-            <Route
-              path="/mentor-profile"
-              element={
-                <ProtectedRoute>
-                  <MentorProfile />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/mentee-profile"
-              element={
-                <ProtectedRoute>
-                  <MenteeProfile />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/mentor-dashboard"
-              element={
-                <ProtectedRoute>
-                  <MentorDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/mentee-dashboard"
-              element={
-                <ProtectedRoute>
-                  <MenteeDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/matching"
-              element={
-                <ProtectedRoute>
-                  <Match />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </Router>
-      </UserContext.Provider>
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <div className="App">
+        <UserContext.Provider value={{ user, updateUser, handleSignout }}>
+          <Router>
+            <Routes>
+              <Route path="/" element={user ? <HomePage /> : <LoginPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignUpPage />} />
+              <Route
+                path="/mentor-profile"
+                element={
+                  <ProtectedRoute>
+                    <MentorProfile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/mentee-profile"
+                element={
+                  <ProtectedRoute>
+                    <MenteeProfile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/mentor-dashboard"
+                element={
+                  <ProtectedRoute>
+                    <MentorDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/mentee-dashboard"
+                element={
+                  <ProtectedRoute>
+                    <MenteeDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/matching"
+                element={
+                  <ProtectedRoute>
+                    <Match />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </Router>
+        </UserContext.Provider>
+      </div>
+    </ThemeProvider>
   );
 }
 
