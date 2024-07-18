@@ -24,6 +24,9 @@ if (!fs.existsSync(uploadDirectory)) {
   fs.mkdirSync(uploadDirectory);
 }
 
+// Serve static files from the uploads directory
+router.use("/uploads", express.static(uploadDirectory));
+
 // directory to save images
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -57,6 +60,24 @@ router.put("/user/:id", upload.single("profileImage"), async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });
+  }
+});
+
+// router to get userinfo
+router.get("/users/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findByPk(userId, {
+      attributes: ["id", "name", "email", "profileImageUrl", "userRole"],
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json(user);
+  } catch {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ message: "Error fetching uer information" });
   }
 });
 
@@ -161,24 +182,6 @@ router.post("/users/signout", (req, res) => {
     res.clearCookie("connect.sid", { path: "/" });
     return res.status(200).json({ message: "Successfully signed out" });
   });
-});
-
-// router to get userinfo
-router.get("/users/:id", async (req, res) => {
-  try {
-    const userId = req.params.id;
-    const user = await User.findByPk(userId, {
-      attributes: ["id", "name", "email", "profileImageUrl", "userRole"],
-    });
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    res.json(user);
-  } catch {
-    console.error("Error fetching user:", error);
-    res.status(500).json({ message: "Error fetching uer information" });
-  }
 });
 
 // Route to update mentor profile

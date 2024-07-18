@@ -144,6 +144,8 @@ function MentorProfile() {
     setIsModalOpen(!isModalOpen);
   };
 
+  console.log(userData);
+
   return (
     <>
       <ResponsiveAppBar
