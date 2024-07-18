@@ -250,6 +250,9 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
         : earliestEndTime;
     }, preferredEndTime);
 
+    console.log("overlapping starttime slot", overlapStartTime);
+    console.log("overlapping endtime slot", overlapEndTime);
+
     // fetch mentors meetings
     const mentorMeetings = await fetchMentorMeetings(mentorId);
 
@@ -265,10 +268,22 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
       endTime: lunchEnd.format(),
     });
 
-    // filter mentor meetings by the selected date
+    // Filter mentor meetings by the selected date and overlapping time range
     const filteredMentorMeetings = mentorMeetings.filter((meeting) => {
-      const meetingDate = moment(meeting.scheduledTime).format("YYYY-MM-DD");
-      return meetingDate === selectedDateMoment.format("YYYY-MM-DD");
+      const meetingStartTime = moment(meeting.scheduledTime);
+      const meetingEndTime = moment(meeting.endTime);
+
+      const isSameDate = meetingStartTime.isSame(selectedDateMoment, "day");
+      const isInOverlap =
+        meetingStartTime.isBetween(
+          overlapStartTime,
+          overlapEndTime,
+          null,
+          "[)"
+        ) &&
+        meetingEndTime.isBetween(overlapStartTime, overlapEndTime, null, "(]");
+
+      return isSameDate && isInOverlap;
     });
 
     // Sort mentor meetings by start time
@@ -305,6 +320,8 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
         end: overlapEndTime.clone(),
       });
     }
+
+    console.log("mentor free slots in overlapping time range", mentorFreeSlots);
 
     // Subtract mentee meetings from mentor's free slots and break mentors slots into smaller slots
     const subtractMeetings = (freeSlots, meetings) => {
@@ -357,6 +374,8 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
         menteesMeetings[menteeId]
       );
     });
+
+    console.log("final free slots", finalFreeSlots);
 
     // Function to break slots into 30 min intervals
     const breakIntoIntervals = (slot) => {
