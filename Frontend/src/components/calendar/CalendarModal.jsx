@@ -306,7 +306,59 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
       });
     }
 
-    // function to break slots into 30 min intervals
+    // Subtract mentee meetings from mentor's free slots and break mentors slots into smaller slots
+    const subtractMeetings = (freeSlots, meetings) => {
+      // result slots
+      const resultSlots = [];
+
+      // go through each free slot for the mentor
+      freeSlots.forEach((slot) => {
+        let currentStart = slot.start;
+
+        // go through the mentee's meeting
+        meetings.forEach((meeting) => {
+          const meetingStart = moment(meeting.scheduledTime);
+          const meetingEnd = moment(meeting.endTime);
+
+          // Check if the meeting overlaps with the curr free slot
+          if (
+            meetingStart.isBefore(slot.end) &&
+            meetingEnd.isAfter(slot.start)
+          ) {
+            // Check if there is a porition of the free slot before the meeting starst, and add it to the result
+            if (currentStart.isBefore(meetingStart)) {
+              resultSlots.push({
+                start: currentStart.clone(),
+                end: meetingStart.clone(),
+              });
+            }
+            // move start time to end of the meeting
+            currentStart = meetingEnd.clone();
+          }
+        });
+
+        // Check if portion of free slot after the meeing ends, and add to the free slots
+        if (currentStart.isBefore(slot.end)) {
+          resultSlots.push({
+            start: currentStart.clone(),
+            end: slot.end.clone(),
+          });
+        }
+      });
+
+      return resultSlots;
+    };
+
+    let finalFreeSlots = mentorFreeSlots;
+
+    selectedMentees.forEach((menteeId) => {
+      finalFreeSlots = subtractMeetings(
+        finalFreeSlots,
+        menteesMeetings[menteeId]
+      );
+    });
+
+    // Function to break slots into 30 min intervals
     const breakIntoIntervals = (slot) => {
       const intervals = [];
       let currentStart = slot.start.clone();
@@ -326,31 +378,13 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
       return intervals;
     };
 
-    // break mentor free slots into 30 min intervals
-    const allIntervals = mentorFreeSlots.flatMap((slot) =>
+    // Break final free slots into 30 min intervals
+    const allIntervals = finalFreeSlots.flatMap((slot) =>
       breakIntoIntervals(slot)
     );
 
-    // filter intervals to remove conflicts with mentees meetings
-    const finalFreeSlots = allIntervals.filter((interval) => {
-      return selectedMentees.every((menteeId) => {
-        const hasConflict = menteesMeetings[menteeId].some((meeting) => {
-          const meetingStartTime = moment(meeting.scheduledTime);
-          const meetingEndTime = moment(meeting.endTime);
-
-          const conflict =
-            interval.start.isBefore(meetingEndTime) &&
-            interval.end.isAfter(meetingStartTime);
-
-          return conflict;
-        });
-
-        return !hasConflict;
-      });
-    });
-
-    // return suggested times
-    return finalFreeSlots.map((slot) => ({
+    // Return suggested times
+    return allIntervals.map((slot) => ({
       start: slot.start.format("HH:mm"),
       end: slot.end.format("HH:mm"),
     }));
