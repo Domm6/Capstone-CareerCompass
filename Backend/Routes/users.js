@@ -54,8 +54,6 @@ router.put("/user/:id", upload.single("profileImage"), async (req, res) => {
 
     const user = await User.findByPk(userId); // Fetch updated user to return
 
-    console.log(user);
-
     res.json(user);
   } catch (error) {
     console.error(error);

@@ -53,8 +53,6 @@ function MentorProfileModal({
   const [errorMessage, setErrorMessage] = useState("");
   const [image, setImage] = useState();
 
-  console.log(user);
-
   useEffect(() => {
     if (mentorData) {
       setFormData((prevFormData) => ({
