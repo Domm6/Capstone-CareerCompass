@@ -1,5 +1,9 @@
 import express from "express";
 import bcrypt from "bcrypt";
+import multer from "multer";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { User } from "../models/user.js";
 import { Op } from "sequelize";
 import { Mentor } from "../models/mentor.js";
@@ -9,8 +13,52 @@ import { Meeting } from "../models/index.js";
 import { Review } from "../models/review.js";
 import { ConnectRequest } from "../models/connect-request.js";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const router = express.Router();
 const SALT_ROUNDS = 10;
+
+const uploadDirectory = path.join(__dirname, "..", "uploads");
+
+if (!fs.existsSync(uploadDirectory)) {
+  fs.mkdirSync(uploadDirectory);
+}
+
+// directory to save images
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Directory to save images
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+// update user profile image
+router.put("/user/:id", upload.single("profileImage"), async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const updatedUser = {};
+
+    if (req.file) {
+      updatedUser.profileImageUrl = `/uploads/${req.file.filename}`;
+    }
+
+    await User.update(updatedUser, { where: { id: userId } });
+
+    const user = await User.findByPk(userId); // Fetch updated user to return
+
+    console.log(user);
+
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 
 // Route for user registration
 router.post("/users/signup", async (req, res) => {

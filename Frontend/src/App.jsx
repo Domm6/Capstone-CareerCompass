@@ -56,7 +56,6 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      {" "}
       {/* Wrap with ThemeProvider */}
       <CssBaseline /> {/* Apply CssBaseline for consistent styling */}
       <div className="App">
