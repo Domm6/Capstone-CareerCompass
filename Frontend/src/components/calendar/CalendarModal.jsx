@@ -24,7 +24,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [suggestedTimes, setSuggestedTimes] = useState([]);
   const [scheduledDate, setScheduledDate] = useState("");
-  const [scheduledTime, setScheduledTime] = useState("");
+  const [scheduledTime, setScheduledTime] = useState(""); // For the start time
   const [topic, setTopic] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [userData, setUserData] = useState("");
@@ -90,6 +90,12 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
     return data.mentee;
   };
 
+  const formatTimeSlot = (startTime) => {
+    const start = moment(startTime, "HH:mm");
+    const end = moment(start).add(30, "minutes"); // Assuming 30 minutes duration
+    return { start: start.format("HH:mm"), end: end.format("HH:mm") };
+  };
+
   useEffect(() => {
     const initialize = async () => {
       try {
@@ -135,7 +141,9 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
     fetchSuggestedTimes();
   }, [userData, selectedUsers, scheduledDate]);
 
-  const handleScheduleMeeting = async (timeSlot) => {
+  const handleScheduleMeeting = async (time) => {
+    const timeSlot = formatTimeSlot(time);
+
     const scheduledDateTime = moment
       .tz(
         `${scheduledDate}T${timeSlot.start}`,
@@ -390,11 +398,31 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
             </FormControl>
             <FormControl fullWidth margin="normal">
               <TextField
+                label="Time"
+                type="time"
+                value={scheduledTime}
+                onChange={(event) => setScheduledTime(event.target.value)}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                required
+              />
+            </FormControl>
+            <FormControl fullWidth margin="normal">
+              <TextField
                 label="Topic"
                 value={topic}
                 onChange={(event) => setTopic(event.target.value)}
               />
             </FormControl>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              onClick={() => handleScheduleMeeting(scheduledTime)}
+            >
+              Schedule Meeting
+            </Button>
           </form>
           <Box className="calendar-suggested-times" mt={2}>
             <Typography>Suggested Times</Typography>
@@ -404,7 +432,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => handleScheduleMeeting(timeSlot)}
+                    onClick={() => handleScheduleMeeting(timeSlot.start)}
                   >
                     {moment(timeSlot.start, "HH:mm").format("h:mm A")} -{" "}
                     {moment(timeSlot.end, "HH:mm").format("h:mm A")}
