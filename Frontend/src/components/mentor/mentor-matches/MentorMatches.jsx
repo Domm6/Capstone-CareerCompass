@@ -37,6 +37,7 @@ function MentorMatches() {
       }
       const data = await response.json();
       setRequests(data.requests);
+      console.log(data);
     } catch (error) {
       setErrorMessage(error.message);
     }

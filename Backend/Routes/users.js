@@ -140,6 +140,43 @@ router.post("/users/signup", async (req, res) => {
   }
 });
 
+// Route to delete a user
+router.delete("/users/:id", async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    // Find the user by ID
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Delete the associated profile (Mentor or Mentee)
+    if (user.userRole === "mentor") {
+      const mentor = await Mentor.findOne({ where: { userId: user.id } });
+      if (mentor) {
+        await ConnectRequest.destroy({ where: { mentorId: mentor.id } });
+        await Mentor.destroy({ where: { userId: user.id } });
+      }
+    } else {
+      const mentee = await Mentee.findOne({ where: { userId: user.id } });
+      if (mentee) {
+        await ConnectRequest.destroy({ where: { menteeId: mentee.id } });
+        await Mentee.destroy({ where: { userId: user.id } });
+      }
+    }
+
+    // Delete the user
+    await User.destroy({ where: { id: userId } });
+
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 // Route for user login
 router.post("/users/login", async (req, res) => {
   const { email, password } = req.body;
@@ -416,6 +453,28 @@ router.post("/connect-requests", async (req, res) => {
     res.status(201).json({ connectRequest });
   } catch (error) {
     console.error("Error creating connect request:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// route to delete connect-requests
+router.delete("/connect-requests/:id", async (req, res) => {
+  const requestId = req.params.id;
+
+  try {
+    // Find the connect request by ID
+    const connectRequest = await ConnectRequest.findByPk(requestId);
+
+    if (!connectRequest) {
+      return res.status(404).json({ error: "Connect request not found" });
+    }
+
+    // Delete the connect request
+    await connectRequest.destroy();
+
+    res.status(200).json({ message: "Connect request deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting connect request:", error);
     res.status(500).json({ error: "Server error" });
   }
 });
