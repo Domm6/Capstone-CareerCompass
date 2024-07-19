@@ -1,0 +1,38 @@
+.rc-body {
+  display: flex;
+  width: 100%;
+}
+
+.rc-left {
+  margin: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.rc-right {
+  margin: 10px;
+  padding: 10px;
+  width: 100%;
+}
+
+.rc-right p {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.rc-right p:nth-of-type(2) {
+  max-height: 100px;
+  overflow: auto;
+}
+
+#rc-img {
+  width: 25px;
+  height: auto;
+}
+
+#rc {
+  height: 300pxx;
+}

@@ -5,6 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 import "./MentorProfile.css";
 import moment from "moment";
 import MentorProfileModal from "./MentorProfileModal.jsx";
+import ReviewCard from "./ReviewCard.jsx";
 import config from "../../../../config.js";
 import ResponsiveAppBar from "../../header/ResponsiveAppBar.jsx";
 import { Container, Box, Typography, Button, Modal } from "@mui/material";
@@ -67,7 +68,7 @@ const experienceMappingReverse = {
   5: "20+",
 };
 
-function MentorProfile({ mentorData }) {
+function MentorProfile() {
   const { user } = useContext(UserContext);
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -76,9 +77,9 @@ function MentorProfile({ mentorData }) {
   const location = useLocation();
   const [mentor, setMentor] = useState(location.state?.mentor || null);
   const { handleSignout } = useContext(UserContext);
+  const [reviews, setReviews] = useState([]);
   const pages = ["Dashboard"];
 
-  console.log(mentor);
   const [userData, setUserData] = useState({
     name: mentor ? mentor.User.name : "Loading",
     profileImageUrl: mentor
@@ -133,6 +134,34 @@ function MentorProfile({ mentorData }) {
     }
   };
 
+  // fetch mentor reviews
+  const fetchMentorReveiews = async (mentorId) => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseUrl}/mentors/${mentorId}/reviews`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        const filteredReviews = data.reviews.filter(
+          (review) => review.textReview !== null
+        );
+        setReviews(filteredReviews);
+      } else {
+        const errorData = await response.json();
+        console.error(`Error: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error("Server error, please try again later.");
+    }
+  };
+
   useEffect(() => {
     if (!mentor) {
       fetchMentorData();
@@ -151,6 +180,10 @@ function MentorProfile({ mentorData }) {
         preferredStartHour: mentor.meetingPreferences.preferredStartHour,
         preferredEndHour: mentor.meetingPreferences.preferredEndHour,
       });
+
+      // fetch mentor reviews
+      fetchMentorReveiews(mentor.id);
+      // filter so only reviews with
     }
   }, [user, mentor]);
 
@@ -234,6 +267,16 @@ function MentorProfile({ mentorData }) {
               </Typography>
             </div>
           </div>
+          {user.userRole != "mentor" && (
+            <div className="mp-reviews">
+              <h3>Reviews</h3>
+              <div className="card-reviews">
+                {reviews.map((review) => (
+                  <ReviewCard key={review.id} review={review} />
+                ))}
+              </div>
+            </div>
+          )}
           <Modal open={isModalOpen} onClose={handleModalToggle}>
             <Box
               sx={{
