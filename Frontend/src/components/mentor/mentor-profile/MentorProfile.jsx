@@ -78,6 +78,7 @@ function MentorProfile() {
   const [mentor, setMentor] = useState(location.state?.mentor || null);
   const { handleSignout } = useContext(UserContext);
   const [reviews, setReviews] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
   const pages = ["Dashboard"];
 
   const [userData, setUserData] = useState({
@@ -125,7 +126,7 @@ function MentorProfile() {
           });
         })
         .catch((error) => {
-          console.error("Error fetching mentor data:", error);
+          setErrorMessage(error);
           setUserData({
             name: "Failed to load user data",
             profileImageUrl: PLACEHOLDER,
@@ -155,7 +156,7 @@ function MentorProfile() {
         setReviews(filteredReviews);
       } else {
         const errorData = await response.json();
-        console.error(`Error: ${errorData.error}`);
+        setErrorMessage(errorData);
       }
     } catch (error) {
       console.error("Server error, please try again later.");

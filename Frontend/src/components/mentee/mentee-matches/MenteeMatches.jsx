@@ -56,7 +56,7 @@ function MenteeMatches() {
       setReviews(data.reviews);
       return reviews;
     } catch (error) {
-      console.error("Error fetching reviews:", error);
+      setErrorMessage(error);
       return [];
     }
   };
