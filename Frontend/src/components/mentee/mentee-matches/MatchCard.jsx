@@ -25,11 +25,16 @@ function MatchCard({
 }) {
   const { user } = useContext(UserContext);
   const [rating, setRating] = useState(5);
+  const [textReview, setTextReview] = useState("");
   const [message, setMessage] = useState("");
   const [hasReviewed, setHasReviewed] = useState(false);
 
   const handleRatingChange = (event) => {
     setRating(parseInt(event.target.value));
+  };
+
+  const handleTextReviewChange = (event) => {
+    setTextReview(event.target.value);
   };
 
   const checkReview = () => {
@@ -50,6 +55,7 @@ function MatchCard({
           mentorId,
           menteeId: mentee.id,
           rating: rating,
+          textReview: textReview,
         }),
       });
 
@@ -76,6 +82,7 @@ function MatchCard({
           mentorId,
           menteeId: mentee.id,
           rating: rating,
+          textReview: textReview,
         }),
       });
 
@@ -122,7 +129,12 @@ function MatchCard({
                 <option value="4">4</option>
                 <option value="5">5</option>
               </select>
-              <input type="text" />
+              <input
+                type="text"
+                value={textReview}
+                onChange={handleTextReviewChange}
+                placeholder="Write your review here"
+              />
               {hasReviewed ? (
                 <Button
                   variant="contained"
