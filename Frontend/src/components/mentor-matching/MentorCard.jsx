@@ -10,6 +10,15 @@ const STAR_ICON =
   "https://cdn.iconscout.com/icon/free/png-256/free-star-bookmark-favorite-shape-rank-16-28621.png";
 const API_KEY = import.meta.env.VITE_LOGO_API;
 
+// mentor map
+const experienceMappingReverse = {
+  1: "0-2",
+  2: "2-5",
+  3: "5-10",
+  4: "10+",
+  5: "20+",
+};
+
 function MentorCard({ mentor, onCardClick, score }) {
   const { User: user } = mentor; // Access user data from mentor
 
@@ -55,7 +64,10 @@ function MentorCard({ mentor, onCardClick, score }) {
           </div>
           <div className="profile-body">
             <p>Bio: {mentor.bio ? mentor.bio : "No bio available"}</p>
-            <p>Years of Experience: {mentor.years_experience}</p>
+            <p>
+              Years of Experience:{" "}
+              {experienceMappingReverse[mentor.years_experience]}
+            </p>
             <p>
               Industry:{" "}
               {mentor.industry ? mentor.industry : "No industry available"}
