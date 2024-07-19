@@ -2,7 +2,14 @@ import { useState, useContext, useEffect } from "react";
 import { UserContext } from "../../../UserContext.jsx";
 import config from "../../../../config.js";
 import "./MatchCard.css";
-import { Container, Box, Typography, Button, Modal } from "@mui/material";
+import {
+  Container,
+  Box,
+  Typography,
+  Button,
+  Modal,
+  Alert,
+} from "@mui/material";
 
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
@@ -104,6 +111,11 @@ function MatchCard({
           </div>
         </div>
         <div className="request-right">
+          {message && (
+            <Alert severity="success" onClose={() => setMessage("")}>
+              {message}
+            </Alert>
+          )}
           <form onSubmit={handleSubmit}>
             <div className="right-rating">
               <select value={rating} onChange={handleRatingChange}>
