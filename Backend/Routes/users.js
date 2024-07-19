@@ -854,7 +854,9 @@ router.post("/reviews", async (req, res) => {
     const reviews = await Review.findAll({ where: { mentorId } });
     const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
     mentor.ratingCount = reviews.length;
-    mentor.averageRating = totalRating / mentor.ratingCount;
+    mentor.averageRating = parseFloat(
+      (totalRating / mentor.ratingCount).toFixed(2)
+    );
     mentor.totalRating = totalRating;
 
     await mentor.save();
@@ -887,7 +889,9 @@ router.put("/reviews/", async (req, res) => {
     const reviews = await Review.findAll({ where: { mentorId } });
     const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
     mentor.ratingCount = reviews.length;
-    mentor.averageRating = totalRating / mentor.ratingCount;
+    mentor.averageRating = parseFloat(
+      (totalRating / mentor.ratingCount).toFixed(2)
+    );
     mentor.totalRating = totalRating;
 
     await mentor.save();

@@ -24,7 +24,7 @@ function MatchCard({
   reviews,
 }) {
   const { user } = useContext(UserContext);
-  const [rating, setRating] = useState(1);
+  const [rating, setRating] = useState(5);
   const [message, setMessage] = useState("");
   const [hasReviewed, setHasReviewed] = useState(false);
 
