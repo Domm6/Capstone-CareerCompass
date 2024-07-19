@@ -126,22 +126,24 @@ function MatchModal({ mentor, closeModal, mentee }) {
                 <Typography>Rating: {mentor.averageRating}</Typography>
               </Box>
             </Box>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSubmit}
-              sx={{ mt: 2 }}
-            >
-              Connect
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{ mt: 2 }}
-              onClick={handleViewProfile}
-            >
-              View Profile
-            </Button>
+            <div className="match-btns">
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSubmit}
+                sx={{ mt: 2 }}
+              >
+                Connect
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{ mt: 2 }}
+                onClick={handleViewProfile}
+              >
+                View Profile
+              </Button>
+            </div>
           </Box>
         </Box>
       </Modal>

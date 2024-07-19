@@ -1,7 +1,8 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { UserContext } from "../../../UserContext.jsx";
 import config from "../../../../config.js";
 import "./MatchCard.css";
+import { Container, Box, Typography, Button, Modal } from "@mui/material";
 
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
@@ -13,18 +14,54 @@ function MatchCard({
   requestId,
   mentee,
   mentorId,
+  reviews,
 }) {
   const { user } = useContext(UserContext);
   const [rating, setRating] = useState(1);
   const [message, setMessage] = useState("");
+  const [hasReviewed, setHasReviewed] = useState(false);
 
   const handleRatingChange = (event) => {
     setRating(parseInt(event.target.value));
   };
 
+  console.log(reviews);
+
+  const checkReview = () => {
+    // implamentiribuedtnthfuhcfndklruircu
+    const reviewed = reviews.some((review) => review.mentorId === mentorId);
+    setHasReviewed(reviewed);
+    return reviewed;
+  };
+
+  const updateRating = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/reviews`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          mentorId,
+          menteeId: mentee.id,
+          rating: rating,
+        }),
+      });
+
+      if (response.ok) {
+        setMessage("Rating updated successfully!");
+      } else {
+        const errorData = await response.json();
+        setMessage(`Error: ${errorData.error}`);
+      }
+    } catch (error) {
+      setMessage("Server error, please try again later.");
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     try {
       const response = await fetch(`${config.apiBaseUrl}/reviews`, {
         method: "POST",
@@ -49,6 +86,10 @@ function MatchCard({
     }
   };
 
+  useEffect(() => {
+    checkReview();
+  }, [reviews]);
+
   return (
     <>
       <div className="request-container">
@@ -72,7 +113,19 @@ function MatchCard({
                 <option value="4">4</option>
                 <option value="5">5</option>
               </select>
-              <button type="submit">Submit Rating</button>
+              {hasReviewed ? (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={updateRating}
+                >
+                  Change Rating
+                </Button>
+              ) : (
+                <Button variant="contained" color="primary" type="submit">
+                  Submit Rating
+                </Button>
+              )}
             </div>
           </form>
         </div>

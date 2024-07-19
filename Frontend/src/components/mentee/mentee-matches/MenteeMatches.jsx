@@ -11,6 +11,7 @@ function MenteeMatches() {
   const [menteeData, setMenteeData] = useState(null);
   const [requests, setRequests] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+  const [reviews, setReviews] = useState([]);
 
   // Fetch mentee-specific data using user ID from user context
   const fetchMenteeData = async () => {
@@ -42,6 +43,24 @@ function MenteeMatches() {
     }
   };
 
+  // Function to fetch reviews for a mentee
+  const fetchReviewsForMentee = async (menteeId) => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseUrl}/mentees/${menteeId}/reviews`
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP status ${response.status}`);
+      }
+      const data = await response.json();
+      setReviews(data.reviews);
+      return reviews;
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+      return [];
+    }
+  };
+
   useEffect(() => {
     if (user && user.id) {
       fetchMenteeData();
@@ -51,6 +70,7 @@ function MenteeMatches() {
   useEffect(() => {
     if (menteeData && menteeData.id) {
       fetchRequests(menteeData.id);
+      fetchReviewsForMentee(menteeData.id);
     }
   }, [menteeData]);
 
@@ -60,6 +80,8 @@ function MenteeMatches() {
       prevRequests.filter((request) => request.id !== requestId)
     );
   };
+
+  // console.log(reviews);
 
   return (
     <>
@@ -77,6 +99,7 @@ function MenteeMatches() {
               mentee={menteeData}
               requestId={request.id}
               onRequestUpdate={handleReqeustUpdate}
+              reviews={reviews}
             />
           ))}
       </div>
