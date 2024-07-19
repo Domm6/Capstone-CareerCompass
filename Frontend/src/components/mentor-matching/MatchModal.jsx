@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../UserContext.jsx";
 import config from "../../../config.js";
+import { useNavigate } from "react-router-dom";
 import "./MatchModal.css";
 import {
   Container,
@@ -17,6 +18,7 @@ const PLACEHOLDER =
 function MatchModal({ mentor, closeModal, mentee }) {
   const { user } = useContext(UserContext); // Access the user context
   const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -53,6 +55,11 @@ function MatchModal({ mentor, closeModal, mentee }) {
       setErrorMessage("Error creating connect request");
       console.error("Error creating connect request:", error);
     }
+  };
+
+  const handleViewProfile = () => {
+    navigate("/public-mentor-profile", { state: { mentor } });
+    closeModal();
   };
 
   return (
@@ -126,6 +133,14 @@ function MatchModal({ mentor, closeModal, mentee }) {
               sx={{ mt: 2 }}
             >
               Connect
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ mt: 2 }}
+              onClick={handleViewProfile}
+            >
+              View Profile
             </Button>
           </Box>
         </Box>

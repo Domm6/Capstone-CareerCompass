@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../UserContext.jsx";
+import { useLocation } from "react-router-dom";
 import { useNavigate, Link } from "react-router-dom";
 import "./MentorProfile.css";
 import moment from "moment";
@@ -66,26 +67,34 @@ const experienceMappingReverse = {
   5: "20+",
 };
 
-function MentorProfile() {
+function MentorProfile({ mentorData }) {
   const { user } = useContext(UserContext);
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const [mentor, setMentor] = useState(location.state?.mentor || null);
   const { handleSignout } = useContext(UserContext);
   const pages = ["Dashboard"];
 
+  console.log(mentor);
   const [userData, setUserData] = useState({
-    name: "Loading",
-    profileImageUrl: PLACEHOLDER,
-    industry: "",
-    company: "",
-    work_role: "",
-    years_experience: "",
-    school: "",
-    skills: "",
-    preferredStartHour: "",
-    preferredEndHour: "",
+    name: mentor ? mentor.User.name : "Loading",
+    profileImageUrl: mentor
+      ? mentor.User.profileImageUrl || PLACEHOLDER
+      : PLACEHOLDER,
+    industry: mentor ? mentor.industry : "",
+    company: mentor ? mentor.company : "",
+    work_role: mentor ? mentor.work_role : "",
+    years_experience: mentor ? mentor.years_experience : "",
+    school: mentor ? mentor.school : "",
+    skills: mentor ? mentor.skills : "",
+    bio: mentor ? mentor.bio : "",
+    preferredStartHour: mentor
+      ? mentor.meetingPreferences.preferredStartHour
+      : "",
+    preferredEndHour: mentor ? mentor.meetingPreferences.preferredEndHour : "",
   });
 
   const fetchMentorData = () => {
@@ -125,8 +134,25 @@ function MentorProfile() {
   };
 
   useEffect(() => {
-    fetchMentorData();
-  }, [user]);
+    if (!mentor) {
+      fetchMentorData();
+    } else {
+      setUserData({
+        name: mentor.User.name,
+        profileImageUrl: mentor.User.profileImageUrl || PLACEHOLDER,
+        industry: mentor.industry,
+        company: mentor.company,
+        work_role: mentor.work_role,
+        years_experience:
+          experienceMappingReverse[mentor.years_experience] || "",
+        school: mentor.school,
+        bio: mentor.bio,
+        skills: mentor.skills,
+        preferredStartHour: mentor.meetingPreferences.preferredStartHour,
+        preferredEndHour: mentor.meetingPreferences.preferredEndHour,
+      });
+    }
+  }, [user, mentor]);
 
   const handleCheckboxChange = (skill) => {
     setSelectedSkills((prevSelectedSkills) =>
@@ -150,30 +176,32 @@ function MentorProfile() {
         handleSignout={handleSignout}
         pages={pages}
         userName={user.name}
-        userRole="mentor"
-      />{" "}
+        userRole={user.userRole}
+      />
       <Container>
         <Box sx={{ my: 2 }}>
           <div className="mp-top">
             <div className="mp-top-left">
               <Typography variant="h4">Mentor Profile</Typography>
             </div>
-            <div className="mp-top-right">
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSignout}
-              >
-                Log Out
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleModalToggle}
-              >
-                Edit
-              </Button>
-            </div>
+            {user.userRole === "mentor" && (
+              <div className="mp-top-right">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSignout}
+                >
+                  Log Out
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleModalToggle}
+                >
+                  Edit
+                </Button>
+              </div>
+            )}
           </div>
           <div className="mp-body">
             <div className="mp-left">
