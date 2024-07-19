@@ -2,6 +2,7 @@ import { useState } from "react";
 import { UserContext } from "../../UserContext.jsx";
 import "./MentorCard.css";
 import config from "../../../config.js";
+import moment from "moment";
 
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
@@ -55,7 +56,23 @@ function MentorCard({ mentor, onCardClick, score }) {
           <div className="profile-body">
             <p>Bio: {mentor.bio ? mentor.bio : "No bio available"}</p>
             <p>Years of Experience: {mentor.years_experience}</p>
+            <p>
+              Industry:{" "}
+              {mentor.industry ? mentor.industry : "No industry available"}
+            </p>
             <p>School: {mentor.school}</p>
+            <p>
+              Availability:{" "}
+              {moment(
+                mentor.meetingPreferences.preferredStartHour,
+                "HH:mm"
+              ).format("h:mm A")}{" "}
+              -{" "}
+              {moment(
+                mentor.meetingPreferences.preferredEndHour,
+                "HH:mm"
+              ).format("h:mm A")}
+            </p>
           </div>
         </div>
         <div className="mc-socre">
