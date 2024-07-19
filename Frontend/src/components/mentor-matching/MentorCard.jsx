@@ -64,19 +64,24 @@ function MentorCard({ mentor, onCardClick, score }) {
           </div>
           <div className="profile-body">
             <div className="bio">
-              <p>Bio: {mentor.bio ? mentor.bio : "No bio available"}</p>
+              <p>
+                <strong>Bio:</strong>{" "}
+                {mentor.bio ? mentor.bio : "No bio available"}
+              </p>
             </div>
             <p>
-              Years of Experience:{" "}
+              <strong>Years of Experience:</strong>{" "}
               {experienceMappingReverse[mentor.years_experience]}
             </p>
             <p>
-              Industry:{" "}
+              <strong>Industry:</strong>{" "}
               {mentor.industry ? mentor.industry : "No industry available"}
             </p>
-            <p>School: {mentor.school}</p>
             <p>
-              Availability:{" "}
+              <strong>School:</strong> {mentor.school}
+            </p>
+            <p>
+              <strong>Availability:</strong>{" "}
               {moment(
                 mentor.meetingPreferences.preferredStartHour,
                 "HH:mm"
