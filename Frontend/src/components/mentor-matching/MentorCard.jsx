@@ -53,7 +53,7 @@ function MentorCard({ mentor, onCardClick, score }) {
             <h3>About {user.name}:</h3>
           </div>
           <div className="profile-body">
-            <p>Bio: {mentor.bio}</p>
+            <p>Bio: {mentor.bio ? mentor.bio : "No bio available"}</p>
             <p>Years of Experience: {mentor.years_experience}</p>
             <p>School: {mentor.school}</p>
           </div>
