@@ -32,10 +32,7 @@ function MatchCard({
     setRating(parseInt(event.target.value));
   };
 
-  console.log(reviews);
-
   const checkReview = () => {
-    // implamentiribuedtnthfuhcfndklruircu
     const reviewed = reviews.some((review) => review.mentorId === mentorId);
     setHasReviewed(reviewed);
     return reviewed;

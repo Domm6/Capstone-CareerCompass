@@ -81,8 +81,6 @@ function MenteeMatches() {
     );
   };
 
-  // console.log(reviews);
-
   return (
     <>
       <div className="requests-list">
