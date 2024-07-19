@@ -272,9 +272,13 @@ function MentorProfile() {
             <div className="mp-reviews">
               <h3>Reviews</h3>
               <div className="card-reviews">
-                {reviews.map((review) => (
-                  <ReviewCard key={review.id} review={review} />
-                ))}
+                {reviews.length > 0 ? (
+                  reviews.map((review) => (
+                    <ReviewCard key={review.id} review={review} />
+                  ))
+                ) : (
+                  <Typography>No reviews available</Typography>
+                )}
               </div>
             </div>
           )}

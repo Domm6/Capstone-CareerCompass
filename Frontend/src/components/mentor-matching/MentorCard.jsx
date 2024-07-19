@@ -49,8 +49,14 @@ function MentorCard({ mentor, onCardClick, score }) {
           </div>
         </div>
         <div className="mc-profile">
-          <h3>About {user.name}:</h3>
-          <p>{mentor.bio}</p>
+          <div className="profile-title">
+            <h3>About {user.name}:</h3>
+          </div>
+          <div className="profile-body">
+            <p>Bio: {mentor.bio}</p>
+            <p>Years of Experience: {mentor.years_experience}</p>
+            <p>School: {mentor.school}</p>
+          </div>
         </div>
         <div className="mc-socre">
           {score && <p>{score.toFixed(2)}% Match</p>}
