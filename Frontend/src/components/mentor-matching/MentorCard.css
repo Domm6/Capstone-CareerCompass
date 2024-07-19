@@ -57,6 +57,30 @@
   padding: 10px;
 }
 
+.bio {
+  max-height: 2.5em;
+  overflow: hidden;
+  position: relative;
+}
+
+.bio::after {
+  content: "...";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 0 10px;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.bio:hover {
+  max-height: none;
+  overflow: auto;
+}
+
+.bio:hover::after {
+  content: "";
+}
+
 .mc-container:hover .mc-profile {
   display: flex;
   flex-direction: column;
