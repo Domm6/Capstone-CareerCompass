@@ -90,6 +90,12 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
     return data.mentee;
   };
 
+  const formatTimeSlot = (startTime) => {
+    const start = moment(startTime, "HH:mm");
+    const end = moment(start).add(30, "minutes"); // Assuming 30 minutes duration
+    return { start: start.format("HH:mm"), end: end.format("HH:mm") };
+  };
+
   useEffect(() => {
     const initialize = async () => {
       try {
@@ -135,7 +141,9 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
     fetchSuggestedTimes();
   }, [userData, selectedUsers, scheduledDate]);
 
-  const handleScheduleMeeting = async (timeSlot) => {
+  const handleScheduleMeeting = async (time) => {
+    const timeSlot = formatTimeSlot(time);
+
     const scheduledDateTime = moment
       .tz(
         `${scheduledDate}T${timeSlot.start}`,
@@ -257,10 +265,22 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
       endTime: lunchEnd.format(),
     });
 
-    // filter mentor meetings by the selected date
+    // Filter mentor meetings by the selected date and overlapping time range
     const filteredMentorMeetings = mentorMeetings.filter((meeting) => {
-      const meetingDate = moment(meeting.scheduledTime).format("YYYY-MM-DD");
-      return meetingDate === selectedDateMoment.format("YYYY-MM-DD");
+      const meetingStartTime = moment(meeting.scheduledTime);
+      const meetingEndTime = moment(meeting.endTime);
+
+      const isSameDate = meetingStartTime.isSame(selectedDateMoment, "day");
+      const isInOverlap =
+        meetingStartTime.isBetween(
+          overlapStartTime,
+          overlapEndTime,
+          null,
+          "[)"
+        ) &&
+        meetingEndTime.isBetween(overlapStartTime, overlapEndTime, null, "(]");
+
+      return isSameDate && isInOverlap;
     });
 
     // Sort mentor meetings by start time
@@ -280,10 +300,19 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
         meetingStartTime.isAfter(lastEndTime) &&
         meetingStartTime.isBefore(overlapEndTime)
       ) {
-        mentorFreeSlots.push({
-          start: lastEndTime.clone(),
-          end: meetingStartTime.clone(),
-        });
+        // adjust the start time to the nearest multiple of 10 minutes
+        let adjustedStart = lastEndTime.clone();
+        if (adjustedStart.minutes() % 10 !== 0) {
+          adjustedStart.add(10 - (adjustedStart.minutes() % 10), "minutes");
+        }
+
+        // only add the slot if the adjusted start time is before the meeting start time
+        if (adjustedStart.isBefore(meetingStartTime)) {
+          mentorFreeSlots.push({
+            start: adjustedStart,
+            end: meetingStartTime.clone(),
+          });
+        }
       }
 
       if (meetingEndTime.isAfter(lastEndTime)) {
@@ -292,13 +321,74 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
     });
 
     if (lastEndTime.isBefore(overlapEndTime)) {
-      mentorFreeSlots.push({
-        start: lastEndTime.clone(),
-        end: overlapEndTime.clone(),
-      });
+      // Adjust the start time to the nearest multiple of 10 minutes
+      let adjustedStart = lastEndTime.clone();
+      if (adjustedStart.minutes() % 10 !== 0) {
+        adjustedStart.add(10 - (adjustedStart.minutes() % 10), "minutes");
+      }
+
+      // Only add the slot if the adjusted start time is before the overlap end time
+      if (adjustedStart.isBefore(overlapEndTime)) {
+        mentorFreeSlots.push({
+          start: adjustedStart,
+          end: overlapEndTime.clone(),
+        });
+      }
     }
 
-    // function to break slots into 30 min intervals
+    // Subtract mentee meetings from mentor's free slots and break mentors slots into smaller slots
+    const subtractMeetings = (freeSlots, meetings) => {
+      // result slots
+      const resultSlots = [];
+
+      // go through each free slot for the mentor
+      freeSlots.forEach((slot) => {
+        let currentStart = slot.start;
+
+        // go through the mentee's meeting
+        meetings.forEach((meeting) => {
+          const meetingStart = moment(meeting.scheduledTime);
+          const meetingEnd = moment(meeting.endTime);
+
+          // check if the meeting overlaps with the current free slot
+          if (
+            meetingStart.isBefore(slot.end) &&
+            meetingEnd.isAfter(slot.start)
+          ) {
+            // check if there is a portion of the free slot before the meeting starts, and add it to the result
+            if (currentStart.isBefore(meetingStart)) {
+              resultSlots.push({
+                start: currentStart.clone(),
+                end: meetingStart.clone(),
+              });
+            }
+            // move start time to end of the meeting
+            currentStart = meetingEnd.clone();
+          }
+        });
+
+        // check if portion of free slot after the meeting ends, and add to free slots
+        if (currentStart.isBefore(slot.end)) {
+          resultSlots.push({
+            start: currentStart.clone(),
+            end: slot.end.clone(),
+          });
+        }
+      });
+
+      return resultSlots;
+    };
+
+    let finalFreeSlots = mentorFreeSlots;
+
+    selectedMentees.forEach((menteeId) => {
+      finalFreeSlots = subtractMeetings(
+        finalFreeSlots,
+        menteesMeetings[menteeId]
+      );
+    });
+
+    // Function to break slots into 30 min intervals
     const breakIntoIntervals = (slot) => {
       const intervals = [];
       let currentStart = slot.start.clone();
@@ -318,31 +408,13 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
       return intervals;
     };
 
-    // break mentor free slots into 30 min intervals
-    const allIntervals = mentorFreeSlots.flatMap((slot) =>
+    // Break final free slots into 30 min intervals
+    const allIntervals = finalFreeSlots.flatMap((slot) =>
       breakIntoIntervals(slot)
     );
 
-    // filter intervals to remove conflicts with mentees meetings
-    const finalFreeSlots = allIntervals.filter((interval) => {
-      return selectedMentees.every((menteeId) => {
-        const hasConflict = menteesMeetings[menteeId].some((meeting) => {
-          const meetingStartTime = moment(meeting.scheduledTime);
-          const meetingEndTime = moment(meeting.endTime);
-
-          const conflict =
-            interval.start.isBefore(meetingEndTime) &&
-            interval.end.isAfter(meetingStartTime);
-
-          return conflict;
-        });
-
-        return !hasConflict;
-      });
-    });
-
-    // return suggested times
-    return finalFreeSlots.map((slot) => ({
+    // Return suggested times
+    return allIntervals.map((slot) => ({
       start: slot.start.format("HH:mm"),
       end: slot.end.format("HH:mm"),
     }));
@@ -390,11 +462,31 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
             </FormControl>
             <FormControl fullWidth margin="normal">
               <TextField
+                label="Time"
+                type="time"
+                value={scheduledTime}
+                onChange={(event) => setScheduledTime(event.target.value)}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                required
+              />
+            </FormControl>
+            <FormControl fullWidth margin="normal">
+              <TextField
                 label="Topic"
                 value={topic}
                 onChange={(event) => setTopic(event.target.value)}
               />
             </FormControl>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              onClick={() => handleScheduleMeeting(scheduledTime)}
+            >
+              Schedule Meeting
+            </Button>
           </form>
           <Box className="calendar-suggested-times" mt={2}>
             <Typography>Suggested Times</Typography>
@@ -404,7 +496,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => handleScheduleMeeting(timeSlot)}
+                    onClick={() => handleScheduleMeeting(timeSlot.start)}
                   >
                     {moment(timeSlot.start, "HH:mm").format("h:mm A")} -{" "}
                     {moment(timeSlot.end, "HH:mm").format("h:mm A")}

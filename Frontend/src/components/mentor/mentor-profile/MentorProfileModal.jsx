@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../UserContext.jsx";
 import axios from "axios";
 import config from "../../../../config.js";
+import ImageUpload from "react-image-easy-upload";
 import {
   Box,
   Button,
@@ -34,6 +35,7 @@ function MentorProfileModal({
   closeModal,
 }) {
   const { user } = useContext(UserContext);
+  const { updateUser } = useContext(UserContext);
   const [formData, setFormData] = useState({
     industry: "",
     company: "",
@@ -49,6 +51,7 @@ function MentorProfileModal({
   });
   const [schoolSuggestions, setSchoolSuggestions] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+  const [image, setImage] = useState();
 
   useEffect(() => {
     if (mentorData) {
@@ -70,7 +73,7 @@ function MentorProfileModal({
         preferredEndHour: mentorData.preferredEndHour || "23:59",
       }));
     }
-  }, [mentorData]);
+  }, [mentorData, user]);
 
   const searchSchools = async (query) => {
     try {
@@ -130,6 +133,7 @@ function MentorProfileModal({
     };
 
     try {
+      // Update profile details
       const response = await fetch(`${config.apiBaseUrl}/mentors/${user.id}`, {
         method: "PUT",
         headers: {
@@ -138,14 +142,44 @@ function MentorProfileModal({
         body: JSON.stringify(preparedData),
       });
 
-      if (response.ok) {
-        closeModal();
-      } else {
+      if (!response.ok) {
         console.error("Error updating mentor profile:", response.statusText);
+        return;
       }
+
+      // Update profile image if a new one is selected
+      if (image) {
+        const imageData = new FormData();
+        imageData.append("profileImage", image);
+
+        const imageResponse = await fetch(
+          `${config.apiBaseUrl}/user/${user.id}`,
+          {
+            method: "PUT",
+            body: imageData,
+          }
+        );
+
+        if (!imageResponse.ok) {
+          console.error(
+            "Error updating profile image:",
+            imageResponse.statusText
+          );
+          return;
+        }
+
+        const updatedUser = await imageResponse.json();
+        updateUser(updatedUser); // Update the user context with the new data
+      }
+
+      closeModal(); // Close the modal if all updates are successful
     } catch (error) {
       console.error("Error updating mentor profile:", error);
     }
+  };
+
+  const handleProfileUpload = (event) => {
+    setImage(event.target.files[0]);
   };
 
   return (
@@ -253,6 +287,10 @@ function MentorProfileModal({
           fullWidth
           margin="normal"
         />
+        <Box>
+          <input type="file" onChange={handleProfileUpload} />
+          <Button type="submit"></Button>
+        </Box>
         <Box className="form-skills">
           <Button
             type="button"

@@ -1,5 +1,9 @@
 import express from "express";
 import bcrypt from "bcrypt";
+import multer from "multer";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { User } from "../models/user.js";
 import { Op } from "sequelize";
 import { Mentor } from "../models/mentor.js";
@@ -9,8 +13,71 @@ import { Meeting } from "../models/index.js";
 import { Review } from "../models/review.js";
 import { ConnectRequest } from "../models/connect-request.js";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const router = express.Router();
 const SALT_ROUNDS = 10;
+
+const uploadDirectory = path.join(__dirname, "..", "uploads");
+
+if (!fs.existsSync(uploadDirectory)) {
+  fs.mkdirSync(uploadDirectory);
+}
+
+// Serve static files from the uploads directory
+router.use("/uploads", express.static(uploadDirectory));
+
+// directory to save images
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Directory to save images
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+// update user profile image
+router.put("/user/:id", upload.single("profileImage"), async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const updatedUser = {};
+
+    if (req.file) {
+      updatedUser.profileImageUrl = `/uploads/${req.file.filename}`;
+    }
+
+    await User.update(updatedUser, { where: { id: userId } });
+
+    const user = await User.findByPk(userId); // Fetch updated user to return
+
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// router to get userinfo
+router.get("/users/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findByPk(userId, {
+      attributes: ["id", "name", "email", "profileImageUrl", "userRole"],
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json(user);
+  } catch {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ message: "Error fetching uer information" });
+  }
+});
 
 // Route for user registration
 router.post("/users/signup", async (req, res) => {
@@ -73,6 +140,43 @@ router.post("/users/signup", async (req, res) => {
   }
 });
 
+// Route to delete a user
+router.delete("/users/:id", async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    // Find the user by ID
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Delete the associated profile (Mentor or Mentee)
+    if (user.userRole === "mentor") {
+      const mentor = await Mentor.findOne({ where: { userId: user.id } });
+      if (mentor) {
+        await ConnectRequest.destroy({ where: { mentorId: mentor.id } });
+        await Mentor.destroy({ where: { userId: user.id } });
+      }
+    } else {
+      const mentee = await Mentee.findOne({ where: { userId: user.id } });
+      if (mentee) {
+        await ConnectRequest.destroy({ where: { menteeId: mentee.id } });
+        await Mentee.destroy({ where: { userId: user.id } });
+      }
+    }
+
+    // Delete the user
+    await User.destroy({ where: { id: userId } });
+
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 // Route for user login
 router.post("/users/login", async (req, res) => {
   const { email, password } = req.body;
@@ -113,24 +217,6 @@ router.post("/users/signout", (req, res) => {
     res.clearCookie("connect.sid", { path: "/" });
     return res.status(200).json({ message: "Successfully signed out" });
   });
-});
-
-// router to get userinfo
-router.get("/users/:id", async (req, res) => {
-  try {
-    const userId = req.params.id;
-    const user = await User.findByPk(userId, {
-      attributes: ["id", "name", "email", "profileImageUrl", "userRole"],
-    });
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    res.json(user);
-  } catch {
-    console.error("Error fetching user:", error);
-    res.status(500).json({ message: "Error fetching uer information" });
-  }
 });
 
 // Route to update mentor profile
@@ -367,6 +453,28 @@ router.post("/connect-requests", async (req, res) => {
     res.status(201).json({ connectRequest });
   } catch (error) {
     console.error("Error creating connect request:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// route to delete connect-requests
+router.delete("/connect-requests/:id", async (req, res) => {
+  const requestId = req.params.id;
+
+  try {
+    // Find the connect request by ID
+    const connectRequest = await ConnectRequest.findByPk(requestId);
+
+    if (!connectRequest) {
+      return res.status(404).json({ error: "Connect request not found" });
+    }
+
+    // Delete the connect request
+    await connectRequest.destroy();
+
+    res.status(200).json({ message: "Connect request deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting connect request:", error);
     res.status(500).json({ error: "Server error" });
   }
 });
