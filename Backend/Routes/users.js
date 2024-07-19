@@ -838,11 +838,16 @@ router.delete("/meeting/:meetingId", async (req, res) => {
 
 // Create new review
 router.post("/reviews", async (req, res) => {
-  const { mentorId, menteeId, rating } = req.body;
+  const { mentorId, menteeId, rating, textReview } = req.body;
 
   try {
     // Create new review
-    const review = await Review.create({ mentorId, menteeId, rating });
+    const review = await Review.create({
+      mentorId,
+      menteeId,
+      rating,
+      textReview,
+    });
 
     // Find mentor
     const mentor = await Mentor.findByPk(mentorId);
@@ -869,7 +874,7 @@ router.post("/reviews", async (req, res) => {
 
 // update review
 router.put("/reviews/", async (req, res) => {
-  const { mentorId, menteeId, rating } = req.body;
+  const { mentorId, menteeId, rating, textReview } = req.body;
 
   try {
     // update new review
@@ -880,6 +885,7 @@ router.put("/reviews/", async (req, res) => {
 
     // Update review rating
     review.rating = rating;
+    review.textReview = textReview;
     await review.save();
 
     // update mentors rating

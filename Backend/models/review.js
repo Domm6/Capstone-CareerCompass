@@ -21,6 +21,10 @@ export const Review = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    textReview: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
   {
     tableName: "Reviews",
