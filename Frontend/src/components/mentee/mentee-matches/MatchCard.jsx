@@ -9,6 +9,7 @@ import {
   Button,
   Modal,
   Alert,
+  CircularProgress,
 } from "@mui/material";
 
 const PLACEHOLDER =
@@ -22,7 +23,6 @@ function MatchCard({
   mentee,
   mentorId,
   reviews,
-  CircularProgress,
 }) {
   const { user } = useContext(UserContext);
   const [rating, setRating] = useState(5);
