@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../../../UserContext";
 import "./LoginPage.css";
 import config from "../../../../config";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Button } from "@mui/material";
+import ResponsiveAppBar from "../../header/ResponsiveAppBar";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -11,8 +12,8 @@ const LoginPage = () => {
   const { updateUser } = useContext(UserContext);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
+  const pages = [""];
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -53,9 +54,7 @@ const LoginPage = () => {
 
   return (
     <>
-      <div className="signup-header">
-        <h1>Welcome to CareerCompass!</h1>
-      </div>
+      <ResponsiveAppBar pages={pages} />{" "}
       <div className="login-form-container">
         {loading ? (
           <div className="loading-spinner">
@@ -84,7 +83,9 @@ const LoginPage = () => {
                 required
               />
             </div>
-            <button type="submit">Login</button>
+            <Button type="submit" variant="contained" color="primary">
+              Login
+            </Button>
             <p>
               New to the app? <Link to="/signup">Sign Up</Link>
             </p>

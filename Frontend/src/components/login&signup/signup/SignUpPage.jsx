@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import "./SignUpPage.css";
 import { UserContext } from "../../../UserContext.jsx";
 import config from "../../../../config.js";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Button } from "@mui/material";
+import ResponsiveAppBar from "../../header/ResponsiveAppBar";
 
 const SignUpPage = () => {
   const [name, setName] = useState("");
@@ -12,6 +13,7 @@ const SignUpPage = () => {
   const [userRole, setUserRole] = useState("");
   const { updateUser } = useContext(UserContext);
   const [loading, setLoading] = useState(false);
+  const pages = [""];
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
@@ -63,9 +65,7 @@ const SignUpPage = () => {
 
   return (
     <>
-      <div className="signup-header">
-        <h1>Welcome to CareerCompass!</h1>
-      </div>
+      <ResponsiveAppBar pages={pages} />{" "}
       <div className="signup-page-container">
         {loading ? (
           <div className="loading-spinner">
@@ -116,7 +116,9 @@ const SignUpPage = () => {
                 <option value="mentee">Mentee</option>
               </select>
             </div>
-            <button type="submit">Sign Up</button>
+            <Button type="submit" variant="contained" color="primary">
+              Signup
+            </Button>{" "}
             <p>
               Already have an account? <Link to="/login">Log In</Link>
             </p>
