@@ -637,6 +637,7 @@ router.get("/meetings/mentee/:menteeId", async (req, res) => {
       endTime: meeting.endTime,
       topic: meeting.topic,
       status: meeting.status,
+      notesUrl: meeting.notesUrl,
       createdAt: meeting.createdAt,
       updatedAt: meeting.updatedAt,
       mentees: meeting.Mentees.map((mentee) => ({
@@ -682,6 +683,7 @@ router.get("/meetings/mentor/:mentorId", async (req, res) => {
       status: meeting.status,
       createdAt: meeting.createdAt,
       updatedAt: meeting.updatedAt,
+      notesUrl: meeting.notesUrl,
       mentees: meeting.Mentees.map((mentee) => ({
         menteeId: mentee.id,
         menteeName: mentee.User.name,
@@ -750,6 +752,7 @@ router.post("/meetings", async (req, res) => {
       scheduledTime: startTime,
       endTime: endTime,
       topic,
+      notesUrl,
     });
 
     // Add mentees to the meeting by setting mentee IDs
@@ -780,6 +783,7 @@ router.post("/meetings", async (req, res) => {
       scheduledTime: meetingWithDetails.scheduledTime,
       endTime: meetingWithDetails.endTime,
       topic: meetingWithDetails.topic,
+      notesUrl: meetingWithDetails.notesUrl,
       status: meetingWithDetails.status,
       createdAt: meetingWithDetails.createdAt,
       updatedAt: meetingWithDetails.updatedAt,
@@ -798,7 +802,7 @@ router.post("/meetings", async (req, res) => {
 // update meeting status (accept)
 router.patch("/meetings/:meetingId", async (req, res) => {
   const { meetingId } = req.params;
-  const { status } = req.body;
+  const { status, notesUrl } = req.body;
 
   try {
     const meeting = await Meeting.findByPk(meetingId);
@@ -807,7 +811,8 @@ router.patch("/meetings/:meetingId", async (req, res) => {
       return res.status(404).json({ error: "Meeting not found" });
     }
 
-    meeting.status = status;
+    if (status) meeting.status = status;
+    if (notesUrl) meeting.notesUrl = notesUrl;
 
     await meeting.save();
 
