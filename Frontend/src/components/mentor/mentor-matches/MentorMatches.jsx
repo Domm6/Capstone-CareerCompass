@@ -5,30 +5,36 @@ import MatchCard from "../../mentee/mentee-matches/MatchCard.jsx";
 import "./MentorMatches.css";
 import config from "../../../../config.js";
 import MentorMatchCard from "./MentorMatchCard.jsx";
+import { CircularProgress } from "@mui/material";
 
 function MentorMatches() {
   const { user } = useContext(UserContext);
   const [mentorData, setMentorData] = useState(null);
   const [requests, setRequests] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // Fetch mentor-specific data using user ID from user context
   const fetchMentorData = async () => {
     try {
+      setLoading(true);
       const response = await fetch(`${config.apiBaseUrl}/mentors/${user.id}`);
       if (!response.ok) {
         throw new Error("Failed to fetch mentor data");
       }
       const data = await response.json();
       setMentorData(data.mentor);
+      setLoading(false);
     } catch (error) {
       setErrorMessage(error.message);
+      setLoading(false);
     }
   };
 
   // Fetch list of requests using mentor ID
   const fetchRequests = async (mentorId) => {
     try {
+      setLoading(true);
       const response = await fetch(
         `${config.apiBaseUrl}/connect-requests/${mentorId}`
       );
@@ -37,8 +43,10 @@ function MentorMatches() {
       }
       const data = await response.json();
       setRequests(data.requests);
+      setLoading(false);
     } catch (error) {
       setErrorMessage(error.message);
+      setLoading(false);
     }
   };
 
@@ -63,21 +71,27 @@ function MentorMatches() {
 
   return (
     <>
-      <div className="requests-list">
-        <h1>Matches</h1>
-        {requests
-          .filter((request) => request.status === "accepted")
-          .map((request) => (
-            <MentorMatchCard
-              key={request.id}
-              menteeName={request.menteeName}
-              menteeSchool={request.menteeSchool}
-              menteeMajor={request.menteeMajor}
-              requestId={request.id}
-              onRequestUpdate={handleReqeustUpdate}
-            />
-          ))}
-      </div>
+      {loading ? (
+        <div className="loading-spinner">
+          <CircularProgress />
+        </div>
+      ) : (
+        <div className="requests-list">
+          <h1>Matches</h1>
+          {requests
+            .filter((request) => request.status === "accepted")
+            .map((request) => (
+              <MentorMatchCard
+                key={request.id}
+                menteeName={request.menteeName}
+                menteeSchool={request.menteeSchool}
+                menteeMajor={request.menteeMajor}
+                requestId={request.id}
+                onRequestUpdate={handleReqeustUpdate}
+              />
+            ))}
+        </div>
+      )}
     </>
   );
 }

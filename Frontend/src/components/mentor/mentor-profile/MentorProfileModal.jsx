@@ -13,6 +13,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  CircularProgress,
 } from "@mui/material";
 
 const API_KEY = import.meta.env.VITE_SCHOOL_API;
@@ -52,6 +53,7 @@ function MentorProfileModal({
   const [schoolSuggestions, setSchoolSuggestions] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [image, setImage] = useState();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (mentorData) {
@@ -77,6 +79,7 @@ function MentorProfileModal({
 
   const searchSchools = async (query) => {
     try {
+      setLoading(true);
       const response = await axios.get(
         `https://api.data.gov/ed/collegescorecard/v1/schools`,
         {
@@ -93,8 +96,10 @@ function MentorProfileModal({
       } else {
         setSchoolSuggestions([]);
       }
+      setLoading(false);
     } catch (error) {
       setErrorMessage(error);
+      setLoading(false);
     }
   };
 
@@ -133,6 +138,7 @@ function MentorProfileModal({
     };
 
     try {
+      setLoading(true);
       // Update profile details
       const response = await fetch(`${config.apiBaseUrl}/mentors/${user.id}`, {
         method: "PUT",
@@ -173,8 +179,10 @@ function MentorProfileModal({
       }
 
       closeModal(); // Close the modal if all updates are successful
+      setLoading(false);
     } catch (error) {
       console.error("Error updating mentor profile:", error);
+      setLoading(false);
     }
   };
 
@@ -187,139 +195,145 @@ function MentorProfileModal({
       <Typography variant="h6" gutterBottom>
         Edit Mentor Profile
       </Typography>
-      <form onSubmit={handleSubmit}>
-        <TextField
-          label="Industry"
-          name="industry"
-          value={formData.industry}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-          required
-        />
-        <TextField
-          label="Company"
-          name="company"
-          value={formData.company}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-          required
-        />
-        <TextField
-          label="Role"
-          name="work_role"
-          value={formData.work_role}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-          required
-        />
-        <FormControl fullWidth margin="normal" required>
-          <InputLabel id="years-experience-label">
-            Years of Experience
-          </InputLabel>
-          <Select
-            labelId="years-experience-label"
-            name="years_experience"
-            value={formData.years_experience}
+      {loading ? (
+        <div className="loading-spinner">
+          <CircularProgress />
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="Industry"
+            name="industry"
+            value={formData.industry}
             onChange={handleChange}
-          >
-            <MenuItem value="">
-              <em>Select</em>
-            </MenuItem>
-            <MenuItem value="1">0 - 2</MenuItem>
-            <MenuItem value="2">2 - 5</MenuItem>
-            <MenuItem value="3">5 - 10</MenuItem>
-            <MenuItem value="4">10+</MenuItem>
-            <MenuItem value="5">20+</MenuItem>
-          </Select>
-        </FormControl>
-        <TextField
-          label="School"
-          name="school"
-          value={formData.school}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-          required
-        />
-        {schoolSuggestions.length > 0 && (
-          <Box className="school-suggestions">
-            {schoolSuggestions.slice(0, 20).map((school) => (
-              <Box
-                key={school.id}
-                className="school-suggestion"
-                onClick={() => handleSchoolSelect(school)}
-              >
-                {school["school.name"]}, {school["school.city"]},{" "}
-                {school["school.state"]}
-              </Box>
-            ))}
-          </Box>
-        )}
-        <TextField
-          label="Bio"
-          name="bio"
-          value={formData.bio}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-          multiline
-          rows={4}
-          required
-        />
-        <TextField
-          label="Preferred Start Hour"
-          type="time"
-          name="preferredStartHour"
-          value={formData.preferredStartHour}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Preferred End Hour"
-          type="time"
-          name="preferredEndHour"
-          value={formData.preferredEndHour}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-        />
-        <Box>
-          <input type="file" onChange={handleProfileUpload} />
-          <Button type="submit"></Button>
-        </Box>
-        <Box className="form-skills">
-          <Button
-            type="button"
-            onClick={handleDropdownToggle}
-            variant="contained"
-            color="primary"
-          >
-            {dropdownOpen ? "Hide Skills" : "Show Skills"}
-          </Button>
-          {dropdownOpen && (
-            <Box className="skills-dropdown">
-              {skillsList.map((skill) => (
-                <Box key={skill}>
-                  <label>{skill}</label>
-                  <input
-                    type="checkbox"
-                    value={skill}
-                    checked={selectedSkills.includes(skill)}
-                    onChange={() => handleCheckboxChange(skill)}
-                  />
+            fullWidth
+            margin="normal"
+            required
+          />
+          <TextField
+            label="Company"
+            name="company"
+            value={formData.company}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+            required
+          />
+          <TextField
+            label="Role"
+            name="work_role"
+            value={formData.work_role}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+            required
+          />
+          <FormControl fullWidth margin="normal" required>
+            <InputLabel id="years-experience-label">
+              Years of Experience
+            </InputLabel>
+            <Select
+              labelId="years-experience-label"
+              name="years_experience"
+              value={formData.years_experience}
+              onChange={handleChange}
+            >
+              <MenuItem value="">
+                <em>Select</em>
+              </MenuItem>
+              <MenuItem value="1">0 - 2</MenuItem>
+              <MenuItem value="2">2 - 5</MenuItem>
+              <MenuItem value="3">5 - 10</MenuItem>
+              <MenuItem value="4">10+</MenuItem>
+              <MenuItem value="5">20+</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField
+            label="School"
+            name="school"
+            value={formData.school}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+            required
+          />
+          {schoolSuggestions.length > 0 && (
+            <Box className="school-suggestions">
+              {schoolSuggestions.slice(0, 20).map((school) => (
+                <Box
+                  key={school.id}
+                  className="school-suggestion"
+                  onClick={() => handleSchoolSelect(school)}
+                >
+                  {school["school.name"]}, {school["school.city"]},{" "}
+                  {school["school.state"]}
                 </Box>
               ))}
             </Box>
           )}
-        </Box>
-        <Button type="submit" variant="contained" color="primary">
-          Save
-        </Button>
-      </form>
+          <TextField
+            label="Bio"
+            name="bio"
+            value={formData.bio}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+            multiline
+            rows={4}
+            required
+          />
+          <TextField
+            label="Preferred Start Hour"
+            type="time"
+            name="preferredStartHour"
+            value={formData.preferredStartHour}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Preferred End Hour"
+            type="time"
+            name="preferredEndHour"
+            value={formData.preferredEndHour}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+          />
+          <Box>
+            <input type="file" onChange={handleProfileUpload} />
+            <Button type="submit"></Button>
+          </Box>
+          <Box className="form-skills">
+            <Button
+              type="button"
+              onClick={handleDropdownToggle}
+              variant="contained"
+              color="primary"
+            >
+              {dropdownOpen ? "Hide Skills" : "Show Skills"}
+            </Button>
+            {dropdownOpen && (
+              <Box className="skills-dropdown">
+                {skillsList.map((skill) => (
+                  <Box key={skill}>
+                    <label>{skill}</label>
+                    <input
+                      type="checkbox"
+                      value={skill}
+                      checked={selectedSkills.includes(skill)}
+                      onChange={() => handleCheckboxChange(skill)}
+                    />
+                  </Box>
+                ))}
+              </Box>
+            )}
+          </Box>
+          <Button type="submit" variant="contained" color="primary">
+            Save
+          </Button>
+        </form>
+      )}
     </Box>
   );
 }

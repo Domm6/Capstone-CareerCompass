@@ -8,7 +8,14 @@ import MentorProfileModal from "./MentorProfileModal.jsx";
 import ReviewCard from "./ReviewCard.jsx";
 import config from "../../../../config.js";
 import ResponsiveAppBar from "../../header/ResponsiveAppBar.jsx";
-import { Container, Box, Typography, Button, Modal } from "@mui/material";
+import {
+  Container,
+  Box,
+  Typography,
+  Button,
+  Modal,
+  CircularProgress,
+} from "@mui/material";
 
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
@@ -79,6 +86,7 @@ function MentorProfile() {
   const { handleSignout } = useContext(UserContext);
   const [reviews, setReviews] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const pages = ["Dashboard"];
 
   const [userData, setUserData] = useState({
@@ -101,11 +109,13 @@ function MentorProfile() {
 
   const fetchMentorData = () => {
     if (user && user.id) {
+      setLoading(true);
       fetch(`${config.apiBaseUrl}/mentors/${user.id}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error(`HTTP status ${response.status}`);
           }
+          setLoading(false);
           return response.json();
         })
         .then((data) => {
@@ -131,6 +141,7 @@ function MentorProfile() {
             name: "Failed to load user data",
             profileImageUrl: PLACEHOLDER,
           });
+          setLoading(false);
         });
     }
   };
@@ -138,6 +149,7 @@ function MentorProfile() {
   // fetch mentor reviews
   const fetchMentorReveiews = async (mentorId) => {
     try {
+      setLoading(true);
       const response = await fetch(
         `${config.apiBaseUrl}/mentors/${mentorId}/reviews`,
         {
@@ -158,8 +170,10 @@ function MentorProfile() {
         const errorData = await response.json();
         setErrorMessage(errorData);
       }
+      setLoading(false);
     } catch (error) {
       console.error("Server error, please try again later.");
+      setLoading(false);
     }
   };
 
@@ -214,105 +228,117 @@ function MentorProfile() {
       />
       <Container>
         <Box sx={{ my: 2 }}>
-          <div className="mp-top">
-            <div className="mp-top-left">
-              <Typography variant="h4">Mentor Profile</Typography>
+          {loading ? (
+            <div className="loading-spinner">
+              <CircularProgress />
             </div>
-            {user.userRole === "mentor" && (
-              <div className="mp-top-right">
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSignout}
-                >
-                  Log Out
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleModalToggle}
-                >
-                  Edit
-                </Button>
-              </div>
-            )}
-          </div>
-          <div className="mp-body">
-            <div className="mp-left">
-              <img src={userData.profileImageUrl} alt="profile picture" />
-              <Typography variant="h4">{userData.name}</Typography>
-            </div>
-            <div className="mp-right">
-              <Typography>Industry: {userData.industry}</Typography>
-              <div className="mp-right-company">
-                <Typography>Company: {userData.company}</Typography>
-                <img
-                  src={`https://img.logo.dev/${userData.company}.com?token=${API_KEY}`}
-                  alt={`${userData.company} logo`}
-                />
-              </div>
-              <Typography>Role: {userData.work_role}</Typography>
-              <Typography>
-                Years of Experience: {userData.years_experience} years
-              </Typography>
-              <Typography>School: {userData.school}</Typography>
-              <Typography>Skills: {userData.skills}</Typography>
-              <Typography>Bio: {userData.bio}</Typography>
-              <Typography>
-                Preferred Start Hour:{" "}
-                {moment(userData.preferredStartHour, "HH:mm").format("h:mm A")}
-              </Typography>
-              <Typography>
-                Preferred End Hour:{" "}
-                {moment(userData.preferredEndHour, "HH:mm").format("h:mm A")}
-              </Typography>
-            </div>
-          </div>
-          {user.userRole != "mentor" && (
-            <div className="mp-reviews">
-              <h3>Reviews</h3>
-              <div className="card-reviews">
-                {reviews.length > 0 ? (
-                  reviews.map((review) => (
-                    <ReviewCard key={review.id} review={review} />
-                  ))
-                ) : (
-                  <Typography>No reviews available</Typography>
+          ) : (
+            <>
+              <div className="mp-top">
+                <div className="mp-top-left">
+                  <Typography variant="h4">Mentor Profile</Typography>
+                </div>
+                {user.userRole === "mentor" && (
+                  <div className="mp-top-right">
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleSignout}
+                    >
+                      Log Out
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleModalToggle}
+                    >
+                      Edit
+                    </Button>
+                  </div>
                 )}
               </div>
-            </div>
+              <div className="mp-body">
+                <div className="mp-left">
+                  <img src={userData.profileImageUrl} alt="profile picture" />
+                  <Typography variant="h4">{userData.name}</Typography>
+                </div>
+                <div className="mp-right">
+                  <Typography>Industry: {userData.industry}</Typography>
+                  <div className="mp-right-company">
+                    <Typography>Company: {userData.company}</Typography>
+                    <img
+                      src={`https://img.logo.dev/${userData.company}.com?token=${API_KEY}`}
+                      alt={`${userData.company} logo`}
+                    />
+                  </div>
+                  <Typography>Role: {userData.work_role}</Typography>
+                  <Typography>
+                    Years of Experience: {userData.years_experience} years
+                  </Typography>
+                  <Typography>School: {userData.school}</Typography>
+                  <Typography>Skills: {userData.skills}</Typography>
+                  <Typography>Bio: {userData.bio}</Typography>
+                  <Typography>
+                    Preferred Start Hour:{" "}
+                    {moment(userData.preferredStartHour, "HH:mm").format(
+                      "h:mm A"
+                    )}
+                  </Typography>
+                  <Typography>
+                    Preferred End Hour:{" "}
+                    {moment(userData.preferredEndHour, "HH:mm").format(
+                      "h:mm A"
+                    )}
+                  </Typography>
+                </div>
+              </div>
+              {user.userRole != "mentor" && (
+                <div className="mp-reviews">
+                  <h3>Reviews</h3>
+                  <div className="card-reviews">
+                    {reviews.length > 0 ? (
+                      reviews.map((review) => (
+                        <ReviewCard key={review.id} review={review} />
+                      ))
+                    ) : (
+                      <Typography>No reviews available</Typography>
+                    )}
+                  </div>
+                </div>
+              )}
+              <Modal open={isModalOpen} onClose={handleModalToggle}>
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    width: "50%",
+                    height: "75%",
+                    bgcolor: "background.paper",
+                    border: "1px solid #000",
+                    borderRadius: "8px",
+                    boxShadow: 24,
+                    p: 4,
+                    overflow: "auto",
+                  }}
+                >
+                  <MentorProfileModal
+                    mentorData={userData}
+                    handleDropdownToggle={handleDropdownToggle}
+                    dropdownOpen={dropdownOpen}
+                    selectedSkills={selectedSkills}
+                    handleCheckboxChange={handleCheckboxChange}
+                    skillsList={skillsList}
+                    closeModal={() => {
+                      handleModalToggle();
+                      fetchMentorData();
+                    }}
+                  />
+                </Box>
+              </Modal>
+            </>
           )}
-          <Modal open={isModalOpen} onClose={handleModalToggle}>
-            <Box
-              sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                width: "50%",
-                height: "75%",
-                bgcolor: "background.paper",
-                border: "1px solid #000",
-                borderRadius: "8px",
-                boxShadow: 24,
-                p: 4,
-                overflow: "auto",
-              }}
-            >
-              <MentorProfileModal
-                mentorData={userData}
-                handleDropdownToggle={handleDropdownToggle}
-                dropdownOpen={dropdownOpen}
-                selectedSkills={selectedSkills}
-                handleCheckboxChange={handleCheckboxChange}
-                skillsList={skillsList}
-                closeModal={() => {
-                  handleModalToggle();
-                  fetchMentorData();
-                }}
-              />
-            </Box>
-          </Modal>
         </Box>
       </Container>
     </>
