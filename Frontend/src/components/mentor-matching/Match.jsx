@@ -294,7 +294,6 @@ function Match() {
         return response.json();
       })
       .then((data) => {
-        console.log(data.mentors);
         setMentors(data.mentors);
       })
       .catch((error) => {
