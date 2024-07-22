@@ -6,7 +6,14 @@ import "./MenteeProfile.css";
 import MenteeProfileModal from "./MenteeProfileModal.jsx";
 import config from "../../../../config.js";
 import ResponsiveAppBar from "../../header/ResponsiveAppBar.jsx";
-import { Container, Box, Typography, Button, Modal } from "@mui/material";
+import {
+  Container,
+  Box,
+  Typography,
+  Button,
+  Modal,
+  CircularProgress,
+} from "@mui/material";
 
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
@@ -64,6 +71,7 @@ function MenteeProfile() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const { handleSignout } = useContext(UserContext);
+  const [loading, setLoading] = useState(false);
 
   const [userData, setUserData] = useState({
     name: "Loading",
@@ -79,11 +87,13 @@ function MenteeProfile() {
 
   const fetchMenteeData = () => {
     if (user && user.id) {
+      setLoading(true);
       fetch(`${config.apiBaseUrl}/mentees/${user.id}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error(`HTTP status ${response.status}`);
           }
+          setLoading(false);
           return response.json();
         })
         .then((data) => {
@@ -107,6 +117,7 @@ function MenteeProfile() {
             name: "Failed to load user data",
             profileImageUrl: PLACEHOLDER,
           });
+          setLoading(false);
         });
     }
   };
@@ -143,48 +154,60 @@ function MenteeProfile() {
       />
       <Container>
         <Box sx={{ my: 2 }}>
-          <div className="mp-top">
-            <div className="mp-top-left">
-              <Typography variant="h4">Mentee Profile</Typography>
+          {loading ? (
+            <div className="loading-spinner">
+              <CircularProgress />
             </div>
-            <div className="mp-top-right">
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSignout}
-              >
-                Log Out
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleModalToggle}
-              >
-                Edit
-              </Button>
-            </div>
-          </div>
-          <div className="mp-body">
-            <div className="mp-left">
-              <img src={userData.profileImageUrl} alt="profile picture" />
-              <Typography variant="h4">{userData.name}</Typography>
-            </div>
-            <div className="mp-right">
-              <Typography>School: {userData.school}</Typography>
-              <Typography>Major: {userData.major}</Typography>
-              <Typography>Career Goals: {userData.career_goals}</Typography>
-              <Typography>Skills: {userData.skills}</Typography>
-              <Typography>Bio: {userData.bio}</Typography>
-              <Typography>
-                Preferred Start Hour:{" "}
-                {moment(userData.preferredStartHour, "HH:mm").format("h:mm A")}
-              </Typography>
-              <Typography>
-                Preferred End Hour:{" "}
-                {moment(userData.preferredEndHour, "HH:mm").format("h:mm A")}
-              </Typography>
-            </div>
-          </div>
+          ) : (
+            <>
+              <div className="mp-top">
+                <div className="mp-top-left">
+                  <Typography variant="h4">Mentee Profile</Typography>
+                </div>
+                <div className="mp-top-right">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSignout}
+                  >
+                    Log Out
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleModalToggle}
+                  >
+                    Edit
+                  </Button>
+                </div>
+              </div>
+              <div className="mp-body">
+                <div className="mp-left">
+                  <img src={userData.profileImageUrl} alt="profile picture" />
+                  <Typography variant="h4">{userData.name}</Typography>
+                </div>
+                <div className="mp-right">
+                  <Typography>School: {userData.school}</Typography>
+                  <Typography>Major: {userData.major}</Typography>
+                  <Typography>Career Goals: {userData.career_goals}</Typography>
+                  <Typography>Skills: {userData.skills}</Typography>
+                  <Typography>Bio: {userData.bio}</Typography>
+                  <Typography>
+                    Preferred Start Hour:{" "}
+                    {moment(userData.preferredStartHour, "HH:mm").format(
+                      "h:mm A"
+                    )}
+                  </Typography>
+                  <Typography>
+                    Preferred End Hour:{" "}
+                    {moment(userData.preferredEndHour, "HH:mm").format(
+                      "h:mm A"
+                    )}
+                  </Typography>
+                </div>
+              </div>
+            </>
+          )}
           <Modal open={isModalOpen} onClose={handleModalToggle}>
             <Box
               sx={{
@@ -211,7 +234,7 @@ function MenteeProfile() {
                 skillsList={skillsList}
                 closeModal={() => {
                   handleModalToggle();
-                  fetchMentorData();
+                  fetchMenteeData();
                 }}
               />
             </Box>

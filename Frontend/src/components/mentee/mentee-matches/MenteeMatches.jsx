@@ -5,6 +5,7 @@ import MatchCard from "./MatchCard.jsx";
 import MentorMatchCard from "../../mentor/mentor-matches/MentorMatchCard.jsx";
 import "../../mentor/mentor-matches/MentorMatches.css";
 import config from "../../../../config.js";
+import { CircularProgress } from "@mui/material";
 
 function MenteeMatches() {
   const { user } = useContext(UserContext);
@@ -12,24 +13,29 @@ function MenteeMatches() {
   const [requests, setRequests] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   // Fetch mentee-specific data using user ID from user context
   const fetchMenteeData = async () => {
     try {
+      setLoading(true);
       const response = await fetch(`${config.apiBaseUrl}/mentees/${user.id}`);
       if (!response.ok) {
         throw new Error("Failed to fetch mentee data");
       }
       const data = await response.json();
       setMenteeData(data.mentee);
+      setLoading(false);
     } catch (error) {
       setErrorMessage(error.message);
+      setLoading(false);
     }
   };
 
   // Fetch list of requests using mentee ID
   const fetchRequests = async (menteeId) => {
     try {
+      setLoading(true);
       const response = await fetch(
         `${config.apiBaseUrl}/connect-requests/mentee/${menteeId}`
       );
@@ -38,14 +44,17 @@ function MenteeMatches() {
       }
       const data = await response.json();
       setRequests(data.requests);
+      setLoading(false);
     } catch (error) {
       setErrorMessage(error.message);
+      setLoading(false);
     }
   };
 
   // Function to fetch reviews for a mentee
   const fetchReviewsForMentee = async (menteeId) => {
     try {
+      setLoading(true);
       const response = await fetch(
         `${config.apiBaseUrl}/mentees/${menteeId}/reviews`
       );
@@ -54,9 +63,11 @@ function MenteeMatches() {
       }
       const data = await response.json();
       setReviews(data.reviews);
+      setLoading(false);
       return reviews;
     } catch (error) {
       setErrorMessage(error);
+      setLoading(false);
       return [];
     }
   };
@@ -83,24 +94,30 @@ function MenteeMatches() {
 
   return (
     <>
-      <div className="requests-list">
-        <h1>Matches</h1>
-        {requests
-          .filter((request) => request.status === "accepted")
-          .map((request) => (
-            <MatchCard
-              key={request.id}
-              mentorName={request.mentorName}
-              mentorCompany={request.mentorCompany}
-              mentorWorkRole={request.mentorWorkRole}
-              mentorId={request.mentorId}
-              mentee={menteeData}
-              requestId={request.id}
-              onRequestUpdate={handleReqeustUpdate}
-              reviews={reviews}
-            />
-          ))}
-      </div>
+      {loading ? (
+        <div className="loading-spinner">
+          <CircularProgress />
+        </div>
+      ) : (
+        <div className="requests-list">
+          <h1>Matches</h1>
+          {requests
+            .filter((request) => request.status === "accepted")
+            .map((request) => (
+              <MatchCard
+                key={request.id}
+                mentorName={request.mentorName}
+                mentorCompany={request.mentorCompany}
+                mentorWorkRole={request.mentorWorkRole}
+                mentorId={request.mentorId}
+                mentee={menteeData}
+                requestId={request.id}
+                onRequestUpdate={handleReqeustUpdate}
+                reviews={reviews}
+              />
+            ))}
+        </div>
+      )}
     </>
   );
 }
