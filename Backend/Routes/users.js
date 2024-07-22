@@ -738,7 +738,7 @@ router.post("/meetings", async (req, res) => {
   const MEETING_DURATION_MINUTES = 30;
   const MILLISECONDS_IN_MINUTE = 60 * 1000;
 
-  const { mentorId, menteeIds, scheduledTime, topic } = req.body;
+  const { mentorId, menteeIds, scheduledTime, topic, notesUrl } = req.body;
   const startTime = new Date(scheduledTime).toISOString();
   const endTime = new Date(
     new Date(scheduledTime).getTime() +

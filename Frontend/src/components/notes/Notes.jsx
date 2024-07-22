@@ -2,14 +2,7 @@ import { useState, useContext, useEffect } from "react";
 import { UserContext } from "../../UserContext.jsx";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
-import {
-  Container,
-  Box,
-  Typography,
-  Button,
-  ButtonGroup,
-  CircularProgress,
-} from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import "./Notes.css";
 import ResponsiveAppBar from "../header/ResponsiveAppBar.jsx";
 import config from "../../../config.js";
@@ -22,13 +15,13 @@ function Notes() {
   const { user } = useContext(UserContext);
   const [meetings, setMeetings] = useState([]);
   const [profileData, setProfileData] = useState(null);
+  const [relatedUsers, setRelatedUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const location = useLocation();
   const [mentor, setMentor] = useState(location.state?.mentor || null);
   const [error, setError] = useState("");
 
   // fetch either mentor or mentee info based on user.userRole
-
   // fetch mentor or mentee meetings using mentorId or menteeId
   // filter meetings into groups based on names included
 
@@ -59,7 +52,16 @@ function Notes() {
       }
     };
 
+    if (user && user.id) {
+      fetchProfileData();
+    }
+  }, [user]);
+
+  // Fetch mentor or mentee meetings using mentorId or menteeId
+  useEffect(() => {
     const fetchMeetings = async () => {
+      if (!profileData) return;
+
       setLoading(true);
       try {
         const response = await fetch(
@@ -69,7 +71,6 @@ function Notes() {
           throw new Error("Failed to fetch meetings");
         }
         const data = await response.json();
-        console.log(data);
         setMeetings(data);
       } catch (err) {
         console.error("Error fetching meetings:", err);
@@ -79,19 +80,48 @@ function Notes() {
       }
     };
 
-    if (user && user.id) {
-      fetchProfileData();
+    if (profileData) {
       fetchMeetings();
     }
-  }, [user]);
+  }, [profileData]);
 
-  //   console.log(meetings);
-  //   console.log(user);
-  console.log(profileData);
+  // Fetch related users (mentees or mentors) based on user role
+  useEffect(() => {
+    const fetchRelatedUsers = async () => {
+      if (!profileData) return;
 
-  // display each meeting
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `${config.apiBaseUrl}/connect-requests/${profileData.id}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch related users");
+        }
+        const data = await response.json();
+        const acceptedRequests = data.requests.filter(
+          (request) => request.status === "accepted"
+        );
 
-  // use meeting Url to embed a google doc
+        setRelatedUsers(
+          acceptedRequests.map((request) =>
+            user.userRole === "mentor"
+              ? { id: request.menteeId, name: request.menteeName }
+              : { id: request.mentorId, name: request.mentorName }
+          )
+        );
+      } catch (err) {
+        console.error("Error fetching related users:", err);
+        setError("Failed to fetch related users. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (profileData) {
+      fetchRelatedUsers();
+    }
+  }, [profileData, user.userRole]);
 
   return (
     <>
@@ -100,39 +130,57 @@ function Notes() {
         <h1>Meeting Notes</h1>
       </div>
       <div className="notes-body">
-        {loading ? (
-          <div className="loading-spinner">
-            <CircularProgress />
-          </div>
-        ) : (
-          meetings.map((meeting) => (
-            <div className="notes-meeting" key={meeting.id}>
-              <div className="notes-left">
-                <div className="notes-mentor">
-                  <img src={PLACEHOLDER} id="notes-img" alt="mentor" />
-                  <p>John Doe</p>
-                </div>
-              </div>
-              <div className="notes-right">
-                <div className="meeting-notes">
-                  <h3>
-                    {new Date(meeting.scheduledTime).toLocaleDateString()}
-                  </h3>
-                  <div className="meeting-notes-text">
-                    {meeting.notesUrl ? (
-                      <iframe
-                        src={meeting.notesUrl}
-                        title="Meeting Notes"
-                      ></iframe>
-                    ) : (
-                      <p>No notes available for this meeting.</p>
-                    )}
+        <div className="notes-left">
+          {relatedUsers.map((relatedUser, index) => (
+            <div className="notes-mentor" key={relatedUser.id}>
+              <img src={PLACEHOLDER} id="notes-img" alt="mentor" />
+              <p>{relatedUser.name}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="notes-right">
+          {loading ? (
+            <div className="loading-spinner">
+              <CircularProgress />
+            </div>
+          ) : error ? (
+            <Alert severity="error">{error}</Alert>
+          ) : (
+            meetings.map((meeting) => (
+              <div className="meeting-notes" key={meeting.id}>
+                <div className="meeting-top">
+                  <div className="meeting-top-left">
+                    <h3>
+                      {new Date(meeting.scheduledTime).toLocaleDateString(
+                        "en-US",
+                        {
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric",
+                        }
+                      )}
+                    </h3>
+                  </div>
+                  <div className="meeting-top-right">
+                    <h3>{meeting.topic}</h3>
                   </div>
                 </div>
+                <div className="meeting-notes-text">
+                  {meeting.notesUrl ? (
+                    <iframe
+                      src={meeting.notesUrl}
+                      frameBorder="0"
+                      title="Meeting Notes"
+                    ></iframe>
+                  ) : (
+                    <p>No notes available for this meeting.</p>
+                  )}
+                </div>
               </div>
-            </div>
-          ))
-        )}
+            ))
+          )}
+        </div>
       </div>
     </>
   );
