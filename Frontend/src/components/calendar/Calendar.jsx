@@ -9,7 +9,13 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import MeetingModal from "../meeting/MeetingModal.jsx";
-import { Container, Box, Typography, Button } from "@mui/material";
+import {
+  Container,
+  Box,
+  Typography,
+  Button,
+  CircularProgress,
+} from "@mui/material";
 
 function Calendar() {
   const { user } = useContext(UserContext);
@@ -19,6 +25,7 @@ function Calendar() {
   const [userData, setUserData] = useState("");
   const [selectedMeeting, setSelectedMeeting] = useState(null);
   const [isMeetingModalOpen, setIsMeetingModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // check if mentor
   const isMentor = (user) => user.userRole === "mentor";
@@ -27,6 +34,7 @@ function Calendar() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
+        setLoading(true);
         const url = isMentor(user)
           ? `${config.apiBaseUrl}/mentors/${user.id}`
           : `${config.apiBaseUrl}/mentees/${user.id}`;
@@ -37,8 +45,10 @@ function Calendar() {
         }
         const data = await response.json();
         setUserData(isMentor(user) ? data.mentor : data.mentee);
+        setLoading(false);
       } catch (error) {
         setErrorMessage(error.message);
+        setLoading(false);
       }
     };
 
@@ -49,6 +59,7 @@ function Calendar() {
 
   const fetchMeetings = async (userId) => {
     try {
+      setLoading(true);
       const url = isMentor(user)
         ? `${config.apiBaseUrl}/meetings/mentor/${userId}`
         : `${config.apiBaseUrl}/meetings/mentee/${userId}`;
@@ -58,6 +69,7 @@ function Calendar() {
         throw new Error("Failed to fetch meetings");
       }
       const data = await response.json();
+      setLoading(false);
 
       const meetings = data.map((meeting) => {
         const start = moment.utc(meeting.scheduledTime).local().format();
@@ -88,6 +100,7 @@ function Calendar() {
       setMeetings(meetings);
     } catch (error) {
       setErrorMessage(error.message);
+      setLoading(false);
     }
   };
 
@@ -130,6 +143,7 @@ function Calendar() {
   // decline (delete) meetings
   const declineMeeting = async (meetingId) => {
     try {
+      setLoading(true);
       const response = await fetch(
         `${config.apiBaseUrl}/meeting/${meetingId}`,
         {
@@ -139,13 +153,16 @@ function Calendar() {
 
       if (!response.ok) {
         throw new Error("Failed to delete meeting");
+        setLoading(false);
       }
       const data = await response.json();
       if (userData && userData.id) {
         fetchMeetings(userData.id);
       }
+      setLoading(false);
     } catch (error) {
       setErrorMessage(error.message);
+      setLoading(false);
     }
     handleMeetingModalToggle();
   };
@@ -153,6 +170,7 @@ function Calendar() {
   // accept meetings
   const acceptMeeting = async (meetingId) => {
     try {
+      setLoading(true);
       const response = await fetch(
         `${config.apiBaseUrl}/meetings/${meetingId}`,
         {
@@ -166,6 +184,7 @@ function Calendar() {
 
       if (!response.ok) {
         throw new Error(`Error accepting meeting`);
+        setLoading(false);
       }
 
       const data = await response.json();
@@ -174,8 +193,10 @@ function Calendar() {
       if (userData && userData.id) {
         fetchMeetings(userData.id);
       }
+      setLoading(false);
     } catch (error) {
       setErrorMessage("Error accepting meeting");
+      setLoading(false);
     }
     handleMeetingModalToggle();
   };
@@ -194,39 +215,54 @@ function Calendar() {
 
   return (
     <>
-      {isMentor(user) && (
-        <div className="add-meeting-btn">
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleModalToggle}
-          >
-            Add Meeting
-          </Button>
-        </div>
-      )}
-      <div className="calendar-container">
-        <FullCalendar
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          initialView="timeGridWeek"
-          events={meetings}
-          eventClick={handleMeetingClick}
-        />
-      </div>
-      {isModalOpen && (
-        <CalendarModal
-          toggleModal={handleModalToggle}
-          onMeetingScheduled={handleMeetingScheduled}
-          isMentor={isMentor}
-        ></CalendarModal>
-      )}
-      {isMeetingModalOpen && (
-        <MeetingModal
-          toggleModal={handleMeetingModalToggle}
-          selectedMeeting={selectedMeeting}
-          acceptMeeting={acceptMeeting}
-          declineMeeting={declineMeeting}
-        ></MeetingModal>
+      {loading ? (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      ) : (
+        <>
+          {isMentor(user) && (
+            <div className="add-meeting-btn">
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleModalToggle}
+              >
+                Add Meeting
+              </Button>
+            </div>
+          )}
+          <div className="calendar-container">
+            <FullCalendar
+              plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+              initialView="timeGridWeek"
+              events={meetings}
+              eventClick={handleMeetingClick}
+            />
+          </div>
+          {isModalOpen && (
+            <CalendarModal
+              toggleModal={handleModalToggle}
+              onMeetingScheduled={handleMeetingScheduled}
+              isMentor={isMentor}
+            />
+          )}
+          {isMeetingModalOpen && (
+            <MeetingModal
+              toggleModal={handleMeetingModalToggle}
+              selectedMeeting={selectedMeeting}
+              acceptMeeting={acceptMeeting}
+              declineMeeting={declineMeeting}
+            />
+          )}
+        </>
       )}
     </>
   );

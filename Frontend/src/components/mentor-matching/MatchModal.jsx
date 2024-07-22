@@ -15,6 +15,15 @@ import {
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
 
+// experience map
+const experienceMappingReverse = {
+  1: "0-2",
+  2: "2-5",
+  3: "5-10",
+  4: "10+",
+  5: "20+",
+};
+
 function MatchModal({ mentor, closeModal, mentee }) {
   const { user } = useContext(UserContext); // Access the user context
   const [errorMessage, setErrorMessage] = useState("");
@@ -118,7 +127,8 @@ function MatchModal({ mentor, closeModal, mentee }) {
                 <Typography>Company: {mentor.company}</Typography>
                 <Typography>Role: {mentor.work_role}</Typography>
                 <Typography>
-                  Years of Experience: {mentor.years_experience} years
+                  Years of Experience:{" "}
+                  {experienceMappingReverse[mentor.years_experience]} years
                 </Typography>
                 <Typography>School: {mentor.school}</Typography>
                 <Typography>Skills: {mentor.skills}</Typography>
