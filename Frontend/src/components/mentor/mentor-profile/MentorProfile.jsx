@@ -292,7 +292,7 @@ function MentorProfile() {
                   </Typography>
                 </div>
               </div>
-              {user.userRole != "mentor" && (
+              {user.userRole !== "mentor" && (
                 <div className="mp-reviews">
                   <h3>Reviews</h3>
                   <div className="card-reviews">
