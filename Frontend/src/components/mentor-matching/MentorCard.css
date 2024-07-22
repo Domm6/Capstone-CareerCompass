@@ -84,6 +84,7 @@
 .mc-container:hover .mc-profile {
   display: flex;
   flex-direction: column;
+  overflow: auto;
 }
 
 .mc-container img {
