@@ -836,21 +836,69 @@ router.delete("/meeting/:meetingId", async (req, res) => {
   }
 });
 
-// create new reveiw
+// Create new review
 router.post("/reviews", async (req, res) => {
-  const { mentorId, menteeId, rating } = req.body;
+  const { mentorId, menteeId, rating, textReview } = req.body;
 
   try {
-    // create new review
-    const review = await Review.create({ mentorId, menteeId, rating });
+    // Create new review
+    const review = await Review.create({
+      mentorId,
+      menteeId,
+      rating,
+      textReview,
+    });
+
+    // Find mentor
+    const mentor = await Mentor.findByPk(mentorId);
+    if (!mentor) {
+      return res.status(404).json({ error: "Mentor not found" });
+    }
+
+    // Recalculate mentor's average rating
+    const reviews = await Review.findAll({ where: { mentorId } });
+    const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+    mentor.ratingCount = reviews.length;
+    mentor.averageRating = parseFloat(
+      (totalRating / mentor.ratingCount).toFixed(2)
+    );
+    mentor.totalRating = totalRating;
+
+    await mentor.save();
+
+    res.status(201).json(review);
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// update review
+router.put("/reviews/", async (req, res) => {
+  const { mentorId, menteeId, rating, textReview } = req.body;
+
+  try {
+    // update new review
+    const review = await Review.findOne({ where: { mentorId, menteeId } });
+    if (!review) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+
+    // Update review rating
+    review.rating = rating;
+    review.textReview = textReview;
+    await review.save();
 
     // update mentors rating
     const mentor = await Mentor.findByPk(mentorId);
 
-    // Update mentor ratings
-    mentor.totalRating += rating;
-    mentor.ratingCount += 1;
-    mentor.averageRating = mentor.totalRating / mentor.ratingCount;
+    // Recalculate mentor's average rating
+    const reviews = await Review.findAll({ where: { mentorId } });
+    const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+    mentor.ratingCount = reviews.length;
+    mentor.averageRating = parseFloat(
+      (totalRating / mentor.ratingCount).toFixed(2)
+    );
+    mentor.totalRating = totalRating;
 
     await mentor.save();
 
@@ -866,6 +914,18 @@ router.get("/mentors/:id/reviews", async (req, res) => {
 
   try {
     const reviews = await Review.findAll({ where: { mentorId } });
+    res.json({ reviews });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// get reviews for a mentee
+router.get("/mentees/:id/reviews", async (req, res) => {
+  const menteeId = req.params.id;
+
+  try {
+    const reviews = await Review.findAll({ where: { menteeId } });
     res.json({ reviews });
   } catch (error) {
     res.status(500).json({ error: "Server error" });

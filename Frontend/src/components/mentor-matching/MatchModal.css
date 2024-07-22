@@ -5,3 +5,11 @@
 .modal-content {
   border-radius: 8px;
 }
+
+.match-btns {
+  display: flex;
+}
+
+.match-btns Button {
+  margin: 10px;
+}

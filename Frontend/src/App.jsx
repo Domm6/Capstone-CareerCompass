@@ -104,6 +104,14 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/public-mentor-profile"
+                element={
+                  <ProtectedRoute>
+                    <MentorProfile />
+                  </ProtectedRoute>
+                }
+              />
             </Routes>
           </Router>
         </UserContext.Provider>

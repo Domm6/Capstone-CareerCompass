@@ -104,3 +104,12 @@
   justify-content: center;
   margin: 10px;
 }
+
+.mp-reviews {
+  margin: 10px;
+  padding: 10px;
+}
+
+.card-reviews {
+  display: flex;
+}

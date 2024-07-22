@@ -1,9 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../UserContext.jsx";
+import { useLocation } from "react-router-dom";
 import { useNavigate, Link } from "react-router-dom";
 import "./MentorProfile.css";
 import moment from "moment";
 import MentorProfileModal from "./MentorProfileModal.jsx";
+import ReviewCard from "./ReviewCard.jsx";
 import config from "../../../../config.js";
 import ResponsiveAppBar from "../../header/ResponsiveAppBar.jsx";
 import { Container, Box, Typography, Button, Modal } from "@mui/material";
@@ -72,20 +74,29 @@ function MentorProfile() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const [mentor, setMentor] = useState(location.state?.mentor || null);
   const { handleSignout } = useContext(UserContext);
+  const [reviews, setReviews] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
   const pages = ["Dashboard"];
 
   const [userData, setUserData] = useState({
-    name: "Loading",
-    profileImageUrl: PLACEHOLDER,
-    industry: "",
-    company: "",
-    work_role: "",
-    years_experience: "",
-    school: "",
-    skills: "",
-    preferredStartHour: "",
-    preferredEndHour: "",
+    name: mentor ? mentor.User.name : "Loading",
+    profileImageUrl: mentor
+      ? mentor.User.profileImageUrl || PLACEHOLDER
+      : PLACEHOLDER,
+    industry: mentor ? mentor.industry : "",
+    company: mentor ? mentor.company : "",
+    work_role: mentor ? mentor.work_role : "",
+    years_experience: mentor ? mentor.years_experience : "",
+    school: mentor ? mentor.school : "",
+    skills: mentor ? mentor.skills : "",
+    bio: mentor ? mentor.bio : "",
+    preferredStartHour: mentor
+      ? mentor.meetingPreferences.preferredStartHour
+      : "",
+    preferredEndHour: mentor ? mentor.meetingPreferences.preferredEndHour : "",
   });
 
   const fetchMentorData = () => {
@@ -115,7 +126,7 @@ function MentorProfile() {
           });
         })
         .catch((error) => {
-          console.error("Error fetching mentor data:", error);
+          setErrorMessage(error);
           setUserData({
             name: "Failed to load user data",
             profileImageUrl: PLACEHOLDER,
@@ -124,9 +135,58 @@ function MentorProfile() {
     }
   };
 
+  // fetch mentor reviews
+  const fetchMentorReveiews = async (mentorId) => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseUrl}/mentors/${mentorId}/reviews`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        const filteredReviews = data.reviews.filter(
+          (review) => review.textReview !== null
+        );
+        setReviews(filteredReviews);
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData);
+      }
+    } catch (error) {
+      console.error("Server error, please try again later.");
+    }
+  };
+
   useEffect(() => {
-    fetchMentorData();
-  }, [user]);
+    if (!mentor) {
+      fetchMentorData();
+    } else {
+      setUserData({
+        name: mentor.User.name,
+        profileImageUrl: mentor.User.profileImageUrl || PLACEHOLDER,
+        industry: mentor.industry,
+        company: mentor.company,
+        work_role: mentor.work_role,
+        years_experience:
+          experienceMappingReverse[mentor.years_experience] || "",
+        school: mentor.school,
+        bio: mentor.bio,
+        skills: mentor.skills,
+        preferredStartHour: mentor.meetingPreferences.preferredStartHour,
+        preferredEndHour: mentor.meetingPreferences.preferredEndHour,
+      });
+
+      // fetch mentor reviews
+      fetchMentorReveiews(mentor.id);
+      // filter so only reviews with
+    }
+  }, [user, mentor]);
 
   const handleCheckboxChange = (skill) => {
     setSelectedSkills((prevSelectedSkills) =>
@@ -150,30 +210,32 @@ function MentorProfile() {
         handleSignout={handleSignout}
         pages={pages}
         userName={user.name}
-        userRole="mentor"
-      />{" "}
+        userRole={user.userRole}
+      />
       <Container>
         <Box sx={{ my: 2 }}>
           <div className="mp-top">
             <div className="mp-top-left">
               <Typography variant="h4">Mentor Profile</Typography>
             </div>
-            <div className="mp-top-right">
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSignout}
-              >
-                Log Out
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleModalToggle}
-              >
-                Edit
-              </Button>
-            </div>
+            {user.userRole === "mentor" && (
+              <div className="mp-top-right">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSignout}
+                >
+                  Log Out
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleModalToggle}
+                >
+                  Edit
+                </Button>
+              </div>
+            )}
           </div>
           <div className="mp-body">
             <div className="mp-left">
@@ -206,6 +268,16 @@ function MentorProfile() {
               </Typography>
             </div>
           </div>
+          {user.userRole != "mentor" && (
+            <div className="mp-reviews">
+              <h3>Reviews</h3>
+              <div className="card-reviews">
+                {reviews.map((review) => (
+                  <ReviewCard key={review.id} review={review} />
+                ))}
+              </div>
+            </div>
+          )}
           <Modal open={isModalOpen} onClose={handleModalToggle}>
             <Box
               sx={{
