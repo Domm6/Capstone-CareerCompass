@@ -6,7 +6,13 @@ import MentorCard from "./MentorCard.jsx";
 import MatchModal from "./MatchModal.jsx";
 import config from "../../../config.js";
 import ResponsiveAppBar from "../header/ResponsiveAppBar.jsx";
-import { Container, Box, Typography, Button } from "@mui/material";
+import {
+  Container,
+  Box,
+  Typography,
+  Button,
+  CircularProgress,
+} from "@mui/material";
 
 const TechRolesEnum = Object.freeze({
   SOFTWARE_ENGINEER: "Software Engineer",
@@ -223,6 +229,7 @@ function Match() {
   const [mentee, setMentee] = useState(null);
   const [topMentors, setTopMentors] = useState([]);
   const [matchedMentorIds, setMatchedMentorIds] = useState([]);
+  const [loading, setLoading] = useState(false);
   const pages = ["Dashboard", "Profile"];
 
   const handleCardClick = (mentor) => {
@@ -244,6 +251,7 @@ function Match() {
   };
 
   const fetchMatchedMentors = (menteeId) => {
+    setLoading(true);
     fetch(`${config.apiBaseUrl}/connect-requests/mentee/${menteeId}`)
       .then((response) => {
         if (!response.ok) {
@@ -251,6 +259,7 @@ function Match() {
             "Failed to fetch connect requests. Please try again later."
           );
         }
+        setLoading(false);
         return response.json();
       })
       .then((data) => {
@@ -264,6 +273,7 @@ function Match() {
       })
       .catch((error) => {
         setErrorMessage(error.message);
+        setLoading(false);
       });
   };
 
@@ -272,6 +282,7 @@ function Match() {
   };
 
   const fetchMentorsData = () => {
+    setLoading(true);
     fetch(`${config.apiBaseUrl}/mentors`)
       .then((response) => {
         if (!response.ok) {
@@ -279,6 +290,7 @@ function Match() {
             "Failed to fetch mentor data. Please try again later."
           );
         }
+        setLoading(false);
         return response.json();
       })
       .then((data) => {
@@ -287,10 +299,12 @@ function Match() {
       })
       .catch((error) => {
         setErrorMessage(error.message);
+        setLoading(false);
       });
   };
 
   const fetchMenteeData = () => {
+    setLoading(true);
     fetch(`${config.apiBaseUrl}/mentees/${user.id}`)
       .then((response) => {
         if (!response.ok) {
@@ -298,6 +312,7 @@ function Match() {
             "Failed to fetch mentee data. Please try again later."
           );
         }
+        setLoading(false);
         return response.json();
       })
       .then((data) => {
@@ -306,6 +321,7 @@ function Match() {
       })
       .catch((error) => {
         setErrorMessage(error.message);
+        setLoading(false);
       });
   };
 
@@ -340,11 +356,7 @@ function Match() {
 
   return (
     <>
-      <ResponsiveAppBar
-        pages={pages}
-        userName={user.name}
-        userRole="mentee"
-      ></ResponsiveAppBar>
+      <ResponsiveAppBar pages={pages} userName={user.name} userRole="mentee" />
       <div className="match-top">
         <h1>Choose a Mentor</h1>
       </div>
@@ -371,36 +383,44 @@ function Match() {
           ))}
         </select>
       </div>
-      <div className="suggested-container">
-        <div className="sc-header">
-          <h3>Suggested</h3>
+      {loading ? (
+        <div className="loading-spinner">
+          <CircularProgress />
         </div>
-        <div className="sc-list">
-          {topMentors.map((mentor) => (
-            <MentorCard
-              key={mentor.id}
-              mentor={mentor}
-              onCardClick={handleCardClick}
-              score={mentor.score}
-            />
-          ))}
-        </div>
-      </div>
-      <div className="divider"></div>
-      <div className="mc-header">
-        <h3>Other Mentors</h3>
-      </div>
-      <div className="mc-list">
-        {filteredMentors
-          .filter((mentor) => !topMentors.includes(mentor))
-          .map((mentor) => (
-            <MentorCard
-              key={mentor.id}
-              mentor={mentor}
-              onCardClick={handleCardClick}
-            />
-          ))}
-      </div>
+      ) : (
+        <>
+          <div className="suggested-container">
+            <div className="sc-header">
+              <h3>Suggested</h3>
+            </div>
+            <div className="sc-list">
+              {topMentors.map((mentor) => (
+                <MentorCard
+                  key={mentor.id}
+                  mentor={mentor}
+                  onCardClick={handleCardClick}
+                  score={mentor.score}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="divider"></div>
+          <div className="mc-header">
+            <h3>Other Mentors</h3>
+          </div>
+          <div className="mc-list">
+            {filteredMentors
+              .filter((mentor) => !topMentors.includes(mentor))
+              .map((mentor) => (
+                <MentorCard
+                  key={mentor.id}
+                  mentor={mentor}
+                  onCardClick={handleCardClick}
+                />
+              ))}
+          </div>
+        </>
+      )}
       {isMatchModalOpen && (
         <MatchModal
           mentor={selectedMentor}

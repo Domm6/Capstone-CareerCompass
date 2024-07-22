@@ -10,6 +10,7 @@ import {
   Button,
   ButtonGroup,
   Modal,
+  CircularProgress,
 } from "@mui/material";
 
 const PLACEHOLDER =
@@ -28,6 +29,7 @@ function MatchModal({ mentor, closeModal, mentee }) {
   const { user } = useContext(UserContext); // Access the user context
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -45,6 +47,7 @@ function MatchModal({ mentor, closeModal, mentee }) {
     };
 
     try {
+      setLoading(true);
       const response = await fetch(`${config.apiBaseUrl}/connect-requests`, {
         method: "POST",
         headers: {
@@ -60,9 +63,11 @@ function MatchModal({ mentor, closeModal, mentee }) {
         const data = await response.json();
         setErrorMessage(data.error || "Error creating connect request");
       }
+      setLoading(false);
     } catch (error) {
       setErrorMessage("Error creating connect request");
       console.error("Error creating connect request:", error);
+      setLoading(false);
     }
   };
 
@@ -97,64 +102,80 @@ function MatchModal({ mentor, closeModal, mentee }) {
               justifyContent: "flex-end",
             }}
           ></Box>
-          <Box
-            className="mp-container"
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
+          {loading ? (
             <Box
-              className="mp-body"
+              className="loading-spinner"
               sx={{
                 display: "flex",
-                flexDirection: "row",
+                justifyContent: "center",
                 alignItems: "center",
-                mb: 2,
+                height: "100%",
               }}
             >
-              <Box className="mp-left" sx={{ mr: 2 }}>
-                <img
-                  src={PLACEHOLDER}
-                  alt="profile picture"
-                  style={{ borderRadius: "50%", width: 100, height: 100 }}
-                />
-                <Typography variant="h5">{mentor.User.name}</Typography>
-              </Box>
-              <Box className="mp-right" sx={{ textAlign: "left" }}>
-                <Typography>Industry: {mentor.industry}</Typography>
-                <Typography>Company: {mentor.company}</Typography>
-                <Typography>Role: {mentor.work_role}</Typography>
-                <Typography>
-                  Years of Experience:{" "}
-                  {experienceMappingReverse[mentor.years_experience]} years
-                </Typography>
-                <Typography>School: {mentor.school}</Typography>
-                <Typography>Skills: {mentor.skills}</Typography>
-                <Typography>Bio: {mentor.bio || "No Bio Available"}</Typography>
-                <Typography>Rating: {mentor.averageRating}</Typography>
-              </Box>
+              <CircularProgress />
             </Box>
-            <div className="match-btns">
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSubmit}
-                sx={{ mt: 2 }}
+          ) : (
+            <Box
+              className="mp-container"
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <Box
+                className="mp-body"
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  mb: 2,
+                }}
               >
-                Connect
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ mt: 2 }}
-                onClick={handleViewProfile}
-              >
-                View Profile
-              </Button>
-            </div>
-          </Box>
+                <Box className="mp-left" sx={{ mr: 2 }}>
+                  <img
+                    src={PLACEHOLDER}
+                    alt="profile picture"
+                    style={{ borderRadius: "50%", width: 100, height: 100 }}
+                  />
+                  <Typography variant="h5">{mentor.User.name}</Typography>
+                </Box>
+                <Box className="mp-right" sx={{ textAlign: "left" }}>
+                  <Typography>Industry: {mentor.industry}</Typography>
+                  <Typography>Company: {mentor.company}</Typography>
+                  <Typography>Role: {mentor.work_role}</Typography>
+                  <Typography>
+                    Years of Experience:{" "}
+                    {experienceMappingReverse[mentor.years_experience]} years
+                  </Typography>
+                  <Typography>School: {mentor.school}</Typography>
+                  <Typography>Skills: {mentor.skills}</Typography>
+                  <Typography>
+                    Bio: {mentor.bio || "No Bio Available"}
+                  </Typography>
+                  <Typography>Rating: {mentor.averageRating}</Typography>
+                </Box>
+              </Box>
+              <div className="match-btns">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSubmit}
+                  sx={{ mt: 2 }}
+                >
+                  Connect
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ mt: 2 }}
+                  onClick={handleViewProfile}
+                >
+                  View Profile
+                </Button>
+              </div>
+            </Box>
+          )}
         </Box>
       </Modal>
     </>
