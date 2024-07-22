@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../../../UserContext";
 import "./LoginPage.css";
 import config from "../../../../config";
-import { CircularProgress, Button } from "@mui/material";
+import { CircularProgress, Button, Alert, AlertTitle } from "@mui/material";
 import ResponsiveAppBar from "../../header/ResponsiveAppBar";
 
 const LoginPage = () => {
@@ -14,7 +14,6 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const pages = [""];
-
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -43,7 +42,14 @@ const LoginPage = () => {
           navigate("/");
         }
       } else {
-        setErrorMessage("Wrong email or password, please try again");
+        const errorData = await response.json();
+        if (errorData.error.includes("No user with email found")) {
+          setErrorMessage("No account with this email found");
+        } else if (errorData.error.includes("Invalid password")) {
+          setErrorMessage("Invalid password.");
+        } else {
+          setErrorMessage("Login failed. Please try again.");
+        }
       }
       setLoading(false);
     } catch (error) {
@@ -91,7 +97,12 @@ const LoginPage = () => {
             </p>
           </form>
         )}
-        {errorMessage && <div className="error-message">{errorMessage}</div>}
+        {errorMessage && (
+          <Alert severity="error" onClose={() => setErrorMessage("")}>
+            <AlertTitle>Error</AlertTitle>
+            {errorMessage}
+          </Alert>
+        )}{" "}
       </div>
     </>
   );

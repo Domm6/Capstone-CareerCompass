@@ -92,7 +92,7 @@ router.post("/users/signup", async (req, res) => {
     });
 
     if (existingUser) {
-      return res.status(400).json({ error: "Email already exists" });
+      return res.status(400).json({ error: "email already in use" });
     }
 
     // Encrypt the password
