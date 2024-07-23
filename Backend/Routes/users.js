@@ -13,8 +13,6 @@ import { Meeting } from "../models/index.js";
 import { Review } from "../models/review.js";
 import { ConnectRequest } from "../models/connect-request.js";
 
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
 const router = express.Router();
 const SALT_ROUNDS = 10;
 
@@ -43,7 +41,6 @@ router.put("/user/:id", upload.single("profileImageUrl"), async (req, res) => {
   }
 });
 
-// router to get userinfo
 // router to get userinfo
 router.get("/users/:id", async (req, res) => {
   try {
