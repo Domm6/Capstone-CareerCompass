@@ -9,11 +9,7 @@ import {
   Button,
   TextField,
   Typography,
-  Modal,
   FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   CircularProgress,
 } from "@mui/material";
 
@@ -31,6 +27,7 @@ function MenteeProfileModal({
   closeModal,
 }) {
   const { user } = useContext(UserContext);
+  const { updateUser } = useContext(UserContext);
   const [formData, setFormData] = useState({
     name: "",
     profileImageUrl: "",
@@ -48,6 +45,7 @@ function MenteeProfileModal({
   const [selectedSchool, setSelectedSchool] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [image, setImage] = useState(null);
 
   useEffect(() => {
     if (menteeData) {
@@ -136,16 +134,37 @@ function MenteeProfileModal({
         body: JSON.stringify(preparedData),
       });
 
-      if (response.ok) {
-        // Close the modal after a successful update
-        closeModal();
-      } else {
+      if (!response.ok) {
         console.error("Error updating mentee profile:", response.statusText);
+        setLoading(false);
+        return;
       }
+
+      // Update profile image if a new one is selected
+      if (image) {
+        const updatedUser = {
+          ...user,
+          profileImageUrl: image, // Use the base64 string directly
+        };
+        updateUser(updatedUser); // Update the user context with the new data
+      }
+
       setLoading(false);
+      closeModal(); // Close the modal if all updates are successful
     } catch (error) {
       console.error("Error updating mentee profile:", error);
       setLoading(false);
+    }
+  };
+
+  const handleProfileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result); // Set the base64 string as image
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -236,6 +255,9 @@ function MenteeProfileModal({
               }}
             />
           </FormControl>
+          <Box>
+            <input type="file" onChange={handleProfileUpload} />
+          </Box>
           <FormControl fullWidth margin="normal">
             <Box>
               <Button

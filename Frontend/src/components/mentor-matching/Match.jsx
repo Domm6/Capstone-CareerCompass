@@ -355,7 +355,12 @@ function Match() {
 
   return (
     <>
-      <ResponsiveAppBar pages={pages} userName={user.name} userRole="mentee" />
+      <ResponsiveAppBar
+        pages={pages}
+        userName={user.name}
+        userRole="mentee"
+        profileImageUrl={user.profileImageUrl}
+      />
       <div className="match-top">
         <h1>Choose a Mentor</h1>
       </div>

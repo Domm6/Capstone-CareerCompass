@@ -150,6 +150,7 @@ function MenteeProfile() {
         handleSignout={handleSignout}
         pages={["Dashboard", "Find Mentors"]}
         userName={user.name}
+        profileImageUrl={user.profileImageUrl}
         userRole="mentee"
       />
       <Container>

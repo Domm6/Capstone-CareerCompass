@@ -20,6 +20,7 @@ function MenteeDashboard() {
         pages={pages}
         userName={user.name}
         userRole="mentee"
+        profileImageUrl={user.profileImageUrl}
       ></ResponsiveAppBar>
       <Container maxWidth="xl" className="md-container">
         <Box className="md-top" sx={{ my: 4 }}>

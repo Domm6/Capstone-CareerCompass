@@ -291,7 +291,7 @@ function MentorProfileModal({
           />
           <Box>
             <input type="file" onChange={handleProfileUpload} />
-            <Button type="submit"></Button>
+            <Button type="submit" variant="contained" color="primary"></Button>
           </Box>
           <Box className="form-skills">
             <Button
