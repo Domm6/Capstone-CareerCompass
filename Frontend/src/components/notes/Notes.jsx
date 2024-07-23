@@ -31,6 +31,7 @@ function Notes() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newNotesLink, setNewNotesLink] = useState("");
   const [selectedMeeting, setSelectedMeeting] = useState(null);
+  const [visibleMeetingsCount, setVisibleMeetingsCount] = useState(3);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -226,6 +227,10 @@ function Notes() {
     }
   };
 
+  const handleLoadMore = () => {
+    setVisibleMeetingsCount((prevCount) => prevCount + 3);
+  };
+
   return (
     <>
       <ResponsiveAppBar
@@ -258,30 +263,8 @@ function Notes() {
             </div>
           ) : error ? (
             <Alert severity="error">{error}</Alert>
-          ) : meetings.length === 0 ? (
-            <>
-              <Modal open={isModalOpen} onClose={handleCloseModal}>
-                <div className="modal-content">
-                  <h2>Add New Meeting</h2>
-                  <TextField
-                    label="Meeting Link"
-                    variant="outlined"
-                    fullWidth
-                    // value={newMeetingLink}
-                    onChange={(e) => setNewMeetingLink(e.target.value)}
-                  />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    // onClick={handleAddMeeting}
-                  >
-                    Add Meeting
-                  </Button>
-                </div>
-              </Modal>
-            </>
           ) : (
-            meetings.map((meeting) => (
+            meetings.slice(0, visibleMeetingsCount).map((meeting) => (
               <div className="meeting-notes" key={meeting.id}>
                 <div className="meeting-top">
                   <div className="meeting-top-left">
@@ -316,12 +299,20 @@ function Notes() {
                       >
                         Add Notes
                       </Button>
-                      <p>No notes available for this meeting.</p>
                     </>
                   )}
                 </div>
               </div>
             ))
+          )}
+          {visibleMeetingsCount < meetings.length && (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleLoadMore}
+            >
+              Load More
+            </Button>
           )}
         </div>
         <Modal open={isModalOpen} onClose={handleCloseModal} id="notes-modal">
