@@ -236,7 +236,7 @@ function MentorProfile() {
             <>
               <div className="mp-top">
                 <div className="mp-top-left">
-                  <Typography variant="h4">Mentor Profile</Typography>
+                  <h1>Mentor Profile</h1>
                 </div>
                 {user.userRole === "mentor" && (
                   <div className="mp-top-right">
@@ -253,6 +253,14 @@ function MentorProfile() {
                       onClick={handleModalToggle}
                     >
                       Edit
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => navigate("/notes")}
+                      sx={{ mr: 1 }}
+                    >
+                      Notes
                     </Button>
                   </div>
                 )}

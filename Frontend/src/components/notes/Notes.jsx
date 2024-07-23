@@ -8,7 +8,7 @@ import ResponsiveAppBar from "../header/ResponsiveAppBar.jsx";
 import config from "../../../config.js";
 import { ContentPasteOffSharp } from "@mui/icons-material";
 
-const pages = ["Profile"];
+const pages = ["Dashboard", "Profile"];
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
 
@@ -66,12 +66,23 @@ function Notes() {
 
       setLoading(true);
       try {
-        const response = await fetch(
-          `${config.apiBaseUrl}/meetings/mentor/${profileData.id}`
-        );
+        let response;
+        if (user.userRole === "mentor") {
+          response = await fetch(
+            `${config.apiBaseUrl}/meetings/mentor/${profileData.id}`
+          );
+        } else if (user.userRole === "mentee") {
+          response = await fetch(
+            `${config.apiBaseUrl}/meetings/mentee/${profileData.id}`
+          );
+        } else {
+          throw new Error("Invalid user role");
+        }
+
         if (!response.ok) {
           throw new Error("Failed to fetch meetings");
         }
+
         const data = await response.json();
 
         // Filter meetings based on activeRelatedUser
@@ -112,9 +123,19 @@ function Notes() {
 
       setLoading(true);
       try {
-        const response = await fetch(
-          `${config.apiBaseUrl}/connect-requests/${profileData.id}`
-        );
+        let response;
+        if (user.userRole === "mentor") {
+          response = await fetch(
+            `${config.apiBaseUrl}/connect-requests/${profileData.id}`
+          );
+        } else if (user.userRole === "mentee") {
+          response = await fetch(
+            `${config.apiBaseUrl}/connect-requests/mentee/${profileData.id}`
+          );
+        } else {
+          throw new Error("Invalid user role");
+        }
+
         if (!response.ok) {
           throw new Error("Failed to fetch related users");
         }
@@ -156,7 +177,11 @@ function Notes() {
 
   return (
     <>
-      <ResponsiveAppBar pages={pages} userName={user.name} userRole="mentor" />
+      <ResponsiveAppBar
+        pages={pages}
+        userName={user.name}
+        userRole={user.userRole}
+      />
       <div className="notes-title">
         <h1>Meeting Notes</h1>
       </div>

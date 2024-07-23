@@ -5,6 +5,7 @@ import moment from "moment";
 import "../mentor-matching/MatchModal.css";
 import "./MeetingModal.css";
 import { Container, Box, Typography, Button, Modal } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 function MeetingModal({
   mentor,
@@ -17,6 +18,7 @@ function MeetingModal({
   const formattedDate = moment(selectedMeeting.end).format("MMMM Do YYYY");
   const formattedStartTime = moment(selectedMeeting.start).format("h:mm a");
   const formattedEndTime = moment(selectedMeeting.end).format("h:mm a");
+  const navigate = useNavigate();
 
   return (
     <>
@@ -74,6 +76,14 @@ function MeetingModal({
                 onClick={() => declineMeeting(selectedMeeting.id)}
               >
                 Decline
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => navigate("/notes")}
+                sx={{ mr: 1 }}
+              >
+                Notes
               </Button>
             </Box>
           </Box>

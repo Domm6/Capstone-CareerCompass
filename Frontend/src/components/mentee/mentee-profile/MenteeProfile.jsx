@@ -179,6 +179,14 @@ function MenteeProfile() {
                   >
                     Edit
                   </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => navigate("/notes")}
+                    sx={{ mr: 1 }}
+                  >
+                    Notes
+                  </Button>
                 </div>
               </div>
               <div className="mp-body">
