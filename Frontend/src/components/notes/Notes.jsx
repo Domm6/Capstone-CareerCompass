@@ -2,7 +2,7 @@ import { useState, useContext, useEffect } from "react";
 import { UserContext } from "../../UserContext.jsx";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Alert } from "@mui/material";
 import "./Notes.css";
 import ResponsiveAppBar from "../header/ResponsiveAppBar.jsx";
 import config from "../../../config.js";
@@ -62,7 +62,7 @@ function Notes() {
   // Fetch mentor or mentee meetings using mentorId or menteeId
   useEffect(() => {
     const fetchMeetings = async () => {
-      if (!profileData) return;
+      if (!profileData || !activeRelatedUser) return;
 
       setLoading(true);
       try {
@@ -73,7 +73,20 @@ function Notes() {
           throw new Error("Failed to fetch meetings");
         }
         const data = await response.json();
-        setMeetings(data);
+
+        // Filter meetings based on activeRelatedUser
+        const filteredMeetings = data.filter((meeting) => {
+          if (user.userRole === "mentor") {
+            return meeting.mentees.some(
+              (mentee) => mentee.menteeId === activeRelatedUser.id
+            );
+          } else if (user.userRole === "mentee") {
+            return meeting.mentorId === activeRelatedUser.id;
+          }
+          return false;
+        });
+
+        setMeetings(filteredMeetings);
       } catch (err) {
         console.error("Error fetching meetings:", err);
         setError("Failed to fetch meetings. Please try again later.");
@@ -82,10 +95,10 @@ function Notes() {
       }
     };
 
-    if (profileData) {
+    if (profileData && activeRelatedUser) {
       fetchMeetings();
     }
-  }, [profileData]);
+  }, [profileData, activeRelatedUser, user.userRole]);
 
   // Fetch related users (mentees or mentors) based on user role
   useEffect(() => {
@@ -131,9 +144,16 @@ function Notes() {
     }
   }, [relatedUsers]);
 
+  // Function to handle card click
+  const handleRelatedUserClick = (relatedUser) => {
+    setActiveRelatedUser(relatedUser);
+  };
+
   //   console.log(relatedUsers);
   //   console.log(meetings);
-  console.log(activeRelatedUser);
+  //   console.log(activeRelatedUser);
+  //   console.log(profileData);
+  console.log(meetings);
 
   return (
     <>
@@ -149,7 +169,7 @@ function Notes() {
                 activeRelatedUser?.id === relatedUser.id ? "active" : ""
               }`}
               key={relatedUser.id}
-              onClick={() => setActiveRelatedUser(relatedUser)}
+              onClick={() => handleRelatedUserClick(relatedUser)}
             >
               <img src={PLACEHOLDER} id="notes-img" alt="mentor" />
               <p>{relatedUser.name}</p>
