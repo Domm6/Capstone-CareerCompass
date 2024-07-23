@@ -6,6 +6,7 @@ import { CircularProgress } from "@mui/material";
 import "./Notes.css";
 import ResponsiveAppBar from "../header/ResponsiveAppBar.jsx";
 import config from "../../../config.js";
+import { ContentPasteOffSharp } from "@mui/icons-material";
 
 const pages = ["Profile"];
 const PLACEHOLDER =
@@ -18,6 +19,7 @@ function Notes() {
   const [relatedUsers, setRelatedUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const location = useLocation();
+  const [activeRelatedUser, setActiveRelatedUser] = useState(null);
   const [mentor, setMentor] = useState(location.state?.mentor || null);
   const [error, setError] = useState("");
 
@@ -123,6 +125,16 @@ function Notes() {
     }
   }, [profileData, user.userRole]);
 
+  useEffect(() => {
+    if (relatedUsers.length > 0 && !activeRelatedUser) {
+      setActiveRelatedUser(relatedUsers[0]);
+    }
+  }, [relatedUsers]);
+
+  //   console.log(relatedUsers);
+  //   console.log(meetings);
+  console.log(activeRelatedUser);
+
   return (
     <>
       <ResponsiveAppBar pages={pages} userName={user.name} userRole="mentor" />
@@ -131,8 +143,14 @@ function Notes() {
       </div>
       <div className="notes-body">
         <div className="notes-left">
-          {relatedUsers.map((relatedUser, index) => (
-            <div className="notes-mentor" key={relatedUser.id}>
+          {relatedUsers.map((relatedUser) => (
+            <div
+              className={`notes-mentor ${
+                activeRelatedUser?.id === relatedUser.id ? "active" : ""
+              }`}
+              key={relatedUser.id}
+              onClick={() => setActiveRelatedUser(relatedUser)}
+            >
               <img src={PLACEHOLDER} id="notes-img" alt="mentor" />
               <p>{relatedUser.name}</p>
             </div>
