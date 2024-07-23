@@ -190,10 +190,40 @@ function Notes() {
     setSelectedMeeting(null);
   };
 
-  const updateMeeting = () => {
-    // call update meeting api endpoint
+  const updateMeeting = async (meetingId, notesUrl) => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `${config.apiBaseUrl}/meetings/${meetingId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ notesUrl }),
+        }
+      );
 
-    setIsModalOpen(false);
+      if (!response.ok) {
+        throw new Error("Failed to update meeting with notes URL");
+      }
+
+      const updatedMeeting = await response.json();
+      setMeetings((prevMeetings) =>
+        prevMeetings.map((meeting) =>
+          meeting.id === updatedMeeting.id ? updatedMeeting : meeting
+        )
+      );
+
+      setIsModalOpen(false);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error updating meeting with notes URL:", error);
+      setError(
+        "Failed to update meeting with notes URL. Please try again later."
+      );
+      setLoading(false);
+    }
   };
 
   return (
@@ -304,7 +334,11 @@ function Notes() {
               value={newNotesLink}
               onChange={(event) => setNewNotesLink(event.target.value)}
             />
-            <Button variant="contained" color="primary" onClick={updateMeeting}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => updateMeeting(selectedMeeting.id, newNotesLink)}
+            >
               Add Notes
             </Button>
           </div>
