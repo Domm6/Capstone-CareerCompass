@@ -2,7 +2,13 @@ import { useState, useContext, useEffect } from "react";
 import { UserContext } from "../../UserContext.jsx";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { CircularProgress, Alert } from "@mui/material";
+import {
+  CircularProgress,
+  Alert,
+  Button,
+  Modal,
+  TextField,
+} from "@mui/material";
 import "./Notes.css";
 import ResponsiveAppBar from "../header/ResponsiveAppBar.jsx";
 import config from "../../../config.js";
@@ -22,10 +28,9 @@ function Notes() {
   const [activeRelatedUser, setActiveRelatedUser] = useState(null);
   const [mentor, setMentor] = useState(location.state?.mentor || null);
   const [error, setError] = useState("");
-
-  // fetch either mentor or mentee info based on user.userRole
-  // fetch mentor or mentee meetings using mentorId or menteeId
-  // filter meetings into groups based on names included
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newNotesLink, setNewNotesLink] = useState("");
+  const [selectedMeeting, setSelectedMeeting] = useState(null);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -175,6 +180,22 @@ function Notes() {
     setActiveRelatedUser(relatedUser);
   };
 
+  const handleOpenModal = (meeting) => {
+    setSelectedMeeting(meeting);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedMeeting(null);
+  };
+
+  const updateMeeting = () => {
+    // call update meeting api endpoint
+
+    setIsModalOpen(false);
+  };
+
   return (
     <>
       <ResponsiveAppBar
@@ -200,7 +221,6 @@ function Notes() {
             </div>
           ))}
         </div>
-
         <div className="notes-right">
           {loading ? (
             <div className="loading-spinner">
@@ -208,6 +228,28 @@ function Notes() {
             </div>
           ) : error ? (
             <Alert severity="error">{error}</Alert>
+          ) : meetings.length === 0 ? (
+            <>
+              <Modal open={isModalOpen} onClose={handleCloseModal}>
+                <div className="modal-content">
+                  <h2>Add New Meeting</h2>
+                  <TextField
+                    label="Meeting Link"
+                    variant="outlined"
+                    fullWidth
+                    // value={newMeetingLink}
+                    onChange={(e) => setNewMeetingLink(e.target.value)}
+                  />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    // onClick={handleAddMeeting}
+                  >
+                    Add Meeting
+                  </Button>
+                </div>
+              </Modal>
+            </>
           ) : (
             meetings.map((meeting) => (
               <div className="meeting-notes" key={meeting.id}>
@@ -236,13 +278,37 @@ function Notes() {
                       title="Meeting Notes"
                     ></iframe>
                   ) : (
-                    <p>No notes available for this meeting.</p>
+                    <>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleOpenModal(meeting)}
+                      >
+                        Add Notes
+                      </Button>
+                      <p>No notes available for this meeting.</p>
+                    </>
                   )}
                 </div>
               </div>
             ))
           )}
         </div>
+        <Modal open={isModalOpen} onClose={handleCloseModal} id="notes-modal">
+          <div className="modal-content">
+            <h2>Add Meeting Notes</h2>
+            <TextField
+              label="Notes URL"
+              variant="outlined"
+              fullWidth
+              value={newNotesLink}
+              onChange={(event) => setNewNotesLink(event.target.value)}
+            />
+            <Button variant="contained" color="primary" onClick={updateMeeting}>
+              Add Notes
+            </Button>
+          </div>
+        </Modal>
       </div>
     </>
   );
