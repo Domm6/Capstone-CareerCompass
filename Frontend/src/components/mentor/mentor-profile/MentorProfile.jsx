@@ -106,6 +106,7 @@ function MentorProfile() {
       : "",
     preferredEndHour: mentor ? mentor.meetingPreferences.preferredEndHour : "",
   });
+
   const fetchMentorData = () => {
     if (user && user.id) {
       setLoading(true);
@@ -244,6 +245,7 @@ function MentorProfile() {
         pages={pages}
         userName={user.name}
         userRole={user.userRole}
+        profileImageUrl={userData.profileImageUrl}
       />
       <Container>
         <Box sx={{ my: 2 }}>
