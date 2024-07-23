@@ -107,62 +107,40 @@ function MentorProfile() {
     preferredEndHour: mentor ? mentor.meetingPreferences.preferredEndHour : "",
   });
 
-  const fetchMentorData = () => {
+  const fetchMentorData = async () => {
     if (user && user.id) {
       setLoading(true);
-
-      fetch(`${config.apiBaseUrl}/users/${user.id}`)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP status ${response.status}`);
-          }
-          return response.json();
-        })
-        .then((userData) => {
-          const profileImageUrlBase64 = userData.profileImageUrl
-            ? `data:image/jpeg;base64,${userData.profileImageUrl}`
-            : PLACEHOLDER;
-          setUserData((prevUserData) => ({
-            ...prevUserData,
-            profileImageUrl: profileImageUrlBase64,
-          }));
-
-          return fetch(`${config.apiBaseUrl}/mentors/${user.id}`);
-        })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP status ${response.status}`);
-          }
-          return response.json();
-        })
-        .then((mentorData) => {
-          setUserData((prevUserData) => ({
-            ...prevUserData,
-            name: user.name,
-            industry: mentorData.mentor.industry,
-            company: mentorData.mentor.company,
-            work_role: mentorData.mentor.work_role,
-            years_experience:
-              experienceMappingReverse[mentorData.mentor.years_experience] ||
-              "",
-            school: mentorData.mentor.school,
-            bio: mentorData.mentor.bio,
-            skills: mentorData.mentor.skills,
-            preferredStartHour:
-              mentorData.mentor.meetingPreferences.preferredStartHour,
-            preferredEndHour:
-              mentorData.mentor.meetingPreferences.preferredEndHour,
-          }));
-          setLoading(false);
-        })
-        .catch((error) => {
-          setErrorMessage(error);
-          setUserData({
-            name: "Failed to load user data",
-            profileImageUrl: PLACEHOLDER,
-          });
-          setLoading(false);
+      try {
+        const response = await fetch(`${config.apiBaseUrl}/mentors/${user.id}`);
+        if (!response.ok) {
+          throw new Error(`HTTP status ${response.status}`);
+        }
+        const mentorData = await response.json();
+        setUserData((prevUserData) => ({
+          ...prevUserData,
+          name: user.name,
+          industry: mentorData.mentor.industry,
+          company: mentorData.mentor.company,
+          work_role: mentorData.mentor.work_role,
+          years_experience:
+            experienceMappingReverse[mentorData.mentor.years_experience] || "",
+          school: mentorData.mentor.school,
+          bio: mentorData.mentor.bio,
+          skills: mentorData.mentor.skills,
+          preferredStartHour:
+            mentorData.mentor.meetingPreferences.preferredStartHour,
+          preferredEndHour:
+            mentorData.mentor.meetingPreferences.preferredEndHour,
+        }));
+        setLoading(false);
+      } catch (error) {
+        setErrorMessage(error);
+        setUserData({
+          name: "Failed to load user data",
+          profileImageUrl: PLACEHOLDER,
         });
+        setLoading(false);
+      }
     }
   };
 
@@ -238,6 +216,8 @@ function MentorProfile() {
     setIsModalOpen(!isModalOpen);
   };
 
+  console.log(user);
+
   return (
     <>
       <ResponsiveAppBar
@@ -245,7 +225,7 @@ function MentorProfile() {
         pages={pages}
         userName={user.name}
         userRole={user.userRole}
-        profileImageUrl={userData.profileImageUrl}
+        profileImageUrl={user.profileImageUrl}
       />
       <Container>
         <Box sx={{ my: 2 }}>
@@ -289,7 +269,7 @@ function MentorProfile() {
               <div className="mp-body">
                 <div className="mp-left">
                   <img
-                    src={userData.profileImageUrl || PLACEHOLDER}
+                    src={user.profileImageUrl || PLACEHOLDER}
                     alt="profile picture"
                   />
                   <Typography variant="h4">{userData.name}</Typography>

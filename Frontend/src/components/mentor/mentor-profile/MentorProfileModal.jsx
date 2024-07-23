@@ -51,7 +51,7 @@ function MentorProfileModal({
   });
   const [schoolSuggestions, setSchoolSuggestions] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
-  const [image, setImage] = useState();
+  const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -120,6 +120,7 @@ function MentorProfileModal({
     });
     setSchoolSuggestions([]);
   };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -152,27 +153,10 @@ function MentorProfileModal({
 
       // Update profile image if a new one is selected
       if (image) {
-        const imageData = new FormData();
-        imageData.append("profileImageUrl", image); // Ensure this matches the field name in multer config
-
-        const imageResponse = await fetch(
-          `${config.apiBaseUrl}/user/${user.id}`,
-          {
-            method: "PUT",
-            body: imageData,
-          }
-        );
-
-        if (!imageResponse.ok) {
-          console.error(
-            "Error updating profile image:",
-            imageResponse.statusText
-          );
-          setLoading(false);
-          return;
-        }
-
-        const updatedUser = await imageResponse.json();
+        const updatedUser = {
+          ...user,
+          profileImageUrl: image, // Use the base64 string directly
+        };
         updateUser(updatedUser); // Update the user context with the new data
       }
 
@@ -185,7 +169,14 @@ function MentorProfileModal({
   };
 
   const handleProfileUpload = (event) => {
-    setImage(event.target.files[0]);
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result); // Set the base64 string as image
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
