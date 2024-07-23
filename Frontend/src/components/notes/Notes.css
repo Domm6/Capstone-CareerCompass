@@ -56,6 +56,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   padding: 20px;
 }
 
@@ -103,4 +104,9 @@ iframe {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+#notes-btn {
+  width: 20%;
+  margin: 10px;
 }

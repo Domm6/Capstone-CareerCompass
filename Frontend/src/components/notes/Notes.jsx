@@ -12,7 +12,6 @@ import {
 import "./Notes.css";
 import ResponsiveAppBar from "../header/ResponsiveAppBar.jsx";
 import config from "../../../config.js";
-import { ContentPasteOffSharp } from "@mui/icons-material";
 
 const pages = ["Dashboard", "Profile"];
 const PLACEHOLDER =
@@ -307,6 +306,7 @@ function Notes() {
           )}
           {visibleMeetingsCount < meetings.length && (
             <Button
+              id="notes-btn"
               variant="contained"
               color="primary"
               onClick={handleLoadMore}
