@@ -13,41 +13,23 @@ import { Meeting } from "../models/index.js";
 import { Review } from "../models/review.js";
 import { ConnectRequest } from "../models/connect-request.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 const router = express.Router();
 const SALT_ROUNDS = 10;
 
-const uploadDirectory = path.join(__dirname, "..", "uploads");
-
-if (!fs.existsSync(uploadDirectory)) {
-  fs.mkdirSync(uploadDirectory);
-}
-
-// Serve static files from the uploads directory
-router.use("/uploads", express.static(uploadDirectory));
-
-// directory to save images
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Directory to save images
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
-
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 // update user profile image
-router.put("/user/:id", upload.single("profileImage"), async (req, res) => {
+router.put("/user/:id", upload.single("profileImageUrl"), async (req, res) => {
   try {
     const userId = req.params.id;
 
     const updatedUser = {};
 
     if (req.file) {
-      updatedUser.profileImageUrl = `/uploads/${req.file.filename}`;
+      updatedUser.profileImageUrl = req.file.buffer;
     }
 
     await User.update(updatedUser, { where: { id: userId } });
@@ -62,6 +44,7 @@ router.put("/user/:id", upload.single("profileImage"), async (req, res) => {
 });
 
 // router to get userinfo
+// router to get userinfo
 router.get("/users/:id", async (req, res) => {
   try {
     const userId = req.params.id;
@@ -72,10 +55,24 @@ router.get("/users/:id", async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    res.json(user);
-  } catch {
+
+    let profileImageUrlBase64 = null;
+    if (user.profileImageUrl) {
+      profileImageUrlBase64 = user.profileImageUrl.toString("base64");
+    }
+
+    const userInfo = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      profileImageUrl: profileImageUrlBase64,
+      userRole: user.userRole,
+    };
+
+    res.json(userInfo);
+  } catch (error) {
     console.error("Error fetching user:", error);
-    res.status(500).json({ message: "Error fetching uer information" });
+    res.status(500).json({ message: "Error fetching user information" });
   }
 });
 
