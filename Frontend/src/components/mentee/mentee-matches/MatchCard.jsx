@@ -9,6 +9,7 @@ import {
   Button,
   Modal,
   Alert,
+  CircularProgress,
 } from "@mui/material";
 
 const PLACEHOLDER =
@@ -28,6 +29,7 @@ function MatchCard({
   const [textReview, setTextReview] = useState("");
   const [message, setMessage] = useState("");
   const [hasReviewed, setHasReviewed] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleRatingChange = (event) => {
     setRating(parseInt(event.target.value));
@@ -46,6 +48,7 @@ function MatchCard({
   const updateRating = async (event) => {
     event.preventDefault();
     try {
+      setLoading(true);
       const response = await fetch(`${config.apiBaseUrl}/reviews`, {
         method: "PUT",
         headers: {
@@ -65,14 +68,17 @@ function MatchCard({
         const errorData = await response.json();
         setMessage(`Error: ${errorData.error}`);
       }
+      setLoading(false);
     } catch (error) {
       setMessage("Server error, please try again later.");
+      setLoading(false);
     }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
+      setLoading(true);
       const response = await fetch(`${config.apiBaseUrl}/reviews`, {
         method: "POST",
         headers: {
@@ -92,8 +98,10 @@ function MatchCard({
         const errorData = await response.json();
         setMessage(`Error: ${errorData.error}`);
       }
+      setLoading(false);
     } catch (error) {
       setMessage("Server error, please try again later.");
+      setLoading(false);
     }
   };
 
@@ -103,55 +111,61 @@ function MatchCard({
 
   return (
     <>
-      <div className="request-container">
-        <div className="request-left">
-          <div className="reqeust-img">
-            <img src={PLACEHOLDER} alt="profile picture" />
-          </div>
-          <div className="request-text">
-            <h3>{mentorName}</h3>
-            <p>{mentorCompany}</p>
-            <p>{mentorWorkRole}</p>
-          </div>
+      {loading ? (
+        <div className="loading-spinner">
+          <CircularProgress />
         </div>
-        <div className="request-right">
-          {message && (
-            <Alert severity="success" onClose={() => setMessage("")}>
-              {message}
-            </Alert>
-          )}
-          <form onSubmit={handleSubmit}>
-            <div className="right-rating">
-              <select value={rating} onChange={handleRatingChange}>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-              </select>
-              <input
-                type="text"
-                value={textReview}
-                onChange={handleTextReviewChange}
-                placeholder="Write your review here"
-              />
-              {hasReviewed ? (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={updateRating}
-                >
-                  Change Rating
-                </Button>
-              ) : (
-                <Button variant="contained" color="primary" type="submit">
-                  Submit Rating
-                </Button>
-              )}
+      ) : (
+        <div className="request-container">
+          <div className="request-left">
+            <div className="reqeust-img">
+              <img src={PLACEHOLDER} alt="profile picture" />
             </div>
-          </form>
+            <div className="request-text">
+              <h3>{mentorName}</h3>
+              <p>{mentorCompany}</p>
+              <p>{mentorWorkRole}</p>
+            </div>
+          </div>
+          <div className="request-right">
+            {message && (
+              <Alert severity="success" onClose={() => setMessage("")}>
+                {message}
+              </Alert>
+            )}
+            <form onSubmit={handleSubmit}>
+              <div className="right-rating">
+                <select value={rating} onChange={handleRatingChange}>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+                <input
+                  type="text"
+                  value={textReview}
+                  onChange={handleTextReviewChange}
+                  placeholder="Write your review here"
+                />
+                {hasReviewed ? (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={updateRating}
+                  >
+                    Change Rating
+                  </Button>
+                ) : (
+                  <Button variant="contained" color="primary" type="submit">
+                    Submit Rating
+                  </Button>
+                )}
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 }

@@ -13,7 +13,7 @@
   justify-content: space-around;
   width: 100%;
   max-width: 200px;
-  height: auto;
+  height: 400px;
   position: relative;
   overflow: hidden;
 }
@@ -38,8 +38,7 @@
   width: 100%;
   height: 100%;
   color: white;
-  padding: 20px;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.7);
   border-radius: 8px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -48,10 +47,44 @@
   box-sizing: border-box;
 }
 
+.profile-title {
+  display: flex;
+  justify-content: center;
+}
+
+.profile-body {
+  margin: 10px;
+  padding: 10px;
+}
+
+.bio {
+  max-height: 2.5em;
+  overflow: hidden;
+  position: relative;
+}
+
+.bio::after {
+  content: "...";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 0 10px;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.bio:hover {
+  max-height: none;
+  overflow: auto;
+}
+
+.bio:hover::after {
+  content: "";
+}
+
 .mc-container:hover .mc-profile {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  overflow: auto;
 }
 
 .mc-container img {

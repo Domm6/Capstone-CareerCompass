@@ -27,7 +27,7 @@ export const Mentor = sequelize.define(
       allowNull: true,
     },
     bio: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true,
     },
     company: {

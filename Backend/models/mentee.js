@@ -15,7 +15,7 @@ export const Mentee = sequelize.define(
       unique: true,
     },
     bio: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     school: {

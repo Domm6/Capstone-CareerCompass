@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { UserContext } from "./UserContext";
 import { useNavigate, Link } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
+import { CircularProgress } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import "./App.css";
 import config from "../config";
@@ -24,6 +25,7 @@ function App() {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
   });
+  const [loading, setLoading] = useState(false);
 
   const updateUser = (newUser) => {
     setUser(newUser);
@@ -36,6 +38,7 @@ function App() {
 
   const handleSignout = async () => {
     try {
+      setLoading(false);
       const response = await fetch(`${config.apiBaseUrl}/users/signout`, {
         method: "POST",
         credentials: "include", // This ensures the session cookie is sent
@@ -49,8 +52,10 @@ function App() {
         const errorData = await response.json();
         alert(`Error: ${errorData.error}`);
       }
+      setLoading(false);
     } catch (error) {
       console.error("Sign out error:", error);
+      setLoading(false);
     }
   };
 
@@ -59,61 +64,67 @@ function App() {
       <CssBaseline />
       <div className="App">
         <UserContext.Provider value={{ user, updateUser, handleSignout }}>
-          <Router>
-            <Routes>
-              <Route path="/" element={user ? <HomePage /> : <LoginPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignUpPage />} />
-              <Route
-                path="/mentor-profile"
-                element={
-                  <ProtectedRoute>
-                    <MentorProfile />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/mentee-profile"
-                element={
-                  <ProtectedRoute>
-                    <MenteeProfile />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/mentor-dashboard"
-                element={
-                  <ProtectedRoute>
-                    <MentorDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/mentee-dashboard"
-                element={
-                  <ProtectedRoute>
-                    <MenteeDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/matching"
-                element={
-                  <ProtectedRoute>
-                    <Match />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/public-mentor-profile"
-                element={
-                  <ProtectedRoute>
-                    <MentorProfile />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-          </Router>
+          {loading ? (
+            <div className="loading-container">
+              <CircularProgress />
+            </div>
+          ) : (
+            <Router>
+              <Routes>
+                <Route path="/" element={user ? <HomePage /> : <LoginPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignUpPage />} />
+                <Route
+                  path="/mentor-profile"
+                  element={
+                    <ProtectedRoute>
+                      <MentorProfile />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/mentee-profile"
+                  element={
+                    <ProtectedRoute>
+                      <MenteeProfile />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/mentor-dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <MentorDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/mentee-dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <MenteeDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/matching"
+                  element={
+                    <ProtectedRoute>
+                      <Match />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/public-mentor-profile"
+                  element={
+                    <ProtectedRoute>
+                      <MentorProfile />
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </Router>
+          )}
         </UserContext.Provider>
       </div>
     </ThemeProvider>

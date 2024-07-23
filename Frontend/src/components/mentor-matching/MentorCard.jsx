@@ -2,12 +2,22 @@ import { useState } from "react";
 import { UserContext } from "../../UserContext.jsx";
 import "./MentorCard.css";
 import config from "../../../config.js";
+import moment from "moment";
 
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
 const STAR_ICON =
   "https://cdn.iconscout.com/icon/free/png-256/free-star-bookmark-favorite-shape-rank-16-28621.png";
 const API_KEY = import.meta.env.VITE_LOGO_API;
+
+// mentor map
+const experienceMappingReverse = {
+  1: "0-2",
+  2: "2-5",
+  3: "5-10",
+  4: "10+",
+  5: "20+",
+};
 
 function MentorCard({ mentor, onCardClick, score }) {
   const { User: user } = mentor; // Access user data from mentor
@@ -49,8 +59,40 @@ function MentorCard({ mentor, onCardClick, score }) {
           </div>
         </div>
         <div className="mc-profile">
-          <h3>About {user.name}:</h3>
-          <p>{mentor.bio}</p>
+          <div className="profile-title">
+            <h3>About {user.name}:</h3>
+          </div>
+          <div className="profile-body">
+            <div className="bio">
+              <p>
+                <strong>Bio:</strong>{" "}
+                {mentor.bio ? mentor.bio : "No bio available"}
+              </p>
+            </div>
+            <p>
+              <strong>Years of Experience:</strong>{" "}
+              {experienceMappingReverse[mentor.years_experience]}
+            </p>
+            <p>
+              <strong>Industry:</strong>{" "}
+              {mentor.industry ? mentor.industry : "No industry available"}
+            </p>
+            <p>
+              <strong>School:</strong> {mentor.school}
+            </p>
+            <p>
+              <strong>Availability:</strong>{" "}
+              {moment(
+                mentor.meetingPreferences.preferredStartHour,
+                "HH:mm"
+              ).format("h:mm A")}{" "}
+              -{" "}
+              {moment(
+                mentor.meetingPreferences.preferredEndHour,
+                "HH:mm"
+              ).format("h:mm A")}
+            </p>
+          </div>
         </div>
         <div className="mc-socre">
           {score && <p>{score.toFixed(2)}% Match</p>}

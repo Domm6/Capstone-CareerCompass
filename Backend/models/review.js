@@ -22,7 +22,7 @@ export const Review = sequelize.define(
       allowNull: false,
     },
     textReview: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true,
     },
   },

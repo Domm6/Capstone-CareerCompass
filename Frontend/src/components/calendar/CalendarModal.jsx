@@ -14,6 +14,7 @@ import {
   FormControlLabel,
   FormGroup,
   FormControl,
+  CircularProgress,
 } from "@mui/material";
 import moment from "moment-timezone";
 import config from "../../../config.js";
@@ -29,6 +30,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
   const [errorMessage, setErrorMessage] = useState("");
   const [userData, setUserData] = useState("");
   const [mentorsMeetings, setMentorsMeetings] = useState([]);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const fetchUserData = async (user, isMentor) => {
@@ -36,11 +38,14 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
       ? `${config.apiBaseUrl}/mentors/${user.id}`
       : `${config.apiBaseUrl}/mentees/${user.id}`;
 
+    setLoading(true);
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error("Failed to fetch user data");
+      setLoading(false);
     }
     const data = await response.json();
+    setLoading(false);
     return isMentor(user) ? data.mentor : data.mentee;
   };
 
@@ -49,15 +54,19 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
       ? `${config.apiBaseUrl}/connect-requests/${userId}`
       : `${config.apiBaseUrl}/connect-requests/mentee/${userId}`;
 
+    setLoading(true);
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error("Failed to fetch requests");
+      setLoading(false);
     }
     const data = await response.json();
+    setLoading(false);
     return data.requests.filter((request) => request.status === "accepted");
   };
 
   const fetchMentorMeetings = async (mentorId) => {
+    setLoading(true);
     const response = await fetch(
       `${config.apiBaseUrl}/meetings/mentor/${mentorId}`
     );
@@ -65,10 +74,12 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
       throw new Error("Failed to fetch meetings");
     }
     const data = await response.json();
+    setLoading(false);
     return data;
   };
 
   const fetchMenteeMeetings = async (menteeId) => {
+    setLoading(true);
     const response = await fetch(
       `${config.apiBaseUrl}/meetings/mentee/${menteeId}`
     );
@@ -76,10 +87,12 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
       throw new Error("Failed to fetch meetings");
     }
     const data = await response.json();
+    setLoading(false);
     return data;
   };
 
   const fetchMenteeData = async (menteeId) => {
+    setLoading(true);
     const response = await fetch(
       `${config.apiBaseUrl}/mentees/menteeId/${menteeId}`
     );
@@ -87,6 +100,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
       throw new Error("Failed to fetch meetings");
     }
     const data = await response.json();
+    setLoading(false);
     return data.mentee;
   };
 
@@ -99,6 +113,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
   useEffect(() => {
     const initialize = async () => {
       try {
+        setLoading(true);
         if (user && user.id) {
           const fetchedUserData = await fetchUserData(user, isMentor);
           setUserData(fetchedUserData);
@@ -116,8 +131,10 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
             setMentorsMeetings(meetings);
           }
         }
+        setLoading(false);
       } catch (error) {
         setErrorMessage(error.message);
+        setLoading(false);
       }
     };
 
@@ -153,6 +170,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
       .format();
 
     try {
+      setLoading(true);
       const response = await fetch(`${config.apiBaseUrl}/meetings`, {
         method: "POST",
         headers: {
@@ -169,12 +187,15 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
       if (response.ok) {
         onMeetingScheduled();
         toggleModal();
+        setLoading(false);
       } else {
         const errorData = await response.json();
         alert(`Error: ${errorData.error}`);
+        setLoading(false);
       }
     } catch (error) {
       setErrorMessage(error.message);
+      setLoading(false);
     }
   };
 
@@ -426,90 +447,104 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
         <Typography variant="h6" gutterBottom>
           Schedule Meeting
         </Typography>
-        <div className="calendar-modal-container">
-          <form className="calendar-form">
-            <FormControl fullWidth margin="normal">
-              <Typography>
-                Select {isMentor(user) ? "Mentees" : "Mentor"}:
-              </Typography>
-              <FormGroup>
-                {menteesOrMentors.map((person) => (
-                  <FormControlLabel
-                    key={person.id}
-                    control={
-                      <Checkbox
-                        value={person.id}
-                        checked={selectedUsers.includes(person.id)}
-                        onChange={handleCheckboxChange}
-                      />
-                    }
-                    label={person.name}
-                  />
-                ))}
-              </FormGroup>
-            </FormControl>
-            <FormControl fullWidth margin="normal">
-              <TextField
-                label="Date"
-                type="date"
-                value={scheduledDate}
-                onChange={(event) => setScheduledDate(event.target.value)}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                required
-              />
-            </FormControl>
-            <FormControl fullWidth margin="normal">
-              <TextField
-                label="Time"
-                type="time"
-                value={scheduledTime}
-                onChange={(event) => setScheduledTime(event.target.value)}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                required
-              />
-            </FormControl>
-            <FormControl fullWidth margin="normal">
-              <TextField
-                label="Topic"
-                value={topic}
-                onChange={(event) => setTopic(event.target.value)}
-              />
-            </FormControl>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              onClick={() => handleScheduleMeeting(scheduledTime)}
-            >
-              Schedule Meeting
-            </Button>
-          </form>
-          <Box className="calendar-suggested-times" mt={2}>
-            <Typography>Suggested Times</Typography>
-            {suggestedTimes.length > 0 ? (
-              suggestedTimes.map((timeSlot, index) => (
-                <Box key={index} mt={1}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleScheduleMeeting(timeSlot.start)}
-                  >
-                    {moment(timeSlot.start, "HH:mm").format("h:mm A")} -{" "}
-                    {moment(timeSlot.end, "HH:mm").format("h:mm A")}
-                  </Button>
-                </Box>
-              ))
-            ) : (
-              <Typography>
-                No suggested times available. Please select a mentee and a date.
-              </Typography>
-            )}
+        {loading ? (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100vh",
+            }}
+          >
+            <CircularProgress />
           </Box>
-        </div>
+        ) : (
+          <div className="calendar-modal-container">
+            <form className="calendar-form">
+              <FormControl fullWidth margin="normal">
+                <Typography>
+                  Select {isMentor(user) ? "Mentees" : "Mentor"}:
+                </Typography>
+                <FormGroup>
+                  {menteesOrMentors.map((person) => (
+                    <FormControlLabel
+                      key={person.id}
+                      control={
+                        <Checkbox
+                          value={person.id}
+                          checked={selectedUsers.includes(person.id)}
+                          onChange={handleCheckboxChange}
+                        />
+                      }
+                      label={person.name}
+                    />
+                  ))}
+                </FormGroup>
+              </FormControl>
+              <FormControl fullWidth margin="normal">
+                <TextField
+                  label="Date"
+                  type="date"
+                  value={scheduledDate}
+                  onChange={(event) => setScheduledDate(event.target.value)}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  required
+                />
+              </FormControl>
+              <FormControl fullWidth margin="normal">
+                <TextField
+                  label="Time"
+                  type="time"
+                  value={scheduledTime}
+                  onChange={(event) => setScheduledTime(event.target.value)}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  required
+                />
+              </FormControl>
+              <FormControl fullWidth margin="normal">
+                <TextField
+                  label="Topic"
+                  value={topic}
+                  onChange={(event) => setTopic(event.target.value)}
+                />
+              </FormControl>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                onClick={() => handleScheduleMeeting(scheduledTime)}
+              >
+                Schedule Meeting
+              </Button>
+            </form>
+            <Box className="calendar-suggested-times" mt={2}>
+              <Typography>Suggested Times</Typography>
+              {suggestedTimes.length > 0 ? (
+                suggestedTimes.map((timeSlot, index) => (
+                  <Box key={index} mt={1}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => handleScheduleMeeting(timeSlot.start)}
+                    >
+                      {moment(timeSlot.start, "HH:mm").format("h:mm A")} -{" "}
+                      {moment(timeSlot.end, "HH:mm").format("h:mm A")}
+                    </Button>
+                  </Box>
+                ))
+              ) : (
+                <Typography>
+                  No suggested times available. Please select a mentee and a
+                  date.
+                </Typography>
+              )}
+            </Box>
+          </div>
+        )}
       </Box>
     </Modal>
   );
