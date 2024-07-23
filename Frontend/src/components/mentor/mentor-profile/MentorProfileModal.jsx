@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../UserContext.jsx";
 import axios from "axios";
 import config from "../../../../config.js";
-import ImageUpload from "react-image-easy-upload";
 import {
   Box,
   Button,
@@ -79,7 +78,6 @@ function MentorProfileModal({
 
   const searchSchools = async (query) => {
     try {
-      setLoading(true);
       const response = await axios.get(
         `https://api.data.gov/ed/collegescorecard/v1/schools`,
         {
@@ -96,10 +94,8 @@ function MentorProfileModal({
       } else {
         setSchoolSuggestions([]);
       }
-      setLoading(false);
     } catch (error) {
       setErrorMessage(error);
-      setLoading(false);
     }
   };
 
