@@ -86,7 +86,12 @@ function Notes() {
           return false;
         });
 
-        setMeetings(filteredMeetings);
+        // Sort meetings by date, most recent first
+        const sortedMeetings = filteredMeetings.sort(
+          (a, b) => new Date(b.scheduledTime) - new Date(a.scheduledTime)
+        );
+
+        setMeetings(sortedMeetings);
       } catch (err) {
         console.error("Error fetching meetings:", err);
         setError("Failed to fetch meetings. Please try again later.");
@@ -148,12 +153,6 @@ function Notes() {
   const handleRelatedUserClick = (relatedUser) => {
     setActiveRelatedUser(relatedUser);
   };
-
-  //   console.log(relatedUsers);
-  //   console.log(meetings);
-  //   console.log(activeRelatedUser);
-  //   console.log(profileData);
-  console.log(meetings);
 
   return (
     <>
