@@ -153,14 +153,31 @@ function MentorProfileModal({
 
       // Update profile image if a new one is selected
       if (image) {
-        const updatedUser = {
-          ...user,
-          profileImageUrl: image, // Use the base64 string directly
-        };
-        updateUser(updatedUser); // Update the user context with the new data
+        const formData = new FormData();
+        formData.append("profileImageUrl", image);
+
+        const imageResponse = await fetch(
+          `${config.apiBaseUrl}/user/${user.id}`,
+          {
+            method: "PUT",
+            body: formData,
+          }
+        );
+
+        if (!imageResponse.ok) {
+          console.error(
+            "Error updating profile image:",
+            imageResponse.statusText
+          );
+          setLoading(false);
+          return;
+        }
+
+        const updatedUser = await imageResponse.json();
+        updateUser(updatedUser);
       }
 
-      closeModal(); // Close the modal if all updates are successful
+      closeModal();
     } catch (error) {
       console.error("Error updating mentor profile:", error);
     } finally {
