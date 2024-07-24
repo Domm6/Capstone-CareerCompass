@@ -77,7 +77,6 @@ function MenteeProfileModal({
   // serach for schools
   const searchSchools = async (query) => {
     try {
-      setLoading(true);
       const response = await axios.get(
         `https://api.data.gov/ed/collegescorecard/v1/schools`,
         {
@@ -94,10 +93,8 @@ function MenteeProfileModal({
       } else {
         setSchoolSuggestions([]);
       }
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching school suggestions:", error);
-      setLoading(false);
     }
   };
 

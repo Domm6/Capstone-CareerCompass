@@ -39,7 +39,7 @@ export const Mentee = sequelize.define(
       allowNull: false,
     },
     skills: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     meetingPreferences: {
