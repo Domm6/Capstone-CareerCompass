@@ -16,6 +16,7 @@ import {
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
 const API_KEY = import.meta.env.VITE_SCHOOL_API;
+const UPLOAD_IMAGE_API_KEY = import.meta.env.VITE_PROFILE_PICTURE_API;
 
 function MenteeProfileModal({
   handleCheckboxChange,
@@ -108,7 +109,6 @@ function MenteeProfileModal({
     setSelectedSchool(school);
     setSchoolSuggestions([]);
   };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -123,33 +123,96 @@ function MenteeProfileModal({
 
     try {
       setLoading(true);
-      const response = await fetch(`${config.apiBaseUrl}/mentees/${user.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(preparedData),
-      });
 
-      if (!response.ok) {
-        console.error("Error updating mentee profile:", response.statusText);
+      let imageUrl = null;
+
+      // Upload profile image to imgbb if a new one is selected
+      if (image) {
+        const formData = new FormData();
+        formData.append("image", image);
+
+        try {
+          const imageResponse = await axios.post(
+            `https://api.imgbb.com/1/upload?key=${UPLOAD_IMAGE_API_KEY}`,
+            formData
+          );
+
+          if (imageResponse.status !== 200) {
+            console.error(
+              "Error uploading profile image:",
+              imageResponse.statusText
+            );
+            setLoading(false);
+            return;
+          }
+
+          console.log(imageResponse);
+
+          imageUrl = imageResponse.data.data.display_url;
+          preparedData.profileImageUrl = imageUrl;
+        } catch (uploadError) {
+          console.error("Error uploading profile image:", uploadError);
+          alert(
+            `Image upload failed: ${uploadError.response.data.error.message}`
+          );
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Update mentee profile details
+      const menteeResponse = await fetch(
+        `${config.apiBaseUrl}/mentees/${user.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(preparedData),
+        }
+      );
+
+      if (!menteeResponse.ok) {
+        console.error(
+          "Error updating mentee profile:",
+          menteeResponse.statusText
+        );
         setLoading(false);
         return;
       }
 
-      // Update profile image if a new one is selected
-      if (image) {
-        const updatedUser = {
-          ...user,
-          profileImageUrl: image, // Use the base64 string directly
-        };
-        updateUser(updatedUser); // Update the user context with the new data
-      }
+      const updatedUser = await menteeResponse.json();
+      updateUser(updatedUser);
 
-      setLoading(false);
-      closeModal(); // Close the modal if all updates are successful
+      // If image was uploaded, update the user profile with the image URL
+      if (imageUrl) {
+        const userResponse = await fetch(
+          `${config.apiBaseUrl}/users/${user.id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ profileImageUrl: imageUrl }),
+          }
+        );
+
+        if (!userResponse.ok) {
+          console.error(
+            "Error updating user profile:",
+            userResponse.statusText
+          );
+          setLoading(false);
+          return;
+        }
+
+        const updatedUserProfile = await userResponse.json();
+        updateUser(updatedUserProfile);
+      }
+      closeModal();
     } catch (error) {
       console.error("Error updating mentee profile:", error);
+    } finally {
       setLoading(false);
     }
   };
@@ -157,11 +220,7 @@ function MenteeProfileModal({
   const handleProfileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result); // Set the base64 string as image
-      };
-      reader.readAsDataURL(file);
+      setImage(file);
     }
   };
 

@@ -107,8 +107,6 @@ function MentorProfile() {
     preferredEndHour: mentor ? mentor.meetingPreferences.preferredEndHour : "",
   });
 
-  console.log(mentor.User.profileImageUrl);
-
   const fetchMentorData = async () => {
     if (user && user.id) {
       setLoading(true);
@@ -176,8 +174,6 @@ function MentorProfile() {
       setLoading(false);
     }
   };
-
-  // console.log(user);
 
   useEffect(() => {
     if (!mentor) {

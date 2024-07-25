@@ -92,6 +92,8 @@ function MenteeMatches() {
     );
   };
 
+  console.log(requests);
+
   return (
     <>
       {loading ? (
