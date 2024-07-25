@@ -314,7 +314,18 @@ function MenteeProfileModal({
             />
           </FormControl>
           <Box>
-            <input type="file" onChange={handleProfileUpload} />
+            <input
+              accept="image/*"
+              style={{ display: "none" }}
+              id="profile-upload"
+              type="file"
+              onChange={handleProfileUpload}
+            />
+            <label htmlFor="profile-upload">
+              <Button variant="contained" color="primary" component="span">
+                Upload Profile Picture
+              </Button>
+            </label>
           </Box>
           <FormControl fullWidth margin="normal">
             <Box>

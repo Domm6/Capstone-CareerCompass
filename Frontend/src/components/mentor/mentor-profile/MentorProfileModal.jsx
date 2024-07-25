@@ -348,8 +348,18 @@ function MentorProfileModal({
             margin="normal"
           />
           <Box>
-            <input type="file" onChange={handleProfileUpload} />
-            <Button type="submit" variant="contained" color="primary"></Button>
+            <input
+              accept="image/*"
+              style={{ display: "none" }}
+              id="profile-upload"
+              type="file"
+              onChange={handleProfileUpload}
+            />
+            <label htmlFor="profile-upload">
+              <Button variant="contained" color="primary" component="span">
+                Upload Profile Picture
+              </Button>
+            </label>
           </Box>
           <Box className="form-skills">
             <Button
