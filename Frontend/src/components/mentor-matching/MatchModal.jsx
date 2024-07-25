@@ -31,8 +31,6 @@ function MatchModal({ mentor, closeModal, mentee }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  console.log(mentor.User);
-
   const handleSubmit = async (event) => {
     event.preventDefault();
 

@@ -148,8 +148,6 @@ function MenteeProfileModal({
             return;
           }
 
-          console.log(imageResponse);
-
           imageUrl = imageResponse.data.data.display_url;
           preparedData.profileImageUrl = imageUrl;
         } catch (uploadError) {
