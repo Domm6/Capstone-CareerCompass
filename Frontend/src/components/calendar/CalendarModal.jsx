@@ -365,10 +365,6 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
 
     // Subtract mentee meetings from mentor's free slots and break mentors slots into smaller slots
     const subtractMeetings = (freeSlots, meetings, meetingCount) => {
-      console.log("subtractMeetings called");
-      console.log("Free slots:", freeSlots);
-      console.log("Meetings:", meetings);
-
       // result slots
       const resultSlots = [];
 
@@ -379,29 +375,23 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
         const meetingTimeKey = `${meetingStart.format(
           "HH:mm"
         )}-${meetingEnd.format("HH:mm")}`;
-        console.log("Adding meeting time to count:", meetingTimeKey);
         meetingCount[meetingTimeKey] = (meetingCount[meetingTimeKey] || 0) + 1;
-        console.log("Updated meetingCount:", meetingCount);
       });
 
       // go through each free slot for the mentor
       freeSlots.forEach((slot) => {
         let currentStart = slot.start;
-        console.log("Processing slot:", slot);
 
         // go through the mentee's meeting again to adjust the free slots
         meetings.forEach((meeting) => {
           const meetingStart = moment(meeting.scheduledTime);
           const meetingEnd = moment(meeting.endTime);
-          console.log("Processing meeting:", meeting);
 
           // check if the meeting overlaps with the current free slot
           if (
             meetingStart.isBefore(slot.end) &&
             meetingEnd.isAfter(slot.start)
           ) {
-            console.log("Meeting overlaps with slot");
-
             // check if there is a portion of the free slot before the meeting starts, and add it to the result
             if (currentStart.isBefore(meetingStart)) {
               resultSlots.push({
@@ -430,9 +420,6 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
     let finalFreeSlots = mentorFreeSlots;
     const meetingCount = {};
 
-    console.log("Mentee 1 Meetings", menteesMeetings[selectedMentees[0]]);
-    console.log("Mentee 2 Meetings", menteesMeetings[selectedMentees[1]]);
-
     selectedMentees.forEach((menteeId) => {
       finalFreeSlots = subtractMeetings(
         finalFreeSlots,
@@ -440,9 +427,6 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
         meetingCount
       );
     });
-
-    // Print the meetingCount dictionary
-    console.log("Meeting Count Dictionary:", meetingCount);
 
     // Function to break slots into 30 min intervals
     const breakIntoIntervals = (slot) => {
@@ -607,7 +591,9 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
                 )}
               </Box>
               <Box className="calendar-alternate-times" mt={2}>
-                <Typography>Alternate Times</Typography>
+                <Typography>
+                  Alternate Times (Times with the least conflicting meetings)
+                </Typography>
                 {alternateTimes.length > 0 ? (
                   alternateTimes.map((timeSlot, index) => (
                     <Box key={index} mt={1}>
