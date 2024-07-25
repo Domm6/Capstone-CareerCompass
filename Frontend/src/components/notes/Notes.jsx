@@ -236,6 +236,7 @@ function Notes() {
         pages={pages}
         userName={user.name}
         userRole={user.userRole}
+        profileImageUrl={user.profileImageUrl}
       />
       <div className="notes-title">
         <h1>Meeting Notes</h1>

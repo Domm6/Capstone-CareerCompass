@@ -6,13 +6,8 @@ import MentorCard from "./MentorCard.jsx";
 import MatchModal from "./MatchModal.jsx";
 import config from "../../../config.js";
 import ResponsiveAppBar from "../header/ResponsiveAppBar.jsx";
-import {
-  Container,
-  Box,
-  Typography,
-  Button,
-  CircularProgress,
-} from "@mui/material";
+import ApiService from "../../../ApiService.js";
+import { CircularProgress } from "@mui/material";
 
 const TechRolesEnum = Object.freeze({
   SOFTWARE_ENGINEER: "Software Engineer",
@@ -104,14 +99,14 @@ const industries = Object.values(IndustriesEnum);
 
 const NORMALIZE = 100;
 const MAX_RATING = 5;
-const RATING_WEIGHT = 0.3;
-const EXPERIENCE_WEIGHT = 0.2;
+const RATING_WEIGHT = 0.25;
+const EXPERIENCE_WEIGHT = 0.1;
 const MATCHING_SKILLS_WEIGHT = 0.2;
-const NON_MATCHING_SKILLS_WEIGHT = 0.1;
-const SCHOOL_MATCH_WEIGHT = 0.02;
-const SCHOOL_STATE_MATCH_WEIGHT = 0.03;
-const SCHOOL_CITY_MATCH_WEIGHT = 0.05;
-const CAREER_GOALS_MATCH_WEIGHT = 0.2;
+const NON_MATCHING_SKILLS_WEIGHT = 0.05;
+const SCHOOL_MATCH_WEIGHT = 0.1;
+const SCHOOL_STATE_MATCH_WEIGHT = 0.1;
+const SCHOOL_CITY_MATCH_WEIGHT = 0.1;
+const CAREER_GOALS_MATCH_WEIGHT = 0.1;
 
 const normalizeRating = (rating) => {
   return (rating / MAX_RATING) * NORMALIZE * RATING_WEIGHT;
@@ -230,6 +225,7 @@ function Match() {
   const [topMentors, setTopMentors] = useState([]);
   const [matchedMentorIds, setMatchedMentorIds] = useState([]);
   const [loading, setLoading] = useState(false);
+  const apiService = new ApiService();
   const pages = ["Dashboard", "Profile"];
 
   const handleCardClick = (mentor) => {
@@ -302,26 +298,12 @@ function Match() {
       });
   };
 
-  const fetchMenteeData = () => {
+  const fetchMenteeData = async () => {
     setLoading(true);
-    fetch(`${config.apiBaseUrl}/mentees/${user.id}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(
-            "Failed to fetch mentee data. Please try again later."
-          );
-        }
-        setLoading(false);
-        return response.json();
-      })
-      .then((data) => {
-        setMentee(data.mentee);
-        fetchMatchedMentors(data.mentee.id);
-      })
-      .catch((error) => {
-        setErrorMessage(error.message);
-        setLoading(false);
-      });
+    const data = await apiService.fetchMenteeData(user.id);
+    setMentee(data);
+    fetchMatchedMentors(data.id);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -355,7 +337,12 @@ function Match() {
 
   return (
     <>
-      <ResponsiveAppBar pages={pages} userName={user.name} userRole="mentee" />
+      <ResponsiveAppBar
+        pages={pages}
+        userName={user.name}
+        userRole="mentee"
+        profileImageUrl={user.profileImageUrl}
+      />
       <div className="match-top">
         <h1>Choose a Mentor</h1>
       </div>

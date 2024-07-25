@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../UserContext.jsx";
 import axios from "axios";
 import config from "../../../../config.js";
-import ImageUpload from "react-image-easy-upload";
 import {
   Box,
   Button,
@@ -17,6 +16,7 @@ import {
 } from "@mui/material";
 
 const API_KEY = import.meta.env.VITE_SCHOOL_API;
+const UPLOAD_IMAGE_API_KEY = import.meta.env.VITE_PROFILE_PICTURE_API;
 
 const experienceMappingReverse = {
   1: "0-2",
@@ -52,7 +52,7 @@ function MentorProfileModal({
   });
   const [schoolSuggestions, setSchoolSuggestions] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
-  const [image, setImage] = useState();
+  const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -79,7 +79,6 @@ function MentorProfileModal({
 
   const searchSchools = async (query) => {
     try {
-      setLoading(true);
       const response = await axios.get(
         `https://api.data.gov/ed/collegescorecard/v1/schools`,
         {
@@ -96,10 +95,8 @@ function MentorProfileModal({
       } else {
         setSchoolSuggestions([]);
       }
-      setLoading(false);
     } catch (error) {
       setErrorMessage(error);
-      setLoading(false);
     }
   };
 
@@ -124,6 +121,7 @@ function MentorProfileModal({
     });
     setSchoolSuggestions([]);
   };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -139,48 +137,90 @@ function MentorProfileModal({
     try {
       setLoading(true);
 
-      // Update profile details
-      const response = await fetch(`${config.apiBaseUrl}/mentors/${user.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(preparedData),
-      });
+      let imageUrl = null;
 
-      if (!response.ok) {
-        console.error("Error updating mentor profile:", response.statusText);
+      // Upload profile image to imgbb if a new one is selected
+      if (image) {
+        const formData = new FormData();
+        formData.append("image", image);
+
+        try {
+          const imageResponse = await axios.post(
+            `https://api.imgbb.com/1/upload?key=${UPLOAD_IMAGE_API_KEY}`,
+            formData
+          );
+
+          if (imageResponse.status !== 200) {
+            console.error(
+              "Error uploading profile image:",
+              imageResponse.statusText
+            );
+            setLoading(false);
+            return;
+          }
+
+          imageUrl = imageResponse.data.data.display_url;
+          preparedData.profileImageUrl = imageUrl;
+        } catch (uploadError) {
+          console.error("Error uploading profile image:", uploadError);
+          alert(
+            `Image upload failed: ${uploadError.response.data.error.message}`
+          );
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Update mentor profile details
+      const mentorResponse = await fetch(
+        `${config.apiBaseUrl}/mentors/${user.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(preparedData),
+        }
+      );
+
+      if (!mentorResponse.ok) {
+        console.error(
+          "Error updating mentor profile:",
+          mentorResponse.statusText
+        );
         setLoading(false);
         return;
       }
 
-      // Update profile image if a new one is selected
-      if (image) {
-        const imageData = new FormData();
-        imageData.append("profileImageUrl", image); // Ensure this matches the field name in multer config
+      const updatedUser = await mentorResponse.json();
+      updateUser(updatedUser);
 
-        const imageResponse = await fetch(
-          `${config.apiBaseUrl}/user/${user.id}`,
+      // If image was uploaded, update the user profile with the image URL
+      if (imageUrl) {
+        const userResponse = await fetch(
+          `${config.apiBaseUrl}/users/${user.id}`,
           {
             method: "PUT",
-            body: imageData,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ profileImageUrl: imageUrl }),
           }
         );
 
-        if (!imageResponse.ok) {
+        if (!userResponse.ok) {
           console.error(
-            "Error updating profile image:",
-            imageResponse.statusText
+            "Error updating user profile:",
+            userResponse.statusText
           );
           setLoading(false);
           return;
         }
 
-        const updatedUser = await imageResponse.json();
-        updateUser(updatedUser); // Update the user context with the new data
+        const updatedUserProfile = await userResponse.json();
+        updateUser(updatedUserProfile);
       }
-
-      closeModal(); // Close the modal if all updates are successful
+      closeModal();
     } catch (error) {
       console.error("Error updating mentor profile:", error);
     } finally {
@@ -189,7 +229,10 @@ function MentorProfileModal({
   };
 
   const handleProfileUpload = (event) => {
-    setImage(event.target.files[0]);
+    const file = event.target.files[0];
+    if (file) {
+      setImage(file);
+    }
   };
 
   return (
@@ -303,8 +346,18 @@ function MentorProfileModal({
             margin="normal"
           />
           <Box>
-            <input type="file" onChange={handleProfileUpload} />
-            <Button type="submit"></Button>
+            <input
+              accept="image/*"
+              style={{ display: "none" }}
+              id="profile-upload"
+              type="file"
+              onChange={handleProfileUpload}
+            />
+            <label htmlFor="profile-upload">
+              <Button variant="contained" color="primary" component="span">
+                Upload Profile Picture
+              </Button>
+            </label>
           </Box>
           <Box className="form-skills">
             <Button

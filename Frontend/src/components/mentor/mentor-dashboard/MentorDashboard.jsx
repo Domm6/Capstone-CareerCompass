@@ -16,12 +16,15 @@ function MentorDashboard() {
 
   return (
     <>
-      <ResponsiveAppBar pages={pages} userName={user.name} userRole="mentor" />{" "}
+      <ResponsiveAppBar
+        pages={pages}
+        userName={user.name}
+        userRole="mentor"
+        profileImageUrl={user.profileImageUrl}
+      />{" "}
       <Container maxWidth="xl" className="md-container">
         <Box className="md-top" sx={{ my: 4 }}>
-          <Typography variant="h3" component="h1" className="md-top-title">
-            Mentor Dashboard
-          </Typography>
+          <h1 className="md-top-title">Mentor Dashboard</h1>
         </Box>
         <Box className="md-nav" sx={{ mb: 4 }}>
           <Button

@@ -20,24 +20,25 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 // update user profile image
-router.put("/user/:id", upload.single("profileImageUrl"), async (req, res) => {
+router.put("/users/:id", async (req, res) => {
   try {
     const userId = req.params.id;
+    const { profileImageUrl } = req.body;
 
-    const updatedUser = {};
+    const user = await User.findByPk(userId);
 
-    if (req.file) {
-      updatedUser.profileImageUrl = req.file.buffer;
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
-    await User.update(updatedUser, { where: { id: userId } });
-
-    const user = await User.findByPk(userId); // Fetch updated user to return
+    // Update user's profile image URL
+    user.profileImageUrl = profileImageUrl;
+    await user.save();
 
     res.json(user);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Server error" });
+    console.error("Error updating user:", error);
+    res.status(500).json({ message: "Error updating user information" });
   }
 });
 
@@ -62,7 +63,7 @@ router.get("/users/:id", async (req, res) => {
       id: user.id,
       name: user.name,
       email: user.email,
-      profileImageUrl: profileImageUrlBase64,
+      profileImageUrl: user.profileImageUrl,
       userRole: user.userRole,
     };
 

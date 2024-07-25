@@ -47,7 +47,7 @@ export const Mentor = sequelize.define(
       allowNull: false,
     },
     skills: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     totalRating: {

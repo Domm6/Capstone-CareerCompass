@@ -8,6 +8,7 @@ import MentorProfileModal from "./MentorProfileModal.jsx";
 import ReviewCard from "./ReviewCard.jsx";
 import config from "../../../../config.js";
 import ResponsiveAppBar from "../../header/ResponsiveAppBar.jsx";
+import ApiService from "../../../../ApiService.js";
 import {
   Container,
   Box,
@@ -87,6 +88,7 @@ function MentorProfile() {
   const [reviews, setReviews] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const apiService = new ApiService();
   const pages = ["Dashboard"];
 
   const [userData, setUserData] = useState({
@@ -107,62 +109,34 @@ function MentorProfile() {
     preferredEndHour: mentor ? mentor.meetingPreferences.preferredEndHour : "",
   });
 
-  const fetchMentorData = () => {
+  const fetchMentorData = async () => {
     if (user && user.id) {
       setLoading(true);
-
-      fetch(`${config.apiBaseUrl}/users/${user.id}`)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP status ${response.status}`);
-          }
-          return response.json();
-        })
-        .then((userData) => {
-          const profileImageUrlBase64 = userData.profileImageUrl
-            ? `data:image/jpeg;base64,${userData.profileImageUrl}`
-            : PLACEHOLDER;
-          setUserData((prevUserData) => ({
-            ...prevUserData,
-            profileImageUrl: profileImageUrlBase64,
-          }));
-
-          return fetch(`${config.apiBaseUrl}/mentors/${user.id}`);
-        })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP status ${response.status}`);
-          }
-          return response.json();
-        })
-        .then((mentorData) => {
-          setUserData((prevUserData) => ({
-            ...prevUserData,
-            name: user.name,
-            industry: mentorData.mentor.industry,
-            company: mentorData.mentor.company,
-            work_role: mentorData.mentor.work_role,
-            years_experience:
-              experienceMappingReverse[mentorData.mentor.years_experience] ||
-              "",
-            school: mentorData.mentor.school,
-            bio: mentorData.mentor.bio,
-            skills: mentorData.mentor.skills,
-            preferredStartHour:
-              mentorData.mentor.meetingPreferences.preferredStartHour,
-            preferredEndHour:
-              mentorData.mentor.meetingPreferences.preferredEndHour,
-          }));
-          setLoading(false);
-        })
-        .catch((error) => {
-          setErrorMessage(error);
-          setUserData({
-            name: "Failed to load user data",
-            profileImageUrl: PLACEHOLDER,
-          });
-          setLoading(false);
+      try {
+        const data = await apiService.fetchMentorData(user.id);
+        setUserData({
+          name: user.name,
+          profileImageUrl: user.profileImageUrl || PLACEHOLDER,
+          industry: data.industry,
+          company: data.company,
+          work_role: data.work_role,
+          years_experience:
+            experienceMappingReverse[data.years_experience] || "",
+          school: data.school,
+          bio: data.bio,
+          skills: data.skills,
+          preferredStartHour: data.meetingPreferences.preferredStartHour,
+          preferredEndHour: data.meetingPreferences.preferredEndHour,
         });
+      } catch (error) {
+        setErrorMessage(error.message);
+        setUserData({
+          name: "Failed to load user data",
+          profileImageUrl: PLACEHOLDER,
+        });
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -245,7 +219,7 @@ function MentorProfile() {
         pages={pages}
         userName={user.name}
         userRole={user.userRole}
-        profileImageUrl={userData.profileImageUrl}
+        profileImageUrl={user.profileImageUrl}
       />
       <Container>
         <Box sx={{ my: 2 }}>
@@ -289,7 +263,11 @@ function MentorProfile() {
               <div className="mp-body">
                 <div className="mp-left">
                   <img
-                    src={userData.profileImageUrl || PLACEHOLDER}
+                    src={
+                      user.profileImageUrl ||
+                      userData.profileImageUrl ||
+                      PLACEHOLDER
+                    }
                     alt="profile picture"
                   />
                   <Typography variant="h4">{userData.name}</Typography>
