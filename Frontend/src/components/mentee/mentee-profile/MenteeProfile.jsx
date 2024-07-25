@@ -6,6 +6,7 @@ import "./MenteeProfile.css";
 import MenteeProfileModal from "./MenteeProfileModal.jsx";
 import config from "../../../../config.js";
 import ResponsiveAppBar from "../../header/ResponsiveAppBar.jsx";
+import ApiService from "../../../../ApiService.js";
 import {
   Container,
   Box,
@@ -72,6 +73,7 @@ function MenteeProfile() {
   const navigate = useNavigate();
   const { handleSignout } = useContext(UserContext);
   const [loading, setLoading] = useState(false);
+  const apiService = new ApiService();
 
   const [userData, setUserData] = useState({
     name: "Loading",
@@ -85,40 +87,33 @@ function MenteeProfile() {
     preferredEndHour: "",
   });
 
-  const fetchMenteeData = () => {
+  const fetchMenteeData = async () => {
     if (user && user.id) {
       setLoading(true);
-      fetch(`${config.apiBaseUrl}/mentees/${user.id}`)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP status ${response.status}`);
-          }
-          setLoading(false);
-          return response.json();
-        })
-        .then((data) => {
-          setUserData({
-            name: user.name,
-            profileImageUrl: user.profileImageUrl || PLACEHOLDER,
-            major: data.mentee.major,
-            school: data.mentee.school,
-            bio: data.mentee.bio,
-            career_goals: data.mentee.career_goals,
-            skills: data.mentee.skills,
-            preferredStartHour:
-              data.mentee.meetingPreferences?.preferredStartHour || "00:00",
-            preferredEndHour:
-              data.mentee.meetingPreferences?.preferredEndHour || "23:59",
-          });
-        })
-        .catch((error) => {
-          console.error("Error fetching mentee data:", error);
-          setUserData({
-            name: "Failed to load user data",
-            profileImageUrl: PLACEHOLDER,
-          });
-          setLoading(false);
+      try {
+        const data = await apiService.fetchMenteeData(user.id);
+        setUserData({
+          name: user.name,
+          profileImageUrl: user.profileImageUrl || PLACEHOLDER,
+          major: data.major,
+          school: data.school,
+          bio: data.bio,
+          career_goals: data.career_goals,
+          skills: data.skills,
+          preferredStartHour:
+            data.meetingPreferences?.preferredStartHour || "00:00",
+          preferredEndHour:
+            data.meetingPreferences?.preferredEndHour || "23:59",
         });
+      } catch (error) {
+        console.error("Error fetching mentee data:", error);
+        setUserData({
+          name: "Failed to load user data",
+          profileImageUrl: PLACEHOLDER,
+        });
+      } finally {
+        setLoading(false);
+      }
     }
   };
 

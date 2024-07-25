@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./MenteeProfileModal.css";
 import config from "../../../../config.js";
 import axios from "axios";
+import ApiService from "../../../../ApiService.js";
 import {
   Box,
   Button,
@@ -47,6 +48,7 @@ function MenteeProfileModal({
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState(null);
+  const apiService = new ApiService();
 
   useEffect(() => {
     if (menteeData) {

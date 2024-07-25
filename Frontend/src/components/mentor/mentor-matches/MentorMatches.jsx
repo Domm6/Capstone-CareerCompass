@@ -5,6 +5,7 @@ import MatchCard from "../../mentee/mentee-matches/MatchCard.jsx";
 import "./MentorMatches.css";
 import config from "../../../../config.js";
 import MentorMatchCard from "./MentorMatchCard.jsx";
+import ApiService from "../../../../ApiService.js";
 import { CircularProgress } from "@mui/material";
 
 function MentorMatches() {
@@ -13,22 +14,15 @@ function MentorMatches() {
   const [requests, setRequests] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const apiService = new ApiService();
 
   // Fetch mentor-specific data using user ID from user context
   const fetchMentorData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`${config.apiBaseUrl}/mentors/${user.id}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch mentor data");
-      }
-      const data = await response.json();
-      setMentorData(data.mentor);
-      setLoading(false);
-    } catch (error) {
-      setErrorMessage(error.message);
-      setLoading(false);
-    }
+    setLoading(true);
+    const data = await apiService.fetchMentorData(user.id);
+    setMentorData(data);
+    setErrorMessage(error.message);
+    setLoading(false);
   };
 
   // Fetch list of requests using mentor ID

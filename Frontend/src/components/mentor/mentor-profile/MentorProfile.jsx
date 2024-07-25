@@ -8,6 +8,7 @@ import MentorProfileModal from "./MentorProfileModal.jsx";
 import ReviewCard from "./ReviewCard.jsx";
 import config from "../../../../config.js";
 import ResponsiveAppBar from "../../header/ResponsiveAppBar.jsx";
+import ApiService from "../../../../ApiService.js";
 import {
   Container,
   Box,
@@ -87,6 +88,7 @@ function MentorProfile() {
   const [reviews, setReviews] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const apiService = new ApiService();
   const pages = ["Dashboard"];
 
   const [userData, setUserData] = useState({
@@ -111,34 +113,28 @@ function MentorProfile() {
     if (user && user.id) {
       setLoading(true);
       try {
-        const response = await fetch(`${config.apiBaseUrl}/mentors/${user.id}`);
-        if (!response.ok) {
-          throw new Error(`HTTP status ${response.status}`);
-        }
-        const mentorData = await response.json();
-        setUserData((prevUserData) => ({
-          ...prevUserData,
+        const data = await apiService.fetchMentorData(user.id);
+        setUserData({
           name: user.name,
-          industry: mentorData.mentor.industry,
-          company: mentorData.mentor.company,
-          work_role: mentorData.mentor.work_role,
+          profileImageUrl: user.profileImageUrl || PLACEHOLDER,
+          industry: data.industry,
+          company: data.company,
+          work_role: data.work_role,
           years_experience:
-            experienceMappingReverse[mentorData.mentor.years_experience] || "",
-          school: mentorData.mentor.school,
-          bio: mentorData.mentor.bio,
-          skills: mentorData.mentor.skills,
-          preferredStartHour:
-            mentorData.mentor.meetingPreferences.preferredStartHour,
-          preferredEndHour:
-            mentorData.mentor.meetingPreferences.preferredEndHour,
-        }));
-        setLoading(false);
+            experienceMappingReverse[data.years_experience] || "",
+          school: data.school,
+          bio: data.bio,
+          skills: data.skills,
+          preferredStartHour: data.meetingPreferences.preferredStartHour,
+          preferredEndHour: data.meetingPreferences.preferredEndHour,
+        });
       } catch (error) {
-        setErrorMessage(error);
+        setErrorMessage(error.message);
         setUserData({
           name: "Failed to load user data",
           profileImageUrl: PLACEHOLDER,
         });
+      } finally {
         setLoading(false);
       }
     }

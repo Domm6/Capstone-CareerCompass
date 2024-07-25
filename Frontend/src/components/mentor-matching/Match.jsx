@@ -6,13 +6,8 @@ import MentorCard from "./MentorCard.jsx";
 import MatchModal from "./MatchModal.jsx";
 import config from "../../../config.js";
 import ResponsiveAppBar from "../header/ResponsiveAppBar.jsx";
-import {
-  Container,
-  Box,
-  Typography,
-  Button,
-  CircularProgress,
-} from "@mui/material";
+import ApiService from "../../../ApiService.js";
+import { CircularProgress } from "@mui/material";
 
 const TechRolesEnum = Object.freeze({
   SOFTWARE_ENGINEER: "Software Engineer",
@@ -230,6 +225,7 @@ function Match() {
   const [topMentors, setTopMentors] = useState([]);
   const [matchedMentorIds, setMatchedMentorIds] = useState([]);
   const [loading, setLoading] = useState(false);
+  const apiService = new ApiService();
   const pages = ["Dashboard", "Profile"];
 
   const handleCardClick = (mentor) => {
@@ -281,47 +277,19 @@ function Match() {
     return mentors.filter((mentor) => !matchedMentorIds.includes(mentor.id));
   };
 
-  const fetchMentorsData = () => {
+  const fetchMentorsData = async () => {
     setLoading(true);
-    fetch(`${config.apiBaseUrl}/mentors`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(
-            "Failed to fetch mentor data. Please try again later."
-          );
-        }
-        setLoading(false);
-        return response.json();
-      })
-      .then((data) => {
-        setMentors(data.mentors);
-      })
-      .catch((error) => {
-        setErrorMessage(error.message);
-        setLoading(false);
-      });
+    const response = await apiService.fetchMentorData(user.id);
+    setMentors(response.mentors);
+    setLoading(false);
   };
 
-  const fetchMenteeData = () => {
+  const fetchMenteeData = async () => {
     setLoading(true);
-    fetch(`${config.apiBaseUrl}/mentees/${user.id}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(
-            "Failed to fetch mentee data. Please try again later."
-          );
-        }
-        setLoading(false);
-        return response.json();
-      })
-      .then((data) => {
-        setMentee(data.mentee);
-        fetchMatchedMentors(data.mentee.id);
-      })
-      .catch((error) => {
-        setErrorMessage(error.message);
-        setLoading(false);
-      });
+    const data = await apiService.fetchMenteeData(user.id);
+    setMentee(data);
+    fetchMatchedMentors(data.id);
+    setLoading(false);
   };
 
   useEffect(() => {

@@ -6,6 +6,7 @@ import MentorMatchCard from "../../mentor/mentor-matches/MentorMatchCard.jsx";
 import "../../mentor/mentor-matches/MentorMatches.css";
 import config from "../../../../config.js";
 import { CircularProgress } from "@mui/material";
+import ApiService from "../../../../ApiService.js";
 
 function MenteeMatches() {
   const { user } = useContext(UserContext);
@@ -14,23 +15,7 @@ function MenteeMatches() {
   const [errorMessage, setErrorMessage] = useState("");
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(false);
-
-  // Fetch mentee-specific data using user ID from user context
-  const fetchMenteeData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`${config.apiBaseUrl}/mentees/${user.id}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch mentee data");
-      }
-      const data = await response.json();
-      setMenteeData(data.mentee);
-      setLoading(false);
-    } catch (error) {
-      setErrorMessage(error.message);
-      setLoading(false);
-    }
-  };
+  const apiService = new ApiService(); // Create an instance of ApiService
 
   // Fetch list of requests using mentee ID
   const fetchRequests = async (menteeId) => {
@@ -74,7 +59,17 @@ function MenteeMatches() {
 
   useEffect(() => {
     if (user && user.id) {
-      fetchMenteeData();
+      setLoading(true);
+      apiService
+        .fetchMenteeData(user.id)
+        .then((data) => {
+          setMenteeData(data);
+          setLoading(false);
+        })
+        .catch((error) => {
+          setErrorMessage(error.message);
+          setLoading(false);
+        });
     }
   }, [user]);
 
