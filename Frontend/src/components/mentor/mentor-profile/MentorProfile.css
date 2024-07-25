@@ -112,6 +112,8 @@
 
 .card-reviews {
   display: flex;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
 .mp-left img {

@@ -31,6 +31,8 @@ function MatchModal({ mentor, closeModal, mentee }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
+  console.log(mentor.User);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -134,7 +136,7 @@ function MatchModal({ mentor, closeModal, mentee }) {
               >
                 <Box className="mp-left" sx={{ mr: 2 }}>
                   <img
-                    src={PLACEHOLDER}
+                    src={mentor.User.profileImageUrl || PLACEHOLDER}
                     alt="profile picture"
                     style={{ borderRadius: "50%", width: 100, height: 100 }}
                   />

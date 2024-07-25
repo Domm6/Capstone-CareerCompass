@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 
 const API_KEY = import.meta.env.VITE_SCHOOL_API;
+const UPLOAD_IMAGE_API_KEY = import.meta.env.VITE_PROFILE_PICTURE_API;
 
 const experienceMappingReverse = {
   1: "0-2",
@@ -136,47 +137,93 @@ function MentorProfileModal({
     try {
       setLoading(true);
 
-      // Update profile details
-      const response = await fetch(`${config.apiBaseUrl}/mentors/${user.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(preparedData),
-      });
+      let imageUrl = null;
 
-      if (!response.ok) {
-        console.error("Error updating mentor profile:", response.statusText);
+      // Upload profile image to imgbb if a new one is selected
+      if (image) {
+        const formData = new FormData();
+        formData.append("image", image);
+
+        try {
+          const imageResponse = await axios.post(
+            `https://api.imgbb.com/1/upload?key=${UPLOAD_IMAGE_API_KEY}`,
+            formData
+          );
+
+          if (imageResponse.status !== 200) {
+            console.error(
+              "Error uploading profile image:",
+              imageResponse.statusText
+            );
+            setLoading(false);
+            return;
+          }
+
+          console.log(imageResponse);
+
+          imageUrl = imageResponse.data.data.display_url;
+          preparedData.profileImageUrl = imageUrl;
+        } catch (uploadError) {
+          console.error("Error uploading profile image:", uploadError);
+          alert(
+            `Image upload failed: ${uploadError.response.data.error.message}`
+          );
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Update mentor profile details
+      const mentorResponse = await fetch(
+        `${config.apiBaseUrl}/mentors/${user.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(preparedData),
+        }
+      );
+
+      if (!mentorResponse.ok) {
+        console.error(
+          "Error updating mentor profile:",
+          mentorResponse.statusText
+        );
         setLoading(false);
         return;
       }
 
-      // Update profile image if a new one is selected
-      if (image) {
-        const formData = new FormData();
-        formData.append("profileImageUrl", image);
+      const updatedUser = await mentorResponse.json();
+      updateUser(updatedUser);
 
-        const imageResponse = await fetch(
-          `${config.apiBaseUrl}/user/${user.id}`,
+      // If image was uploaded, update the user profile with the image URL
+      if (imageUrl) {
+        const userResponse = await fetch(
+          `${config.apiBaseUrl}/users/${user.id}`,
           {
             method: "PUT",
-            body: formData,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ profileImageUrl: imageUrl }),
           }
         );
 
-        if (!imageResponse.ok) {
+        if (!userResponse.ok) {
           console.error(
-            "Error updating profile image:",
-            imageResponse.statusText
+            "Error updating user profile:",
+            userResponse.statusText
           );
           setLoading(false);
           return;
         }
 
-        const updatedUser = await imageResponse.json();
-        updateUser(updatedUser);
+        const updatedUserProfile = await userResponse.json();
+        updateUser(updatedUserProfile);
       }
 
+      alert("Profile updated successfully!");
       closeModal();
     } catch (error) {
       console.error("Error updating mentor profile:", error);
@@ -188,11 +235,7 @@ function MentorProfileModal({
   const handleProfileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result); // Set the base64 string as image
-      };
-      reader.readAsDataURL(file);
+      setImage(file);
     }
   };
 

@@ -20,37 +20,28 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 // update user profile image
-router.get("/users/:id", async (req, res) => {
+router.put("/users/:id", async (req, res) => {
   try {
     const userId = req.params.id;
-    const user = await User.findByPk(userId, {
-      attributes: ["id", "name", "email", "profileImageUrl", "userRole"],
-    });
+    const { profileImageUrl } = req.body;
+
+    const user = await User.findByPk(userId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    let profileImageUrlBase64 = null;
-    if (user.profileImageUrl) {
-      const base64Image = user.profileImageUrl.toString("base64");
-      profileImageUrlBase64 = `data:image/png;base64,${base64Image}`;
-    }
+    // Update user's profile image URL
+    user.profileImageUrl = profileImageUrl;
+    await user.save();
 
-    const userInfo = {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      profileImageUrl: profileImageUrlBase64,
-      userRole: user.userRole,
-    };
-
-    res.json(userInfo);
+    res.json(user);
   } catch (error) {
-    console.error("Error fetching user:", error);
-    res.status(500).json({ message: "Error fetching user information" });
+    console.error("Error updating user:", error);
+    res.status(500).json({ message: "Error updating user information" });
   }
 });
+
 // router to get userinfo
 router.get("/users/:id", async (req, res) => {
   try {
@@ -72,7 +63,7 @@ router.get("/users/:id", async (req, res) => {
       id: user.id,
       name: user.name,
       email: user.email,
-      profileImageUrl: profileImageUrlBase64,
+      profileImageUrl: user.profileImageUrl,
       userRole: user.userRole,
     };
 

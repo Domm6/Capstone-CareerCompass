@@ -107,6 +107,8 @@ function MentorProfile() {
     preferredEndHour: mentor ? mentor.meetingPreferences.preferredEndHour : "",
   });
 
+  console.log(mentor.User.profileImageUrl);
+
   const fetchMentorData = async () => {
     if (user && user.id) {
       setLoading(true);
@@ -175,6 +177,8 @@ function MentorProfile() {
     }
   };
 
+  // console.log(user);
+
   useEffect(() => {
     if (!mentor) {
       fetchMentorData();
@@ -215,8 +219,6 @@ function MentorProfile() {
   const handleModalToggle = () => {
     setIsModalOpen(!isModalOpen);
   };
-
-  console.log(user);
 
   return (
     <>
@@ -269,7 +271,11 @@ function MentorProfile() {
               <div className="mp-body">
                 <div className="mp-left">
                   <img
-                    src={user.profileImageUrl || PLACEHOLDER}
+                    src={
+                      user.profileImageUrl ||
+                      userData.profileImageUrl ||
+                      PLACEHOLDER
+                    }
                     alt="profile picture"
                   />
                   <Typography variant="h4">{userData.name}</Typography>
