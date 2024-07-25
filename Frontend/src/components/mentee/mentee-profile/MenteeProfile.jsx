@@ -158,7 +158,7 @@ function MenteeProfile() {
             <>
               <div className="mp-top">
                 <div className="mp-top-left">
-                  <Typography variant="h4">Mentee Profile</Typography>
+                  <h1>Mentee Profile</h1>
                 </div>
                 <div className="mp-top-right">
                   <Button

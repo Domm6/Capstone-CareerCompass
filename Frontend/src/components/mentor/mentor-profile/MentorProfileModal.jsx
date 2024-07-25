@@ -222,8 +222,6 @@ function MentorProfileModal({
         const updatedUserProfile = await userResponse.json();
         updateUser(updatedUserProfile);
       }
-
-      alert("Profile updated successfully!");
       closeModal();
     } catch (error) {
       console.error("Error updating mentor profile:", error);

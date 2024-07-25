@@ -24,9 +24,7 @@ function MenteeDashboard() {
       ></ResponsiveAppBar>
       <Container maxWidth="xl" className="md-container">
         <Box className="md-top" sx={{ my: 4 }}>
-          <Typography variant="h3" component="h1" className="md-top-title">
-            Mentee Dashboard
-          </Typography>
+          <h1 className="md-top-title">Mentee Dashboard</h1>
         </Box>
         <Box className="md-nav" sx={{ mb: 4 }}>
           <Button
