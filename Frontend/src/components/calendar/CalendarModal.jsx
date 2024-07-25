@@ -30,6 +30,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
   const [errorMessage, setErrorMessage] = useState("");
   const [userData, setUserData] = useState("");
   const [mentorsMeetings, setMentorsMeetings] = useState([]);
+  const [notesUrl, setNotesUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -181,6 +182,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
           menteeIds: user.userRole === "mentee" ? userData.id : selectedUsers,
           scheduledTime: scheduledDateTime,
           topic: topic.trim() ? topic : "No Title",
+          notesUrl,
         }),
       });
 
@@ -453,7 +455,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              height: "100vh",
+              height: "50vh",
             }}
           >
             <CircularProgress />
@@ -512,6 +514,13 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
                   onChange={(event) => setTopic(event.target.value)}
                 />
               </FormControl>
+              <TextField
+                label="Google Doc URL for Notes"
+                value={notesUrl}
+                onChange={(event) => setNotesUrl(event.target.value)}
+                fullWidth
+                margin="normal"
+              />
               <Button
                 type="submit"
                 variant="contained"

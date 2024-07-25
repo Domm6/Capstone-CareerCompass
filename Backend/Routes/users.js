@@ -13,41 +13,21 @@ import { Meeting } from "../models/index.js";
 import { Review } from "../models/review.js";
 import { ConnectRequest } from "../models/connect-request.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 const router = express.Router();
 const SALT_ROUNDS = 10;
 
-const uploadDirectory = path.join(__dirname, "..", "uploads");
-
-if (!fs.existsSync(uploadDirectory)) {
-  fs.mkdirSync(uploadDirectory);
-}
-
-// Serve static files from the uploads directory
-router.use("/uploads", express.static(uploadDirectory));
-
-// directory to save images
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Directory to save images
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
-
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 // update user profile image
-router.put("/user/:id", upload.single("profileImage"), async (req, res) => {
+router.put("/user/:id", upload.single("profileImageUrl"), async (req, res) => {
   try {
     const userId = req.params.id;
 
     const updatedUser = {};
 
     if (req.file) {
-      updatedUser.profileImageUrl = `/uploads/${req.file.filename}`;
+      updatedUser.profileImageUrl = req.file.buffer;
     }
 
     await User.update(updatedUser, { where: { id: userId } });
@@ -72,10 +52,24 @@ router.get("/users/:id", async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    res.json(user);
-  } catch {
+
+    let profileImageUrlBase64 = null;
+    if (user.profileImageUrl) {
+      profileImageUrlBase64 = user.profileImageUrl.toString("base64");
+    }
+
+    const userInfo = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      profileImageUrl: profileImageUrlBase64,
+      userRole: user.userRole,
+    };
+
+    res.json(userInfo);
+  } catch (error) {
     console.error("Error fetching user:", error);
-    res.status(500).json({ message: "Error fetching uer information" });
+    res.status(500).json({ message: "Error fetching user information" });
   }
 });
 
@@ -637,6 +631,7 @@ router.get("/meetings/mentee/:menteeId", async (req, res) => {
       endTime: meeting.endTime,
       topic: meeting.topic,
       status: meeting.status,
+      notesUrl: meeting.notesUrl,
       createdAt: meeting.createdAt,
       updatedAt: meeting.updatedAt,
       mentees: meeting.Mentees.map((mentee) => ({
@@ -682,6 +677,7 @@ router.get("/meetings/mentor/:mentorId", async (req, res) => {
       status: meeting.status,
       createdAt: meeting.createdAt,
       updatedAt: meeting.updatedAt,
+      notesUrl: meeting.notesUrl,
       mentees: meeting.Mentees.map((mentee) => ({
         menteeId: mentee.id,
         menteeName: mentee.User.name,
@@ -736,7 +732,7 @@ router.post("/meetings", async (req, res) => {
   const MEETING_DURATION_MINUTES = 30;
   const MILLISECONDS_IN_MINUTE = 60 * 1000;
 
-  const { mentorId, menteeIds, scheduledTime, topic } = req.body;
+  const { mentorId, menteeIds, scheduledTime, topic, notesUrl } = req.body;
   const startTime = new Date(scheduledTime).toISOString();
   const endTime = new Date(
     new Date(scheduledTime).getTime() +
@@ -750,6 +746,7 @@ router.post("/meetings", async (req, res) => {
       scheduledTime: startTime,
       endTime: endTime,
       topic,
+      notesUrl,
     });
 
     // Add mentees to the meeting by setting mentee IDs
@@ -780,6 +777,7 @@ router.post("/meetings", async (req, res) => {
       scheduledTime: meetingWithDetails.scheduledTime,
       endTime: meetingWithDetails.endTime,
       topic: meetingWithDetails.topic,
+      notesUrl: meetingWithDetails.notesUrl,
       status: meetingWithDetails.status,
       createdAt: meetingWithDetails.createdAt,
       updatedAt: meetingWithDetails.updatedAt,
@@ -798,7 +796,7 @@ router.post("/meetings", async (req, res) => {
 // update meeting status (accept)
 router.patch("/meetings/:meetingId", async (req, res) => {
   const { meetingId } = req.params;
-  const { status } = req.body;
+  const { status, notesUrl } = req.body;
 
   try {
     const meeting = await Meeting.findByPk(meetingId);
@@ -807,7 +805,8 @@ router.patch("/meetings/:meetingId", async (req, res) => {
       return res.status(404).json({ error: "Meeting not found" });
     }
 
-    meeting.status = status;
+    if (status) meeting.status = status;
+    if (notesUrl) meeting.notesUrl = notesUrl;
 
     await meeting.save();
 

@@ -1,0 +1,112 @@
+.notes-title {
+  display: flex;
+  justify-content: center;
+}
+
+.notes-body {
+  margin: 10px;
+  padding: 20px;
+  display: flex;
+  width: 100%;
+}
+
+.notes-meeting {
+  display: flex;
+}
+
+.notes-left {
+  margin: 10px;
+  padding: 10px;
+  width: 30%;
+}
+
+.notes-mentor {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  margin: 10px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.notes-mentor:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.notes-mentor p {
+  width: 100px;
+  height: auto;
+  margin: 10px;
+  padding: 10px;
+  width: 100%;
+}
+
+.notes-mentor img {
+  width: 100px;
+  height: auto;
+  margin: 10px;
+  padding: 10px;
+}
+
+.notes-right {
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.meeting-notes {
+  margin: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.meeting-notes-text {
+  display: flex;
+  justify-content: center;
+}
+
+.meeting-notes-text iframe {
+  border-radius: 8px;
+}
+
+.meeting-top {
+  display: flex;
+  padding: 5px;
+}
+
+.meeting-top-left {
+  width: 30%;
+}
+
+.meeting-top-right {
+  width: 40%;
+  display: flex;
+  justify-content: center;
+}
+
+iframe {
+  width: 100%;
+  height: 800px;
+  border: 0;
+}
+
+#notes-modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#notes-btn {
+  width: 20%;
+  margin: 10px;
+}

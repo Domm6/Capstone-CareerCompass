@@ -17,6 +17,7 @@ import MenteeProfile from "./components/mentee/mentee-profile/MenteeProfile";
 import MentorDashboard from "./components/mentor/mentor-dashboard/MentorDashboard";
 import MenteeDashboard from "./components/mentee/mentee-dashboard/MenteeDashboard";
 import Match from "./components/mentor-matching/Match";
+import Notes from "./components/notes/Notes";
 import theme from "../theme";
 
 function App() {
@@ -119,6 +120,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <MentorProfile />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/notes"
+                  element={
+                    <ProtectedRoute>
+                      <Notes />
                     </ProtectedRoute>
                   }
                 />

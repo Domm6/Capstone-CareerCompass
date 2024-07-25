@@ -39,6 +39,10 @@ export const Meeting = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    notesUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
   {
     tableName: "Meetings",

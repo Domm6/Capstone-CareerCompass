@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 
 const settings = ["Profile"];
 
-function ResponsiveAppBar({ pages, userName, userRole }) {
+function ResponsiveAppBar({ pages, userName, userRole, profileImageUrl }) {
   const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -142,7 +142,7 @@ function ResponsiveAppBar({ pages, userName, userRole }) {
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt={userName} src="/static/images/avatar/2.jpg" />
+                  <Avatar alt={userName} src={profileImageUrl} />
                 </IconButton>
               </Tooltip>
               <Menu

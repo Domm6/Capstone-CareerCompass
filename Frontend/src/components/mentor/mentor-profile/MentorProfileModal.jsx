@@ -124,7 +124,6 @@ function MentorProfileModal({
     });
     setSchoolSuggestions([]);
   };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -139,6 +138,7 @@ function MentorProfileModal({
 
     try {
       setLoading(true);
+
       // Update profile details
       const response = await fetch(`${config.apiBaseUrl}/mentors/${user.id}`, {
         method: "PUT",
@@ -150,13 +150,14 @@ function MentorProfileModal({
 
       if (!response.ok) {
         console.error("Error updating mentor profile:", response.statusText);
+        setLoading(false);
         return;
       }
 
       // Update profile image if a new one is selected
       if (image) {
         const imageData = new FormData();
-        imageData.append("profileImage", image);
+        imageData.append("profileImageUrl", image); // Ensure this matches the field name in multer config
 
         const imageResponse = await fetch(
           `${config.apiBaseUrl}/user/${user.id}`,
@@ -171,6 +172,7 @@ function MentorProfileModal({
             "Error updating profile image:",
             imageResponse.statusText
           );
+          setLoading(false);
           return;
         }
 
@@ -179,9 +181,9 @@ function MentorProfileModal({
       }
 
       closeModal(); // Close the modal if all updates are successful
-      setLoading(false);
     } catch (error) {
       console.error("Error updating mentor profile:", error);
+    } finally {
       setLoading(false);
     }
   };

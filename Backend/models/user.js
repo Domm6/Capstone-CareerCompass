@@ -27,7 +27,7 @@ export const User = sequelize.define(
       allowNull: false,
     },
     profileImageUrl: {
-      type: DataTypes.STRING,
+      type: DataTypes.BLOB("long"), // Changed from STRING to BLOB
       allowNull: true,
       defaultValue: null,
     },

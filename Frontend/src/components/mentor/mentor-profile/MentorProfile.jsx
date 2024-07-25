@@ -110,30 +110,50 @@ function MentorProfile() {
   const fetchMentorData = () => {
     if (user && user.id) {
       setLoading(true);
-      fetch(`${config.apiBaseUrl}/mentors/${user.id}`)
+
+      fetch(`${config.apiBaseUrl}/users/${user.id}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error(`HTTP status ${response.status}`);
           }
-          setLoading(false);
           return response.json();
         })
-        .then((data) => {
-          setUserData({
+        .then((userData) => {
+          const profileImageUrlBase64 = userData.profileImageUrl
+            ? `data:image/jpeg;base64,${userData.profileImageUrl}`
+            : PLACEHOLDER;
+          setUserData((prevUserData) => ({
+            ...prevUserData,
+            profileImageUrl: profileImageUrlBase64,
+          }));
+
+          return fetch(`${config.apiBaseUrl}/mentors/${user.id}`);
+        })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP status ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((mentorData) => {
+          setUserData((prevUserData) => ({
+            ...prevUserData,
             name: user.name,
-            profileImageUrl: user.profileImageUrl || PLACEHOLDER,
-            industry: data.mentor.industry,
-            company: data.mentor.company,
-            work_role: data.mentor.work_role,
+            industry: mentorData.mentor.industry,
+            company: mentorData.mentor.company,
+            work_role: mentorData.mentor.work_role,
             years_experience:
-              experienceMappingReverse[data.mentor.years_experience] || "",
-            school: data.mentor.school,
-            bio: data.mentor.bio,
-            skills: data.mentor.skills,
+              experienceMappingReverse[mentorData.mentor.years_experience] ||
+              "",
+            school: mentorData.mentor.school,
+            bio: mentorData.mentor.bio,
+            skills: mentorData.mentor.skills,
             preferredStartHour:
-              data.mentor.meetingPreferences.preferredStartHour,
-            preferredEndHour: data.mentor.meetingPreferences.preferredEndHour,
-          });
+              mentorData.mentor.meetingPreferences.preferredStartHour,
+            preferredEndHour:
+              mentorData.mentor.meetingPreferences.preferredEndHour,
+          }));
+          setLoading(false);
         })
         .catch((error) => {
           setErrorMessage(error);
@@ -225,6 +245,7 @@ function MentorProfile() {
         pages={pages}
         userName={user.name}
         userRole={user.userRole}
+        profileImageUrl={userData.profileImageUrl}
       />
       <Container>
         <Box sx={{ my: 2 }}>
@@ -236,7 +257,7 @@ function MentorProfile() {
             <>
               <div className="mp-top">
                 <div className="mp-top-left">
-                  <Typography variant="h4">Mentor Profile</Typography>
+                  <h1>Mentor Profile</h1>
                 </div>
                 {user.userRole === "mentor" && (
                   <div className="mp-top-right">
@@ -254,12 +275,23 @@ function MentorProfile() {
                     >
                       Edit
                     </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => navigate("/notes")}
+                      sx={{ mr: 1 }}
+                    >
+                      Notes
+                    </Button>
                   </div>
                 )}
               </div>
               <div className="mp-body">
                 <div className="mp-left">
-                  <img src={userData.profileImageUrl} alt="profile picture" />
+                  <img
+                    src={userData.profileImageUrl || PLACEHOLDER}
+                    alt="profile picture"
+                  />
                   <Typography variant="h4">{userData.name}</Typography>
                 </div>
                 <div className="mp-right">
