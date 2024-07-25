@@ -3,6 +3,7 @@ import { UserContext } from "../../../UserContext.jsx";
 import config from "../../../../config.js";
 import "./Request.css";
 import { CircularProgress } from "@mui/material";
+import { Button } from "@mui/material";
 
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
@@ -81,8 +82,20 @@ function Request({ name, major, school, requestId, onRequestUpdate }) {
           </div>
           <div className="request-right">
             <div className="request-actions">
-              <button onClick={acceptRequest}>Accept</button>
-              <button onClick={deleteRequest}>Decline</button>
+              <Button
+                onClick={acceptRequest}
+                variant="contained"
+                color="primary"
+              >
+                Accept
+              </Button>
+              <Button
+                onClick={deleteRequest}
+                variant="contained"
+                color="primary"
+              >
+                Decline
+              </Button>
             </div>
           </div>
         </div>
