@@ -277,11 +277,25 @@ function Match() {
     return mentors.filter((mentor) => !matchedMentorIds.includes(mentor.id));
   };
 
-  const fetchMentorsData = async () => {
+  const fetchMentorsData = () => {
     setLoading(true);
-    const response = await apiService.fetchMentorData(user.id);
-    setMentors(response.mentors);
-    setLoading(false);
+    fetch(`${config.apiBaseUrl}/mentors`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(
+            "Failed to fetch mentor data. Please try again later."
+          );
+        }
+        setLoading(false);
+        return response.json();
+      })
+      .then((data) => {
+        setMentors(data.mentors);
+      })
+      .catch((error) => {
+        setErrorMessage(error.message);
+        setLoading(false);
+      });
   };
 
   const fetchMenteeData = async () => {
