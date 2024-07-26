@@ -24,8 +24,12 @@ function MentorCard({ mentor, onCardClick, score }) {
 
   return (
     <>
-      <div className="mc-container" onClick={() => onCardClick(mentor)}>
-        <div className="mc-image">
+      <div
+        className="mc-container"
+        id="mentor-matching-container"
+        onClick={() => onCardClick(mentor)}
+      >
+        <div className="mc-image" id="mentor-matching-card">
           <img
             src={user.profileImageUrl || PLACEHOLDER}
             alt="profile picture"

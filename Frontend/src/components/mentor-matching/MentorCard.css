@@ -18,6 +18,10 @@
   overflow: hidden;
 }
 
+#mentor-matching-container {
+  height: 500px;
+}
+
 @media (min-width: 600px) {
   .mc-container {
     flex: 0 0 30%;
@@ -117,4 +121,8 @@
 .mc-body-right-rating img {
   max-width: 23px;
   height: auto;
+}
+
+#mentor-matching-card img {
+  width: 200px;
 }
