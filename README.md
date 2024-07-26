@@ -58,24 +58,6 @@ The Career Guidance and Mentorship Platform, CareerCompass, is designed to suppo
   - Mentees can view public-facing mentor profiles, including reviews.
 - **Collaborative Notes Feature:**
   - Real-time collaborative note-taking for mentors and mentees during sessions.
-- **Job Search Tools:**
-  - Seekers can access job search tools to find relevant job openings.
-- **Messaging System:**
-  - Real-time communication between seekers and mentors.
-- **Community Forums:**
-  - Seekers can participate in community forums to connect and share experiences.
-- **AI-Powered Interview Preparation:**
-  - AI tools for practicing interview questions to improve skills.
-- **Career Progress Analytics:**
-  - Analytics to track career progress and identify areas for improvement.
-- **AI Resume Review:**
-  - AI-generated feedback on resumes to help seekers improve.
-- **Goal Setting and Tracking:**
-  - Tools for setting and tracking career goals.
-- **Resource Library:**
-  - Access to a library of career development resources.
-- **Career Pathway Exploration:**
-  - Tools for exploring various career paths.
 
 ## Screen Archetypes
 
