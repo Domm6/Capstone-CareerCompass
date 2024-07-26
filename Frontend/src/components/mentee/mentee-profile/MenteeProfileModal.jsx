@@ -181,9 +181,6 @@ function MenteeProfileModal({
         return;
       }
 
-      const updatedUser = await menteeResponse.json();
-      updateUser(updatedUser);
-
       // If image was uploaded, update the user profile with the image URL
       if (imageUrl) {
         const userResponse = await fetch(
@@ -223,6 +220,8 @@ function MenteeProfileModal({
       setImage(file);
     }
   };
+
+  console.log(user);
 
   return (
     <Box>
