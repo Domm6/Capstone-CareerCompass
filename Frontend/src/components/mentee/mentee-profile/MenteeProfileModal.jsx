@@ -221,8 +221,6 @@ function MenteeProfileModal({
     }
   };
 
-  console.log(user);
-
   return (
     <Box>
       <Typography variant="h6" gutterBottom>

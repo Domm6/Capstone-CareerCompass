@@ -412,12 +412,14 @@ router.get("/mentees", async (req, res) => {
 router.post("/connect-requests", async (req, res) => {
   const {
     menteeName,
+    menteeImage,
     menteeSchool,
     menteeMajor,
     mentorId,
     menteeId,
     status,
     mentorName,
+    mentorImage,
     mentorCompany,
     mentorWorkRole,
   } = req.body;
@@ -437,8 +439,10 @@ router.post("/connect-requests", async (req, res) => {
       mentorId,
       menteeId,
       menteeName,
+      menteeImage,
       menteeSchool,
       menteeMajor,
+      mentorImage,
       mentorName,
       mentorCompany,
       mentorWorkRole,
@@ -593,9 +597,49 @@ router.get("/connect-requests/mentee/:menteeId", async (req, res) => {
   const { menteeId } = req.params;
 
   try {
+    // Fetch connect requests for the specific mentee
     const requests = await ConnectRequest.findAll({
       where: { menteeId },
     });
+
+    // Fetch and set mentor and mentee data for each connect request
+    for (const request of requests) {
+      // Fetch mentor data
+      const mentor = await Mentor.findOne({
+        where: { id: request.mentorId },
+        include: {
+          model: User,
+          attributes: ["id", "name", "email", "profileImageUrl"],
+        },
+      });
+
+      // Fetch mentee data
+      const mentee = await Mentee.findOne({
+        where: { id: request.menteeId },
+        include: {
+          model: User,
+          attributes: ["id", "name", "email", "profileImageUrl"],
+        },
+      });
+
+      // Set mentor fields
+      if (mentor) {
+        request.mentorName = mentor.User.name;
+        request.mentorCompany = mentor.company;
+        request.mentorWorkRole = mentor.work_role;
+        request.mentorImage = mentor.User.profileImageUrl;
+        // Add any other mentor fields as needed
+      }
+
+      // Set mentee fields
+      if (mentee) {
+        request.menteeName = mentee.User.name;
+        request.menteeSchool = mentee.school;
+        request.menteeMajor = mentee.major;
+        request.menteeImage = mentee.User.profileImageUrl;
+        // Add any other mentee fields as needed
+      }
+    }
 
     res.json({ requests });
   } catch (error) {

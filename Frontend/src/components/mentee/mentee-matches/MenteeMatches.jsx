@@ -57,6 +57,8 @@ function MenteeMatches() {
     }
   };
 
+  console.log(requests);
+
   useEffect(() => {
     if (user && user.id) {
       setLoading(true);
@@ -106,6 +108,7 @@ function MenteeMatches() {
                 <MatchCard
                   key={request.id}
                   mentorName={request.mentorName}
+                  mentorImage={request.mentorImage}
                   mentorCompany={request.mentorCompany}
                   mentorWorkRole={request.mentorWorkRole}
                   mentorId={request.mentorId}

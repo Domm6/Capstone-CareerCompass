@@ -17,6 +17,7 @@ const PLACEHOLDER =
 
 function MatchCard({
   mentorName,
+  mentorImage,
   mentorCompany,
   mentorWorkRole,
   requestId,
@@ -132,7 +133,7 @@ function MatchCard({
         <div className="request-container">
           <div className="request-left">
             <div className="reqeust-img">
-              <img src={PLACEHOLDER} alt="profile picture" />
+              <img src={mentorImage || PLACEHOLDER} alt="profile picture" />
             </div>
             <div className="request-text">
               <h3>{mentorName}</h3>
