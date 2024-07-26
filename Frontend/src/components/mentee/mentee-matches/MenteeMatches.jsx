@@ -96,21 +96,26 @@ function MenteeMatches() {
       ) : (
         <div className="requests-list">
           <h1>Matches</h1>
-          {requests
-            .filter((request) => request.status === "accepted")
-            .map((request) => (
-              <MatchCard
-                key={request.id}
-                mentorName={request.mentorName}
-                mentorCompany={request.mentorCompany}
-                mentorWorkRole={request.mentorWorkRole}
-                mentorId={request.mentorId}
-                mentee={menteeData}
-                requestId={request.id}
-                onRequestUpdate={handleReqeustUpdate}
-                reviews={reviews}
-              />
-            ))}
+          {requests.filter((request) => request.status === "accepted")
+            .length === 0 ? (
+            <p>No matches</p>
+          ) : (
+            requests
+              .filter((request) => request.status === "accepted")
+              .map((request) => (
+                <MatchCard
+                  key={request.id}
+                  mentorName={request.mentorName}
+                  mentorCompany={request.mentorCompany}
+                  mentorWorkRole={request.mentorWorkRole}
+                  mentorId={request.mentorId}
+                  mentee={menteeData}
+                  requestId={request.id}
+                  onRequestUpdate={handleReqeustUpdate}
+                  reviews={reviews}
+                />
+              ))
+          )}
         </div>
       )}
     </>

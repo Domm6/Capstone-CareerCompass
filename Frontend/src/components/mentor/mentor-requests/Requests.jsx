@@ -69,18 +69,23 @@ function Requests() {
       ) : (
         <div className="requests-list">
           <h1>Requests</h1>
-          {requests
-            .filter((request) => request.status === "pending")
-            .map((request) => (
-              <Request
-                key={request.id}
-                name={request.menteeName}
-                school={request.menteeSchool}
-                major={request.menteeMajor}
-                requestId={request.id}
-                onRequestUpdate={handleReqeustUpdate}
-              />
-            ))}
+          {requests.filter((request) => request.status === "pending").length ===
+          0 ? (
+            <p>No requests</p>
+          ) : (
+            requests
+              .filter((request) => request.status === "pending")
+              .map((request) => (
+                <Request
+                  key={request.id}
+                  name={request.menteeName}
+                  school={request.menteeSchool}
+                  major={request.menteeMajor}
+                  requestId={request.id}
+                  onRequestUpdate={handleReqeustUpdate}
+                />
+              ))
+          )}
         </div>
       )}
     </>
