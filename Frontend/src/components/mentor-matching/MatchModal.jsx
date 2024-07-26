@@ -3,6 +3,7 @@ import { UserContext } from "../../UserContext.jsx";
 import config from "../../../config.js";
 import { useNavigate } from "react-router-dom";
 import "./MatchModal.css";
+import { Alert } from "@mui/material";
 import {
   Container,
   Box,
@@ -29,6 +30,7 @@ function MatchModal({ mentor, closeModal, mentee }) {
   const { user } = useContext(UserContext); // Access the user context
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+  const [showAlert, setShowAlert] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (event) => {
@@ -62,10 +64,12 @@ function MatchModal({ mentor, closeModal, mentee }) {
       } else {
         const data = await response.json();
         setErrorMessage(data.error || "Error creating connect request");
+        setShowAlert(true); // Show alert on error
       }
       setLoading(false);
     } catch (error) {
       setErrorMessage("Error creating connect request");
+      setShowAlert(true); // Show alert on error
       console.error("Error creating connect request:", error);
       setLoading(false);
     }
@@ -74,6 +78,10 @@ function MatchModal({ mentor, closeModal, mentee }) {
   const handleViewProfile = () => {
     navigate("/public-mentor-profile", { state: { mentor } });
     closeModal();
+  };
+
+  const handleAlertClose = () => {
+    setShowAlert(false);
   };
 
   return (
@@ -174,6 +182,15 @@ function MatchModal({ mentor, closeModal, mentee }) {
                   View Profile
                 </Button>
               </div>
+              {showAlert && (
+                <Alert
+                  severity="error"
+                  onClose={handleAlertClose}
+                  sx={{ mt: 2 }}
+                >
+                  {errorMessage}
+                </Alert>
+              )}
             </Box>
           )}
         </Box>
