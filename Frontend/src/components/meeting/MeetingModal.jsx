@@ -37,6 +37,7 @@ function MeetingModal({
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
+            borderRadius: "8px",
           }}
         >
           <Box className="mm-body">
