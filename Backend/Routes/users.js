@@ -1016,4 +1016,22 @@ router.get("/mentees/:id/reviews", async (req, res) => {
   }
 });
 
+// delete a review
+router.delete("/reviews/:id", async (req, res) => {
+  const reviewId = req.params.id;
+
+  try {
+    const review = await Review.findByPk(reviewId);
+
+    if (!review) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+
+    await review.destroy();
+    res.status(200).json({ message: "Review deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 export default router;
