@@ -21,7 +21,6 @@ function MentorMatches() {
     setLoading(true);
     const data = await apiService.fetchMentorData(user.id);
     setMentorData(data);
-    setErrorMessage(error.message);
     setLoading(false);
   };
 
