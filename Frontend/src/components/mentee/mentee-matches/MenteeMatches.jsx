@@ -57,8 +57,6 @@ function MenteeMatches() {
     }
   };
 
-  console.log(requests);
-
   useEffect(() => {
     if (user && user.id) {
       setLoading(true);
