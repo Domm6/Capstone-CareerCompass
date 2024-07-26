@@ -192,9 +192,6 @@ function MentorProfileModal({
         return;
       }
 
-      const updatedUser = await mentorResponse.json();
-      updateUser(updatedUser);
-
       // If image was uploaded, update the user profile with the image URL
       if (imageUrl) {
         const userResponse = await fetch(
