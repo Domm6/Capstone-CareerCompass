@@ -238,8 +238,6 @@ function Notes() {
     setVisibleMeetingsCount((prevCount) => prevCount + 3);
   };
 
-  console.log(relatedUsers);
-
   return (
     <>
       <ResponsiveAppBar
@@ -277,6 +275,8 @@ function Notes() {
             </div>
           ) : error ? (
             <Alert severity="error">{error}</Alert>
+          ) : meetings.length === 0 ? (
+            <div>No meetings</div>
           ) : (
             meetings.slice(0, visibleMeetingsCount).map((meeting) => (
               <div className="meeting-notes" key={meeting.id}>
