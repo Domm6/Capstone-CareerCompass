@@ -46,13 +46,26 @@ function MeetingModal({
                 ? selectedMeeting.title
                 : "No Meeting Title"}
             </Typography>
-            <Typography>Status: {selectedMeeting.status}</Typography>
-            <Typography>Mentor: {selectedMeeting.mentorName}</Typography>
-            <Typography>Date: {formattedDate}</Typography>
             <Typography>
-              Time: {formattedStartTime} - {formattedEndTime}
+              {" "}
+              <strong>Status:</strong> {selectedMeeting.status}
             </Typography>
-            <Typography>Attendees:</Typography>
+            <Typography>
+              <strong>Mentor:</strong> {selectedMeeting.mentorName}
+            </Typography>
+            <Typography>
+              {" "}
+              <strong>Date: </strong>
+              {formattedDate}
+            </Typography>
+            <Typography>
+              <strong> Time: </strong>
+              {formattedStartTime} - {formattedEndTime}
+            </Typography>
+            <Typography>
+              {" "}
+              <strong>Attendees:</strong>
+            </Typography>
             {selectedMeeting.menteeNames.length > 0 ? (
               <ul>
                 {selectedMeeting.menteeNames.map((name, index) => (
