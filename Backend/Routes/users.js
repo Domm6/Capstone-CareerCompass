@@ -578,7 +578,6 @@ router.get("/connect-requests", async (req, res) => {
 });
 
 // route to get mentors specific requests
-// route to get mentors specific requests
 router.get("/connect-requests/:mentorId", async (req, res) => {
   const { mentorId } = req.params;
 
