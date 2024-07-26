@@ -13,3 +13,7 @@
 .match-btns Button {
   margin: 10px;
 }
+
+#matching-page-modal {
+  max-width: 1000px;
+}

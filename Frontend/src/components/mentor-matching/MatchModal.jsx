@@ -89,6 +89,7 @@ function MatchModal({ mentor, closeModal, mentee }) {
       <Modal open={true} onClose={closeModal}>
         <Box
           className="modal-content"
+          id="matching-page-modal"
           sx={{
             position: "absolute",
             top: "50%",
