@@ -61,8 +61,6 @@ The Career Guidance and Mentorship Platform, CareerCompass, is designed to suppo
 
 ## Screen Archetypes
 
-[Provide detailed descriptions and diagrams of different screens that compose the full experience of your app, including navigation and presentation.]
-
 ## Data Model
 
 **User Table**
