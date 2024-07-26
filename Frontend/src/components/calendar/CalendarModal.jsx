@@ -25,6 +25,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
   const [menteesOrMentors, setMenteesOrMentors] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [suggestedTimes, setSuggestedTimes] = useState([]);
+  const [alternateTimes, setAlternateTimes] = useState([]);
   const [scheduledDate, setScheduledDate] = useState("");
   const [scheduledTime, setScheduledTime] = useState("");
   const [topic, setTopic] = useState("");
@@ -146,14 +147,16 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
   useEffect(() => {
     const fetchSuggestedTimes = async () => {
       if (userData && selectedUsers.length > 0 && scheduledDate) {
-        const suggestedTimes = await getSuggestedTimes(
+        const { suggestedTimes, alternateTimes } = await getSuggestedTimes(
           userData.id,
           selectedUsers,
           scheduledDate
         );
         setSuggestedTimes(suggestedTimes);
+        setAlternateTimes(alternateTimes);
       } else {
         setSuggestedTimes([]); // Clear suggested times when no users are selected
+        setAlternateTimes([]); // Clear alternate times
       }
     };
 
@@ -361,15 +364,25 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
     }
 
     // Subtract mentee meetings from mentor's free slots and break mentors slots into smaller slots
-    const subtractMeetings = (freeSlots, meetings) => {
+    const subtractMeetings = (freeSlots, meetings, meetingCount) => {
       // result slots
       const resultSlots = [];
+
+      // go through the mentee's meetings first to update the meetingCount dictionary
+      meetings.forEach((meeting) => {
+        const meetingStart = moment(meeting.scheduledTime);
+        const meetingEnd = moment(meeting.endTime);
+        const meetingTimeKey = `${meetingStart.format(
+          "HH:mm"
+        )}-${meetingEnd.format("HH:mm")}`;
+        meetingCount[meetingTimeKey] = (meetingCount[meetingTimeKey] || 0) + 1;
+      });
 
       // go through each free slot for the mentor
       freeSlots.forEach((slot) => {
         let currentStart = slot.start;
 
-        // go through the mentee's meeting
+        // go through the mentee's meeting again to adjust the free slots
         meetings.forEach((meeting) => {
           const meetingStart = moment(meeting.scheduledTime);
           const meetingEnd = moment(meeting.endTime);
@@ -386,6 +399,7 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
                 end: meetingStart.clone(),
               });
             }
+
             // move start time to end of the meeting
             currentStart = meetingEnd.clone();
           }
@@ -404,11 +418,13 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
     };
 
     let finalFreeSlots = mentorFreeSlots;
+    const meetingCount = {};
 
     selectedMentees.forEach((menteeId) => {
       finalFreeSlots = subtractMeetings(
         finalFreeSlots,
-        menteesMeetings[menteeId]
+        menteesMeetings[menteeId],
+        meetingCount
       );
     });
 
@@ -437,11 +453,31 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
       breakIntoIntervals(slot)
     );
 
-    // Return suggested times
-    return allIntervals.map((slot) => ({
-      start: slot.start.format("HH:mm"),
-      end: slot.end.format("HH:mm"),
-    }));
+    // Collect all intervals in meetingCount dictionary
+    allIntervals.forEach((slot) => {
+      const intervalKey = `${slot.start.format("HH:mm")}-${slot.end.format(
+        "HH:mm"
+      )}`;
+      meetingCount[intervalKey] = meetingCount[intervalKey] || 0;
+    });
+
+    // Sort the intervals by meeting count to find the least used times
+    const sortedMeetingCount = Object.entries(meetingCount)
+      .sort((a, b) => a[1] - b[1])
+      .slice(0, 5)
+      .map(([time]) => {
+        const [start, end] = time.split("-");
+        return { start, end };
+      });
+
+    // Return suggested times and alternate times
+    return {
+      suggestedTimes: allIntervals.map((slot) => ({
+        start: slot.start.format("HH:mm"),
+        end: slot.end.format("HH:mm"),
+      })),
+      alternateTimes: sortedMeetingCount,
+    };
   };
 
   return (
@@ -531,28 +567,51 @@ function CalendarModal({ toggleModal, onMeetingScheduled, isMentor }) {
                 Schedule Meeting
               </Button>
             </form>
-            <Box className="calendar-suggested-times" mt={2}>
-              <Typography>Suggested Times</Typography>
-              {suggestedTimes.length > 0 ? (
-                suggestedTimes.map((timeSlot, index) => (
-                  <Box key={index} mt={1}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => handleScheduleMeeting(timeSlot.start)}
-                    >
-                      {moment(timeSlot.start, "HH:mm").format("h:mm A")} -{" "}
-                      {moment(timeSlot.end, "HH:mm").format("h:mm A")}
-                    </Button>
-                  </Box>
-                ))
-              ) : (
+            <div className="calendar-times">
+              <Box className="calendar-suggested-times" mt={2}>
+                <Typography>Suggested Times</Typography>
+                {suggestedTimes.length > 0 ? (
+                  suggestedTimes.map((timeSlot, index) => (
+                    <Box key={index} mt={1}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleScheduleMeeting(timeSlot.start)}
+                      >
+                        {moment(timeSlot.start, "HH:mm").format("h:mm A")} -{" "}
+                        {moment(timeSlot.end, "HH:mm").format("h:mm A")}
+                      </Button>
+                    </Box>
+                  ))
+                ) : (
+                  <Typography>
+                    No suggested times available. Please select a mentee and a
+                    date.
+                  </Typography>
+                )}
+              </Box>
+              <Box className="calendar-alternate-times" mt={2}>
                 <Typography>
-                  No suggested times available. Please select a mentee and a
-                  date.
+                  Alternate Times (Times with the least conflicting meetings)
                 </Typography>
-              )}
-            </Box>
+                {alternateTimes.length > 0 ? (
+                  alternateTimes.map((timeSlot, index) => (
+                    <Box key={index} mt={1}>
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={() => handleScheduleMeeting(timeSlot.start)}
+                      >
+                        {moment(timeSlot.start, "HH:mm").format("h:mm A")} -{" "}
+                        {moment(timeSlot.end, "HH:mm").format("h:mm A")}
+                      </Button>
+                    </Box>
+                  ))
+                ) : (
+                  <Typography>No alternate times available.</Typography>
+                )}
+              </Box>
+            </div>
           </div>
         )}
       </Box>

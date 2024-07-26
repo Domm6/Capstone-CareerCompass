@@ -147,7 +147,12 @@ function MentorProfileModal({
         try {
           const imageResponse = await axios.post(
             `https://api.imgbb.com/1/upload?key=${UPLOAD_IMAGE_API_KEY}`,
-            formData
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
           );
 
           if (imageResponse.status !== 200) {
@@ -191,9 +196,6 @@ function MentorProfileModal({
         setLoading(false);
         return;
       }
-
-      const updatedUser = await mentorResponse.json();
-      updateUser(updatedUser);
 
       // If image was uploaded, update the user profile with the image URL
       if (imageUrl) {

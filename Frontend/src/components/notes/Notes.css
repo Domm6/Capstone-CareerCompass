@@ -19,6 +19,9 @@
   padding: 10px;
   width: 30%;
 }
+#notes-img {
+  border-radius: 8px;
+}
 
 .notes-mentor {
   display: flex;
@@ -29,6 +32,7 @@
   margin: 10px;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 0.7px solid black;
 }
 
 .notes-mentor:hover {
@@ -46,9 +50,8 @@
 
 .notes-mentor img {
   width: 100px;
-  height: auto;
-  margin: 10px;
-  padding: 10px;
+  height: 100px;
+  margin: 15px;
 }
 
 .notes-right {
@@ -68,6 +71,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  border: 0.7px solid black;
 }
 
 .meeting-notes-text {

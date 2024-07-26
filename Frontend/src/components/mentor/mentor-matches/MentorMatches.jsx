@@ -21,7 +21,6 @@ function MentorMatches() {
     setLoading(true);
     const data = await apiService.fetchMentorData(user.id);
     setMentorData(data);
-    setErrorMessage(error.message);
     setLoading(false);
   };
 
@@ -72,18 +71,24 @@ function MentorMatches() {
       ) : (
         <div className="requests-list">
           <h1>Matches</h1>
-          {requests
-            .filter((request) => request.status === "accepted")
-            .map((request) => (
-              <MentorMatchCard
-                key={request.id}
-                menteeName={request.menteeName}
-                menteeSchool={request.menteeSchool}
-                menteeMajor={request.menteeMajor}
-                requestId={request.id}
-                onRequestUpdate={handleReqeustUpdate}
-              />
-            ))}
+          {requests.filter((request) => request.status === "accepted")
+            .length === 0 ? (
+            <p>No matches</p>
+          ) : (
+            requests
+              .filter((request) => request.status === "accepted")
+              .map((request) => (
+                <MentorMatchCard
+                  key={request.id}
+                  menteeName={request.menteeName}
+                  menteeImage={request.menteeImage}
+                  menteeSchool={request.menteeSchool}
+                  menteeMajor={request.menteeMajor}
+                  requestId={request.id}
+                  onRequestUpdate={handleReqeustUpdate}
+                />
+              ))
+          )}
         </div>
       )}
     </>

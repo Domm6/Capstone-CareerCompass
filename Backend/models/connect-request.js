@@ -25,6 +25,10 @@ export const ConnectRequest = sequelize.define(
       },
       allowNull: false,
     },
+    menteeImage: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     menteeName: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -41,6 +45,10 @@ export const ConnectRequest = sequelize.define(
       type: DataTypes.ENUM("pending", "accepted", "rejected"),
       defaultValue: "pending",
       allowNull: false,
+    },
+    mentorImage: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     mentorName: {
       type: DataTypes.STRING,

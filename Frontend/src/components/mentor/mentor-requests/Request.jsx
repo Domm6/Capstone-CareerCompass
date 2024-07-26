@@ -8,7 +8,7 @@ import { Button } from "@mui/material";
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
 
-function Request({ name, major, school, requestId, onRequestUpdate }) {
+function Request({ name, major, school, requestId, onRequestUpdate, image }) {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -72,7 +72,7 @@ function Request({ name, major, school, requestId, onRequestUpdate }) {
         <div className="request-container">
           <div className="request-left">
             <div className="reqeust-img">
-              <img src={PLACEHOLDER} alt="profile picture" />
+              <img src={image || PLACEHOLDER} alt="profile picture" />
             </div>
             <div className="request-text">
               <h3>{name}</h3>

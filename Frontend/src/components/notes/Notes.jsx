@@ -152,8 +152,16 @@ function Notes() {
         setRelatedUsers(
           acceptedRequests.map((request) =>
             user.userRole === "mentor"
-              ? { id: request.menteeId, name: request.menteeName }
-              : { id: request.mentorId, name: request.mentorName }
+              ? {
+                  id: request.menteeId,
+                  name: request.menteeName,
+                  image: request.menteeImage,
+                }
+              : {
+                  id: request.mentorId,
+                  name: request.mentorName,
+                  image: request.mentorImage,
+                }
           )
         );
       } catch (err) {
@@ -251,7 +259,11 @@ function Notes() {
               key={relatedUser.id}
               onClick={() => handleRelatedUserClick(relatedUser)}
             >
-              <img src={PLACEHOLDER} id="notes-img" alt="mentor" />
+              <img
+                src={relatedUser.image || PLACEHOLDER}
+                id="notes-img"
+                alt="mentor"
+              />
               <p>{relatedUser.name}</p>
             </div>
           ))}
@@ -263,6 +275,8 @@ function Notes() {
             </div>
           ) : error ? (
             <Alert severity="error">{error}</Alert>
+          ) : meetings.length === 0 ? (
+            <div>No meetings</div>
           ) : (
             meetings.slice(0, visibleMeetingsCount).map((meeting) => (
               <div className="meeting-notes" key={meeting.id}>

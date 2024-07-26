@@ -17,12 +17,13 @@ const PLACEHOLDER =
 
 function MatchCard({
   mentorName,
+  mentorImage,
   mentorCompany,
   mentorWorkRole,
   requestId,
   mentee,
   mentorId,
-  reviews,
+  reviews: initialReviews,
 }) {
   const { user } = useContext(UserContext);
   const [rating, setRating] = useState(5);
@@ -30,6 +31,7 @@ function MatchCard({
   const [message, setMessage] = useState("");
   const [hasReviewed, setHasReviewed] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [reviews, setReviews] = useState(initialReviews);
 
   const handleRatingChange = (event) => {
     setRating(parseInt(event.target.value));
@@ -64,6 +66,15 @@ function MatchCard({
 
       if (response.ok) {
         setMessage("Rating updated successfully!");
+        const updatedReview = await response.json();
+        setReviews((prevReviews) =>
+          prevReviews.map((review) =>
+            review.mentorId === mentorId && review.menteeId === mentee.id
+              ? updatedReview
+              : review
+          )
+        );
+        checkReview(); // Re-check review status
       } else {
         const errorData = await response.json();
         setMessage(`Error: ${errorData.error}`);
@@ -94,6 +105,9 @@ function MatchCard({
 
       if (response.ok) {
         setMessage("Rating submitted successfully!");
+        const newReview = await response.json();
+        setReviews((prevReviews) => [...prevReviews, newReview]);
+        checkReview(); // Re-check review status
       } else {
         const errorData = await response.json();
         setMessage(`Error: ${errorData.error}`);
@@ -119,7 +133,7 @@ function MatchCard({
         <div className="request-container">
           <div className="request-left">
             <div className="reqeust-img">
-              <img src={PLACEHOLDER} alt="profile picture" />
+              <img src={mentorImage || PLACEHOLDER} alt="profile picture" />
             </div>
             <div className="request-text">
               <h3>{mentorName}</h3>

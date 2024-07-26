@@ -112,8 +112,26 @@
 
 .card-reviews {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: row;
+  overflow-x: auto;
   width: 100%;
+}
+
+.card-reviews::-webkit-scrollbar {
+  height: 8px;
+}
+
+.card-reviews::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.card-reviews::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+
+.card-reviews::-webkit-scrollbar-track {
+  background: #f1f1f1;
 }
 
 .mp-left img {
