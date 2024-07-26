@@ -152,8 +152,16 @@ function Notes() {
         setRelatedUsers(
           acceptedRequests.map((request) =>
             user.userRole === "mentor"
-              ? { id: request.menteeId, name: request.menteeName }
-              : { id: request.mentorId, name: request.mentorName }
+              ? {
+                  id: request.menteeId,
+                  name: request.menteeName,
+                  image: request.menteeImage,
+                }
+              : {
+                  id: request.mentorId,
+                  name: request.mentorName,
+                  image: request.mentorImage,
+                }
           )
         );
       } catch (err) {
@@ -230,6 +238,8 @@ function Notes() {
     setVisibleMeetingsCount((prevCount) => prevCount + 3);
   };
 
+  console.log(relatedUsers);
+
   return (
     <>
       <ResponsiveAppBar
@@ -251,7 +261,11 @@ function Notes() {
               key={relatedUser.id}
               onClick={() => handleRelatedUserClick(relatedUser)}
             >
-              <img src={PLACEHOLDER} id="notes-img" alt="mentor" />
+              <img
+                src={relatedUser.image || PLACEHOLDER}
+                id="notes-img"
+                alt="mentor"
+              />
               <p>{relatedUser.name}</p>
             </div>
           ))}

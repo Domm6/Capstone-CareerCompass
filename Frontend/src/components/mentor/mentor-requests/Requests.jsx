@@ -79,6 +79,7 @@ function Requests() {
                 <Request
                   key={request.id}
                   name={request.menteeName}
+                  image={request.menteeImage}
                   school={request.menteeSchool}
                   major={request.menteeMajor}
                   requestId={request.id}

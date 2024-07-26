@@ -578,13 +578,54 @@ router.get("/connect-requests", async (req, res) => {
 });
 
 // route to get mentors specific requests
+// route to get mentors specific requests
 router.get("/connect-requests/:mentorId", async (req, res) => {
   const { mentorId } = req.params;
 
   try {
+    // Fetch connect requests for the specific mentor
     const requests = await ConnectRequest.findAll({
       where: { mentorId },
     });
+
+    // Fetch and set mentor and mentee data for each connect request
+    for (const request of requests) {
+      // Fetch mentor data
+      const mentor = await Mentor.findOne({
+        where: { id: request.mentorId },
+        include: {
+          model: User,
+          attributes: ["id", "name", "email", "profileImageUrl"],
+        },
+      });
+
+      // Fetch mentee data
+      const mentee = await Mentee.findOne({
+        where: { id: request.menteeId },
+        include: {
+          model: User,
+          attributes: ["id", "name", "email", "profileImageUrl"],
+        },
+      });
+
+      // Set mentor fields
+      if (mentor) {
+        request.mentorName = mentor.User.name;
+        request.mentorCompany = mentor.company;
+        request.mentorWorkRole = mentor.work_role;
+        request.mentorImage = mentor.User.profileImageUrl;
+        // Add any other mentor fields as needed
+      }
+
+      // Set mentee fields
+      if (mentee) {
+        request.menteeName = mentee.User.name;
+        request.menteeSchool = mentee.school;
+        request.menteeMajor = mentee.major;
+        request.menteeImage = mentee.User.profileImageUrl;
+        // Add any other mentee fields as needed
+      }
+    }
 
     res.json({ requests });
   } catch (error) {

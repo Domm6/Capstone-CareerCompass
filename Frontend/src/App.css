@@ -16,3 +16,7 @@ select {
   background: #fff;
   font-size: 14px;
 }
+
+img {
+  border-radius: 8px;
+}

@@ -81,6 +81,7 @@ function MentorMatches() {
                 <MentorMatchCard
                   key={request.id}
                   menteeName={request.menteeName}
+                  menteeImage={request.menteeImage}
                   menteeSchool={request.menteeSchool}
                   menteeMajor={request.menteeMajor}
                   requestId={request.id}
