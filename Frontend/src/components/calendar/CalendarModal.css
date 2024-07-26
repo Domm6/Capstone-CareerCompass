@@ -5,7 +5,7 @@
 }
 
 .calendar-form {
-  width: 50%;
+  width: 75%;
   display: flex;
   flex-direction: column;
 }
@@ -72,11 +72,15 @@
 }
 
 .calendar-alternate-times {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin: 10px;
   padding: 10px;
 }
 
 .calendar-times {
+  width: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
