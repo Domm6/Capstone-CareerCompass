@@ -1,7 +1,9 @@
 import { useState, useContext, useEffect } from "react";
 import { UserContext } from "../../../UserContext.jsx";
+import { useNavigate } from "react-router-dom";
 import config from "../../../../config.js";
 import "./MatchCard.css";
+import ApiService from "../../../../ApiService.js";
 import {
   Container,
   Box,
@@ -11,6 +13,14 @@ import {
   Alert,
   CircularProgress,
 } from "@mui/material";
+
+const experienceMappingReverse = {
+  1: "0-2",
+  2: "2-5",
+  3: "5-10",
+  4: "10+",
+  5: "20+",
+};
 
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
@@ -26,12 +36,15 @@ function MatchCard({
   reviews: initialReviews,
 }) {
   const { user } = useContext(UserContext);
+  const navigate = useNavigate();
   const [rating, setRating] = useState(5);
   const [textReview, setTextReview] = useState("");
   const [message, setMessage] = useState("");
   const [hasReviewed, setHasReviewed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [reviews, setReviews] = useState(initialReviews);
+  const [errorMessage, setErrorMessage] = useState("");
+  const apiService = new ApiService();
 
   const handleRatingChange = (event) => {
     setRating(parseInt(event.target.value));
@@ -119,6 +132,18 @@ function MatchCard({
     }
   };
 
+  const handleViewProfile = async () => {
+    setLoading(true);
+    try {
+      const mentor = await apiService.fetchMentorDataMentorId(mentorId);
+      navigate("/public-mentor-profile", { state: { mentor } });
+    } catch (error) {
+      setErrorMessage("Failed to fetch mentee data.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     checkReview();
   }, [reviews]);
@@ -130,7 +155,11 @@ function MatchCard({
           <CircularProgress />
         </div>
       ) : (
-        <div className="request-container">
+        <div
+          className="request-container"
+          id="mentor-request-container"
+          onClick={handleViewProfile}
+        >
           <div className="request-left">
             <div className="reqeust-img">
               <img src={mentorImage || PLACEHOLDER} alt="profile picture" />

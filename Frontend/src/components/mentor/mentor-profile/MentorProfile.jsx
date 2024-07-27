@@ -192,7 +192,6 @@ function MentorProfile() {
 
       // fetch mentor reviews
       fetchMentorReveiews(mentor.id);
-      // filter so only reviews with
     }
   }, [user, mentor]);
 

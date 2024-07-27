@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../UserContext.jsx";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import moment from "moment";
 import "./MenteeProfile.css";
 import MenteeProfileModal from "./MenteeProfileModal.jsx";
@@ -70,21 +70,26 @@ function MenteeProfile() {
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const navigate = useNavigate();
+  const location = useLocation(); // Added location
+  const [mentee, setMentee] = useState(location.state?.mentee || null);
   const { handleSignout } = useContext(UserContext);
   const [loading, setLoading] = useState(false);
   const apiService = new ApiService();
 
   const [userData, setUserData] = useState({
-    name: "Loading",
-    profileImageUrl: PLACEHOLDER,
-    bio: "",
-    major: "",
-    career_goals: "",
-    school: "",
-    skills: "",
-    preferredStartHour: "",
-    preferredEndHour: "",
+    name: mentee ? mentee.name : "Loading", // Updated to use mentee data if available
+    profileImageUrl: mentee
+      ? mentee.profileImageUrl || PLACEHOLDER
+      : PLACEHOLDER,
+    bio: mentee ? mentee.bio : "",
+    major: mentee ? mentee.major : "",
+    career_goals: mentee ? mentee.career_goals : "",
+    school: mentee ? mentee.school : "",
+    skills: mentee ? mentee.skills : "",
+    preferredStartHour: mentee
+      ? mentee.meetingPreferences.preferredStartHour
+      : "",
+    preferredEndHour: mentee ? mentee.meetingPreferences.preferredEndHour : "",
   });
 
   const fetchMenteeData = async () => {
@@ -106,7 +111,6 @@ function MenteeProfile() {
             data.meetingPreferences?.preferredEndHour || "23:59",
         });
       } catch (error) {
-        console.error("Error fetching mentee data:", error);
         setUserData({
           name: "Failed to load user data",
           profileImageUrl: PLACEHOLDER,
@@ -118,8 +122,21 @@ function MenteeProfile() {
   };
 
   useEffect(() => {
-    fetchMenteeData();
-  }, [user]);
+    if (!mentee) {
+      fetchMenteeData();
+    } else {
+      setUserData({
+        name: userData.name,
+        school: userData.school,
+        major: userData.major,
+        bio: userData.bio,
+        career_goals: userData.career_goals,
+        skills: userData.skills,
+        meetingPreferences: userData.meetingPreferences,
+        profileImageUrl: userData.profileImageUrl || PLACEHOLDER,
+      });
+    }
+  }, [user, mentee]);
 
   const handleCheckboxChange = (skill) => {
     if (selectedSkills.includes(skill)) {
@@ -146,7 +163,7 @@ function MenteeProfile() {
         pages={["Dashboard", "Find Mentors"]}
         userName={user.name}
         profileImageUrl={user.profileImageUrl}
-        userRole="mentee"
+        userRole={user.userRole}
       />
       <Container>
         <Box sx={{ my: 2 }}>
@@ -160,30 +177,32 @@ function MenteeProfile() {
                 <div className="mp-top-left">
                   <h1>Mentee Profile</h1>
                 </div>
-                <div className="mp-top-right">
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSignout}
-                  >
-                    Log Out
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleModalToggle}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => navigate("/notes")}
-                    sx={{ mr: 1 }}
-                  >
-                    Notes
-                  </Button>
-                </div>
+                {user.userRole === "mentee" && (
+                  <div className="mp-top-right">
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleSignout}
+                    >
+                      Log Out
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleModalToggle}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => navigate("/notes")}
+                      sx={{ mr: 1 }}
+                    >
+                      Notes
+                    </Button>
+                  </div>
+                )}
               </div>
               <div className="mp-body">
                 <div className="mp-left">
