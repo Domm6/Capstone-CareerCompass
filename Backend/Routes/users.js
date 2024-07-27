@@ -284,6 +284,29 @@ router.get("/mentors/:id", async (req, res) => {
   }
 });
 
+// Route to fetch mentor profile based on mentorId, not userId
+router.get("/mentors/mentorId/:id", async (req, res) => {
+  const mentorId = req.params.id;
+
+  try {
+    // Find the mentor by mentor ID
+    const mentor = await Mentor.findOne({
+      where: { id: mentorId },
+      include: { model: User, attributes: ["name", "profileImageUrl"] },
+    });
+
+    if (!mentor) {
+      return res.status(404).json({ error: "Mentor not found" });
+    }
+
+    // Return the mentor data in the response
+    res.json({ mentor });
+  } catch (error) {
+    console.error("Error fetching mentor profile:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 // Route to fetch mentor profiles
 router.get("/mentors", async (req, res) => {
   try {

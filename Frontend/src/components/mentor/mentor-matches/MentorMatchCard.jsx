@@ -24,8 +24,6 @@ function MentorMatchCard({
     setLoading(true);
     try {
       const menteeData = await apiService.fetchMenteeDataMenteeId(menteeId);
-      // console.log(menteeData);
-      // console.log(menteeData.User.name);
       const mentee = {
         name: menteeData.User.name,
         school: menteeData.school,
@@ -38,7 +36,6 @@ function MentorMatchCard({
         meetingPreferences: menteeData.meetingPreferences,
         profileImageUrl: menteeImage || PLACEHOLDER,
       };
-      console.log(mentee);
       navigate("/public-mentee-profile", { state: { mentee } });
     } catch (error) {
       setErrorMessage("Failed to fetch mentee data.");
