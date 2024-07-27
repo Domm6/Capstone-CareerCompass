@@ -374,17 +374,25 @@ router.get("/mentees/menteeId/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
-    // Find the mentor by user ID
-    const mentee = await Mentee.findOne({ where: { id } });
+    // Find the mentee by user ID and include the associated user data
+    const mentee = await Mentee.findOne({
+      where: { id },
+      include: [
+        {
+          model: User, // Assuming you have defined the association in your models
+          attributes: ["name", "profileImageUrl"], // Include only necessary attributes
+        },
+      ],
+    });
 
     if (!mentee) {
       return res.status(404).json({ error: "Mentee not found" });
     }
 
-    // Return the mentor data in the response
+    // Return the mentee data in the response
     res.json({ mentee });
   } catch (error) {
-    console.error("Error fetching mentor profile:", error);
+    console.error("Error fetching mentee profile:", error);
     res.status(500).json({ error: "Server error" });
   }
 });

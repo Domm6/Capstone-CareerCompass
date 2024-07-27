@@ -124,6 +124,14 @@ function App() {
                   }
                 />
                 <Route
+                  path="/public-mentee-profile"
+                  element={
+                    <ProtectedRoute>
+                      <MenteeProfile />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/notes"
                   element={
                     <ProtectedRoute>

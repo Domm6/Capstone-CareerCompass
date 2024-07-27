@@ -80,6 +80,7 @@ function MentorMatches() {
               .map((request) => (
                 <MentorMatchCard
                   key={request.id}
+                  menteeId={request.menteeId}
                   menteeName={request.menteeName}
                   menteeImage={request.menteeImage}
                   menteeSchool={request.menteeSchool}
