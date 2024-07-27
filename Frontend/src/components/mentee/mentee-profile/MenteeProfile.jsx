@@ -111,7 +111,6 @@ function MenteeProfile() {
             data.meetingPreferences?.preferredEndHour || "23:59",
         });
       } catch (error) {
-        console.error("Error fetching mentee data:", error);
         setUserData({
           name: "Failed to load user data",
           profileImageUrl: PLACEHOLDER,

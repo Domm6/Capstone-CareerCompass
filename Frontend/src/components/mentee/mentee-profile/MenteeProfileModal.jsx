@@ -97,7 +97,7 @@ function MenteeProfileModal({
         setSchoolSuggestions([]);
       }
     } catch (error) {
-      console.error("Error fetching school suggestions:", error);
+      setErrorMessage(error);
     }
   };
 

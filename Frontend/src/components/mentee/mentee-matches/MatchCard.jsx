@@ -136,7 +136,6 @@ function MatchCard({
     setLoading(true);
     try {
       const mentor = await apiService.fetchMentorDataMentorId(mentorId);
-      // console.log(mentor);
       navigate("/public-mentor-profile", { state: { mentor } });
     } catch (error) {
       setErrorMessage("Failed to fetch mentee data.");
