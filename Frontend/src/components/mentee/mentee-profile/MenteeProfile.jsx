@@ -71,9 +71,11 @@ function MenteeProfile() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const location = useLocation(); // Added location
+  const navigate = useNavigate();
   const [mentee, setMentee] = useState(location.state?.mentee || null);
   const { handleSignout } = useContext(UserContext);
   const [loading, setLoading] = useState(false);
+
   const apiService = new ApiService();
 
   const [userData, setUserData] = useState({
