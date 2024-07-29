@@ -178,6 +178,18 @@ function MenteeProfile() {
             <>
               <div className="mp-top">
                 <div className="mp-top-left">
+                  <div className="top-left-leftside">
+                    {user.userRole !== "mentee" && (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        id="back-btn"
+                        onClick={() => navigate("/mentor-dashboard")}
+                      >
+                        Back
+                      </Button>
+                    )}
+                  </div>
                   <h1>Mentee Profile</h1>
                 </div>
                 {user.userRole === "mentee" && (
