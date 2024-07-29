@@ -214,6 +214,8 @@ function MentorProfile() {
     setIsModalOpen(!isModalOpen);
   };
 
+  console.log(reviews);
+
   return (
     <>
       <ResponsiveAppBar
@@ -309,9 +311,17 @@ function MentorProfile() {
                   <h3>Reviews</h3>
                   <div className="card-reviews">
                     {reviews.length > 0 ? (
-                      reviews.map((review) => (
-                        <ReviewCard key={review.id} review={review} />
-                      ))
+                      reviews
+                        .filter(
+                          (review) =>
+                            review.textReview && review.textReview.trim() !== ""
+                        )
+                        .map((filteredReview) => (
+                          <ReviewCard
+                            key={filteredReview.id}
+                            review={filteredReview}
+                          />
+                        ))
                     ) : (
                       <Typography>No reviews available</Typography>
                     )}
