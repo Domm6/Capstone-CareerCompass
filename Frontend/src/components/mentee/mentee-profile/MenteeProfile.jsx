@@ -132,7 +132,8 @@ function MenteeProfile() {
         bio: userData.bio,
         career_goals: userData.career_goals,
         skills: userData.skills,
-        meetingPreferences: userData.meetingPreferences,
+        preferredStartHour: userData.preferredStartHour || "00:00",
+        preferredEndHour: userData.preferredEndHour || "23:59",
         profileImageUrl: userData.profileImageUrl || PLACEHOLDER,
       });
     }
