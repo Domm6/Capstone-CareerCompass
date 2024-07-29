@@ -272,8 +272,12 @@ function MentorProfile() {
                   <div className="mp-right-company">
                     <Typography>Company: {userData.company}</Typography>
                     <img
-                      src={`https://img.logo.dev/${userData.company}.com?token=${API_KEY}`}
-                      alt={`${userData.company} logo`}
+                      src={`${config.logoDevApiBaseUrl}/${userData.company}.com?token=${API_KEY}`}
+                      alt="company logo"
+                      onError={(error) => {
+                        error.target.onerror = null;
+                        error.target.src = PLACEHOLDER;
+                      }}
                     />
                   </div>
                   <Typography>Role: {userData.work_role}</Typography>
