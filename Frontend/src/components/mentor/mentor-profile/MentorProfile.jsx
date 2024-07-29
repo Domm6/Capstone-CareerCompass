@@ -88,8 +88,11 @@ function MentorProfile() {
   const [reviews, setReviews] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const pages = ["Dashboard", "Profile"];
+  if (user.userRole === "mentee") {
+    pages.push("Find Mentors");
+  }
   const apiService = new ApiService();
-  const pages = ["Dashboard"];
 
   const [userData, setUserData] = useState({
     name: mentor ? mentor.User.name : "Loading",
@@ -230,17 +233,6 @@ function MentorProfile() {
             <>
               <div className="mp-top">
                 <div className="mp-top-left">
-                  <div className="top-left-leftside">
-                    {user.userRole !== "mentor" && (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => navigate("/mentee-dashboard")}
-                      >
-                        Back
-                      </Button>
-                    )}
-                  </div>
                   <h1>Mentor Profile</h1>
                 </div>
                 {user.userRole === "mentor" && (

@@ -226,7 +226,7 @@ function Match() {
   const [matchedMentorIds, setMatchedMentorIds] = useState([]);
   const [loading, setLoading] = useState(false);
   const apiService = new ApiService();
-  const pages = ["Dashboard", "Profile"];
+  const pages = ["Dashboard", "Profile", "Find Mentors"];
 
   const handleCardClick = (mentor) => {
     setSelectedMentor(mentor);

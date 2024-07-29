@@ -75,7 +75,10 @@ function MenteeProfile() {
   const [mentee, setMentee] = useState(location.state?.mentee || null);
   const { handleSignout } = useContext(UserContext);
   const [loading, setLoading] = useState(false);
-
+  const pages = ["Dashboard", "Profile"];
+  if (user.userRole === "mentee") {
+    pages.push("Find Mentors");
+  }
   const apiService = new ApiService();
 
   const [userData, setUserData] = useState({
@@ -163,7 +166,7 @@ function MenteeProfile() {
     <>
       <ResponsiveAppBar
         handleSignout={handleSignout}
-        pages={["Dashboard", "Find Mentors"]}
+        pages={pages}
         userName={user.name}
         profileImageUrl={user.profileImageUrl}
         userRole={user.userRole}
@@ -178,18 +181,6 @@ function MenteeProfile() {
             <>
               <div className="mp-top">
                 <div className="mp-top-left">
-                  <div className="top-left-leftside">
-                    {user.userRole !== "mentee" && (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        id="back-btn"
-                        onClick={() => navigate("/mentor-dashboard")}
-                      >
-                        Back
-                      </Button>
-                    )}
-                  </div>
                   <h1>Mentee Profile</h1>
                 </div>
                 {user.userRole === "mentee" && (
