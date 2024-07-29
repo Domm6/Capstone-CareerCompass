@@ -24,6 +24,7 @@ const experienceMappingReverse = {
 
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
+const API_KEY = import.meta.env.VITE_LOGO_API;
 
 function MatchCard({
   mentorName,
@@ -167,7 +168,17 @@ function MatchCard({
             </div>
             <div className="request-text">
               <h3>{mentorName}</h3>
-              <p>{mentorCompany}</p>
+              <div className="request-text-company">
+                <p>{mentorCompany}</p>
+                <img
+                  src={`${config.logoDevApiBaseUrl}/${mentorCompany}.com?token=${API_KEY}`}
+                  alt="company logo"
+                  onError={(error) => {
+                    error.target.onerror = null;
+                    error.target.src = PLACEHOLDER;
+                  }}
+                />
+              </div>
               <p>{mentorWorkRole}</p>
             </div>
           </div>
