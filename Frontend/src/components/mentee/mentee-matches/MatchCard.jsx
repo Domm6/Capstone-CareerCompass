@@ -155,14 +155,15 @@ function MatchCard({
           <CircularProgress />
         </div>
       ) : (
-        <div
-          className="request-container"
-          id="mentor-request-container"
-          onClick={handleViewProfile}
-        >
+        <div className="request-container" id="mentor-request-container">
           <div className="request-left">
             <div className="reqeust-img">
-              <img src={mentorImage || PLACEHOLDER} alt="profile picture" />
+              <img
+                src={mentorImage || PLACEHOLDER}
+                alt="profile picture"
+                onClick={handleViewProfile}
+                id="mentor-match-img"
+              />
             </div>
             <div className="request-text">
               <h3>{mentorName}</h3>
