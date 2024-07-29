@@ -262,11 +262,7 @@ function MentorProfile() {
               <div className="mp-body">
                 <div className="mp-left">
                   <img
-                    src={
-                      user.profileImageUrl ||
-                      userData.profileImageUrl ||
-                      PLACEHOLDER
-                    }
+                    src={userData.profileImageUrl || PLACEHOLDER}
                     alt="profile picture"
                   />
                   <Typography variant="h4">{userData.name}</Typography>
