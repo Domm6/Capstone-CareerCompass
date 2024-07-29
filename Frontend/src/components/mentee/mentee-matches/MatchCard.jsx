@@ -190,14 +190,19 @@ function MatchCard({
             )}
             <form onSubmit={handleSubmit}>
               <div className="right-rating">
-                <select value={rating} onChange={handleRatingChange}>
+                <select
+                  value={rating}
+                  onChange={handleRatingChange}
+                  id="rating-select"
+                >
                   <option value="1">1</option>
                   <option value="2">2</option>
                   <option value="3">3</option>
                   <option value="4">4</option>
                   <option value="5">5</option>
                 </select>
-                <input
+                <textarea
+                  className="review-textarea"
                   type="text"
                   value={textReview}
                   onChange={handleTextReviewChange}
