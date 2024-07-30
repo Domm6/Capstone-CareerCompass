@@ -347,6 +347,7 @@ function Match() {
         <h1>Choose a Mentor</h1>
       </div>
       <div className="match-nav">
+        <input type="text" placeholder="Search" />
         <select name="role" value={selectedRole} onChange={handleRoleChange}>
           <option value="">Select a role</option>
           {techRoles.map((role, index) => (
