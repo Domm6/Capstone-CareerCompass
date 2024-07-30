@@ -225,6 +225,7 @@ function Match() {
   const [topMentors, setTopMentors] = useState([]);
   const [matchedMentorIds, setMatchedMentorIds] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const apiService = new ApiService();
   const pages = ["Dashboard", "Profile", "Find Mentors"];
 
@@ -331,6 +332,13 @@ function Match() {
           mentor.industry
             .toLowerCase()
             .includes(selectedIndustry.toLowerCase()))) &&
+      (searchQuery === "" ||
+        (mentor.User.name &&
+          mentor.User.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (mentor.company &&
+          mentor.company.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (mentor.school &&
+          mentor.school.toLowerCase().includes(searchQuery.toLowerCase()))) &&
       !matchedMentorIds.includes(mentor.id) &&
       !topMentors.some((topMentor) => topMentor.id === mentor.id)
   );
@@ -347,7 +355,12 @@ function Match() {
         <h1>Choose a Mentor</h1>
       </div>
       <div className="match-nav">
-        <input type="text" placeholder="Search" />
+        <input
+          type="text"
+          placeholder="Search"
+          value={searchQuery}
+          onChange={(event) => setSearchQuery(event.target.value)}
+        />
         <select name="role" value={selectedRole} onChange={handleRoleChange}>
           <option value="">Select a role</option>
           {techRoles.map((role, index) => (
