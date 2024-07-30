@@ -214,8 +214,6 @@ function MentorProfile() {
     setIsModalOpen(!isModalOpen);
   };
 
-  console.log(reviews);
-
   return (
     <>
       <ResponsiveAppBar
