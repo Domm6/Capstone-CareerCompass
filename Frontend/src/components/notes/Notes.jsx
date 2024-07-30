@@ -251,22 +251,28 @@ function Notes() {
       </div>
       <div className="notes-body">
         <div className="notes-left">
-          {relatedUsers.map((relatedUser) => (
-            <div
-              className={`notes-mentor ${
-                activeRelatedUser?.id === relatedUser.id ? "active" : ""
-              }`}
-              key={relatedUser.id}
-              onClick={() => handleRelatedUserClick(relatedUser)}
-            >
-              <img
-                src={relatedUser.image || PLACEHOLDER}
-                id="notes-img"
-                alt="mentor"
-              />
-              <p>{relatedUser.name}</p>
-            </div>
-          ))}
+          {relatedUsers.length > 0 ? (
+            relatedUsers.map((relatedUser) => (
+              <div
+                className={`notes-mentor ${
+                  activeRelatedUser?.id === relatedUser.id ? "active" : ""
+                }`}
+                key={relatedUser.id}
+                onClick={() => handleRelatedUserClick(relatedUser)}
+              >
+                <img
+                  src={relatedUser.image || PLACEHOLDER}
+                  id="notes-img"
+                  alt="related user"
+                />
+                <p>{relatedUser.name}</p>
+              </div>
+            ))
+          ) : (
+            <p id="notes-left-text">
+              {user.userRole === "mentee" ? "No Mentors" : "No Mentees"}
+            </p>
+          )}
         </div>
         <div className="notes-right">
           {loading ? (
@@ -276,7 +282,7 @@ function Notes() {
           ) : error ? (
             <Alert severity="error">{error}</Alert>
           ) : meetings.length === 0 ? (
-            <div>No meetings</div>
+            <p id="notes-left-text">No meetings</p>
           ) : (
             meetings.slice(0, visibleMeetingsCount).map((meeting) => (
               <div className="meeting-notes" key={meeting.id}>

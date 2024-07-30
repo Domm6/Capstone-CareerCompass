@@ -114,3 +114,8 @@ iframe {
   width: 20%;
   margin: 10px;
 }
+
+#notes-left-text {
+  display: flex;
+  justify-content: center;
+}
