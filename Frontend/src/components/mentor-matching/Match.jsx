@@ -357,7 +357,7 @@ function Match() {
       <div className="match-nav">
         <input
           type="text"
-          placeholder="Search"
+          placeholder="Search mentor by name, company, or school"
           value={searchQuery}
           onChange={(event) => setSearchQuery(event.target.value)}
         />
