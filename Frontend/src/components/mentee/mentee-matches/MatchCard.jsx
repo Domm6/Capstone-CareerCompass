@@ -24,6 +24,7 @@ const experienceMappingReverse = {
 
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
+const API_KEY = import.meta.env.VITE_LOGO_API;
 
 function MatchCard({
   mentorName,
@@ -155,18 +156,29 @@ function MatchCard({
           <CircularProgress />
         </div>
       ) : (
-        <div
-          className="request-container"
-          id="mentor-request-container"
-          onClick={handleViewProfile}
-        >
+        <div className="request-container" id="mentor-request-container">
           <div className="request-left">
             <div className="reqeust-img">
-              <img src={mentorImage || PLACEHOLDER} alt="profile picture" />
+              <img
+                src={mentorImage || PLACEHOLDER}
+                alt="profile picture"
+                onClick={handleViewProfile}
+                id="mentor-match-img"
+              />
             </div>
             <div className="request-text">
               <h3>{mentorName}</h3>
-              <p>{mentorCompany}</p>
+              <div className="request-text-company">
+                <p>{mentorCompany}</p>
+                <img
+                  src={`${config.logoDevApiBaseUrl}/${mentorCompany}.com?token=${API_KEY}`}
+                  alt="company logo"
+                  onError={(error) => {
+                    error.target.onerror = null;
+                    error.target.src = PLACEHOLDER;
+                  }}
+                />
+              </div>
               <p>{mentorWorkRole}</p>
             </div>
           </div>
@@ -178,14 +190,19 @@ function MatchCard({
             )}
             <form onSubmit={handleSubmit}>
               <div className="right-rating">
-                <select value={rating} onChange={handleRatingChange}>
+                <select
+                  value={rating}
+                  onChange={handleRatingChange}
+                  id="rating-select"
+                >
                   <option value="1">1</option>
                   <option value="2">2</option>
                   <option value="3">3</option>
                   <option value="4">4</option>
                   <option value="5">5</option>
                 </select>
-                <input
+                <textarea
+                  className="review-textarea"
                   type="text"
                   value={textReview}
                   onChange={handleTextReviewChange}

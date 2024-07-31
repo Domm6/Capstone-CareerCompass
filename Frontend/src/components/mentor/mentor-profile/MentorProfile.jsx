@@ -88,8 +88,11 @@ function MentorProfile() {
   const [reviews, setReviews] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const pages = ["Dashboard", "Profile"];
+  if (user.userRole === "mentee") {
+    pages.push("Find Mentors");
+  }
   const apiService = new ApiService();
-  const pages = ["Dashboard"];
 
   const [userData, setUserData] = useState({
     name: mentor ? mentor.User.name : "Loading",
@@ -262,11 +265,7 @@ function MentorProfile() {
               <div className="mp-body">
                 <div className="mp-left">
                   <img
-                    src={
-                      user.profileImageUrl ||
-                      userData.profileImageUrl ||
-                      PLACEHOLDER
-                    }
+                    src={userData.profileImageUrl || PLACEHOLDER}
                     alt="profile picture"
                   />
                   <Typography variant="h4">{userData.name}</Typography>
@@ -276,8 +275,12 @@ function MentorProfile() {
                   <div className="mp-right-company">
                     <Typography>Company: {userData.company}</Typography>
                     <img
-                      src={`https://img.logo.dev/${userData.company}.com?token=${API_KEY}`}
-                      alt={`${userData.company} logo`}
+                      src={`${config.logoDevApiBaseUrl}/${userData.company}.com?token=${API_KEY}`}
+                      alt="company logo"
+                      onError={(error) => {
+                        error.target.onerror = null;
+                        error.target.src = PLACEHOLDER;
+                      }}
                     />
                   </div>
                   <Typography>Role: {userData.work_role}</Typography>
@@ -306,9 +309,17 @@ function MentorProfile() {
                   <h3>Reviews</h3>
                   <div className="card-reviews">
                     {reviews.length > 0 ? (
-                      reviews.map((review) => (
-                        <ReviewCard key={review.id} review={review} />
-                      ))
+                      reviews
+                        .filter(
+                          (review) =>
+                            review.textReview && review.textReview.trim() !== ""
+                        )
+                        .map((filteredReview) => (
+                          <ReviewCard
+                            key={filteredReview.id}
+                            review={filteredReview}
+                          />
+                        ))
                     ) : (
                       <Typography>No reviews available</Typography>
                     )}

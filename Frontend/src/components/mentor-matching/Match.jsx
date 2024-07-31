@@ -210,7 +210,7 @@ const getTopMentorSuggestions = (mentors, mentee) => {
     })
     .sort((a, b) => b.score - a.score);
 
-  return rankedMentors.slice(0, 5);
+  return rankedMentors.slice(0, 6);
 };
 
 function Match() {
@@ -226,7 +226,7 @@ function Match() {
   const [matchedMentorIds, setMatchedMentorIds] = useState([]);
   const [loading, setLoading] = useState(false);
   const apiService = new ApiService();
-  const pages = ["Dashboard", "Profile"];
+  const pages = ["Dashboard", "Profile", "Find Mentors"];
 
   const handleCardClick = (mentor) => {
     setSelectedMentor(mentor);

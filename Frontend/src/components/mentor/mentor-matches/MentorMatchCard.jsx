@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../../mentee/mentee-matches/MatchCard.css";
 import "./MentorMatchCard.css";
 import ApiService from "../../../../ApiService.js";
+import config from "../../../../config.js";
 
 const PLACEHOLDER =
   "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";

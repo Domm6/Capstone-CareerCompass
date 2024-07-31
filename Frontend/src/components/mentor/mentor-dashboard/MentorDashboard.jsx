@@ -8,7 +8,7 @@ import Requests from "../mentor-requests/Requests.jsx";
 import { Container, Box, Typography, Button, ButtonGroup } from "@mui/material";
 import ResponsiveAppBar from "../../header/ResponsiveAppBar.jsx";
 
-const pages = ["Profile"];
+const pages = ["Dashboard", "Profile"];
 
 function MentorDashboard() {
   const [activeComponent, setActiveComponent] = useState("Calendar");

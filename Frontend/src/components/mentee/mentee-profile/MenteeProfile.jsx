@@ -71,9 +71,14 @@ function MenteeProfile() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const location = useLocation(); // Added location
+  const navigate = useNavigate();
   const [mentee, setMentee] = useState(location.state?.mentee || null);
   const { handleSignout } = useContext(UserContext);
   const [loading, setLoading] = useState(false);
+  const pages = ["Dashboard", "Profile"];
+  if (user.userRole === "mentee") {
+    pages.push("Find Mentors");
+  }
   const apiService = new ApiService();
 
   const [userData, setUserData] = useState({
@@ -132,7 +137,8 @@ function MenteeProfile() {
         bio: userData.bio,
         career_goals: userData.career_goals,
         skills: userData.skills,
-        meetingPreferences: userData.meetingPreferences,
+        preferredStartHour: userData.preferredStartHour || "00:00",
+        preferredEndHour: userData.preferredEndHour || "23:59",
         profileImageUrl: userData.profileImageUrl || PLACEHOLDER,
       });
     }
@@ -160,7 +166,7 @@ function MenteeProfile() {
     <>
       <ResponsiveAppBar
         handleSignout={handleSignout}
-        pages={["Dashboard", "Find Mentors"]}
+        pages={pages}
         userName={user.name}
         profileImageUrl={user.profileImageUrl}
         userRole={user.userRole}

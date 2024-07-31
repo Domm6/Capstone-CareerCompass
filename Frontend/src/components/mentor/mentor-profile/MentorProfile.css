@@ -16,9 +16,10 @@
 }
 
 .mp-top-left {
-  flex: 1; /* Allow this div to grow and take available space */
+  /* flex: 1; Allow this div to grow and take available space */
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
+  width: 70%;
 }
 
 .mp-left h4 {
@@ -83,7 +84,7 @@
 .mp-right-company img {
   width: 50px;
   margin: 10px;
-  padding: 10px;
+  border-radius: 8px;
 }
 
 .mp-form {
@@ -136,4 +137,11 @@
 
 .mp-left img {
   width: 500px;
+}
+
+.top-left-leftside {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  margin: 10px;
 }
