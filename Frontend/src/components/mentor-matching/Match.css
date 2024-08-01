@@ -64,3 +64,17 @@
   margin: none;
   padding: none;
 }
+
+.match-nav input[type="text"] {
+  margin-left: 30px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.match-nav input[type="text"]:focus {
+  border-color: #3d52a0; /* Highlight color on focus */
+  outline: none;
+}
