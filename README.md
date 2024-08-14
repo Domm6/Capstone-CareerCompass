@@ -1,6 +1,8 @@
 # CareerCompass
 
 [Project Plan Link](https://docs.google.com/document/d/1fK66Y3GIK12eqAS148DwcOe7q6lIE-Wumrvvb4dYV98/edit?usp=sharing)
+[Demo](https://drive.google.com/file/d/10tbapRCC6aW0s2vb-iNTM606m1-y5kRb/view?usp=sharing)
+
 
 ## Overview
 
